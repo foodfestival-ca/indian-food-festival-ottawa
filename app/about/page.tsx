@@ -143,14 +143,24 @@ export default function AboutPage() {
             title={`Behind It All: ${festival.organizer.legalName}`}
             accent={festival.organizer.legalName}
           />
-          <RevealGroup className="mx-auto mt-12 grid max-w-[64rem] gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {/* max-w bumped from 64rem to 72rem: with square source photos and
+              object-cover, a taller image frame on a FIXED-width card
+              necessarily crops MORE off the sides, not less — the zoom people
+              feel is set by the frame's height:width ratio, and object-position
+              only changes which part of that crop is kept, not how much is
+              cropped. Widening the grid keeps each card's width growing
+              roughly in step with the taller frame, so the ratio — and the
+              amount of visible zoom — stays reasonable instead of getting
+              tighter. Cards are still identical widths to each other, just
+              wider than before. */}
+          <RevealGroup className="mx-auto mt-12 grid max-w-[72rem] gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {organizers.map((person, i) => (
               <RevealItem key={person.id}>
                 <article className="h-full overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-white shadow-[var(--shadow-sm)]">
                   <FounderPortrait
                     src={person.image}
                     alt={`Portrait of ${person.name}`}
-                    position={person.imagePosition}
+                    objectPosition={person.objectPosition}
                     label={person.name}
                     priority={i === 0}
                   />
