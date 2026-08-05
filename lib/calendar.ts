@@ -6,16 +6,29 @@ function toIcsUtc(iso: string): string {
   return new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }
 
-function dayIsoFor(dayId: ScheduleEvent["dayId"], hhmm: string): string {
-  const day = festival.days.find((d) => d.id === dayId);
-  const dateMap: Record<string, string> = {
+/** "5:15PM" → "17:15" (24h, zero-padded) — the sheet's times are 12h. */
+function to24h(t: string): string {
+  const m = t.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!m) return "00:00";
+  const [, hh, mm, ap] = m as unknown as [string, string, string, string];
+  let h = parseInt(hh, 10) % 12;
+  if (ap.toUpperCase() === "PM") h += 12;
+  return `${String(h).padStart(2, "0")}:${mm}`;
+}
+
+/** "5:00PM - 5:15PM" → { start: "17:00", end: "17:15" } */
+function parseTimeRange(time: string): { start: string; end: string } {
+  const [s, e] = time.split("-").map((part) => part.trim());
+  return { start: to24h(s ?? ""), end: to24h(e ?? s ?? "") };
+}
+
+function dayIsoFor(day: ScheduleEvent["day"], hhmm: string): string {
+  const dateMap: Record<ScheduleEvent["day"], string> = {
     fri: "2026-08-21",
     sat: "2026-08-22",
     sun: "2026-08-23",
   };
-  const date = dateMap[dayId] ?? dateMap.fri!;
-  void day;
-  return `${date}T${hhmm}:00-04:00`;
+  return `${dateMap[day]}T${hhmm}:00-04:00`;
 }
 
 function escapeIcs(text: string): string {
@@ -24,8 +37,10 @@ function escapeIcs(text: string): string {
 
 /** Single-event .ics. Used by the per-event add-to-calendar button. */
 export function eventToIcs(event: ScheduleEvent): string {
-  const start = toIcsUtc(dayIsoFor(event.dayId, event.start));
-  const end = toIcsUtc(dayIsoFor(event.dayId, event.end));
+  const { start: startHHMM, end: endHHMM } = parseTimeRange(event.time);
+  const start = toIcsUtc(dayIsoFor(event.day, startHHMM));
+  const end = toIcsUtc(dayIsoFor(event.day, endHHMM));
+  const byline = [event.performer, event.group].filter(Boolean).join(" — ");
 
   return [
     "BEGIN:VCALENDAR",
@@ -38,8 +53,8 @@ export function eventToIcs(event: ScheduleEvent): string {
     `DTSTART:${start}`,
     `DTEND:${end}`,
     `SUMMARY:${escapeIcs(event.title)}`,
-    `DESCRIPTION:${escapeIcs(event.description)}`,
-    `LOCATION:${escapeIcs(`${event.stage}, ${festival.venue.name}, Ottawa`)}`,
+    ...(byline ? [`DESCRIPTION:${escapeIcs(byline)}`] : []),
+    `LOCATION:${escapeIcs(`${festival.venue.name}, Ottawa`)}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
