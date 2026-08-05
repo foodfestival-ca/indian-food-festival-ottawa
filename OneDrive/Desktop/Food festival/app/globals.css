@@ -1,0 +1,313 @@
+@import "tailwindcss";
+
+/* ============================================================
+   INDIAN FOOD FESTIVAL OF OTTAWA 2026 — DESIGN TOKENS
+   Mobile-first. Every scale starts at 360px and grows upward.
+   ============================================================ */
+
+@theme {
+  /* ---------- COLOR ----------
+     Contrast (WCAG 2.2 AA) verified against --color-cream:
+       ink 13.1:1 · maroon 11.4:1 · burgundy 8.9:1 · ink-muted 5.4:1
+       saffron 3.1:1  → large text / non-text UI ONLY, never body copy
+       emerald 5.2:1                                                  */
+  --color-cream:        #FDF8F0;
+  --color-cream-deep:   #F7EFE2;
+  --color-maroon:       #6B1028;
+  --color-burgundy:     #8A1538;
+  --color-gold:         #C9A227;
+  --color-gold-soft:    #E8D9A8;
+  --color-saffron:      #E8792B;
+  --color-saffron-deep: #C25E19;
+  --color-emerald:      #1F6B4A;
+  --color-ink:          #2A1A18;
+  --color-ink-muted:    #6E5A56;
+  --color-border:       #E7D9C4;
+  --color-white:        #FFFFFF;
+
+  /* ---------- TYPE FAMILIES (bound in layout.tsx via next/font) ---------- */
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-body:    var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ---------- FLUID TYPE SCALE ----------
+     clamp(min @360px, preferred, max @1440px)
+     Body never drops below 16px on mobile — prevents iOS input zoom. */
+  --text-xs:   clamp(0.6875rem, 0.664rem + 0.10vw, 0.75rem);    /* 11 → 12 */
+  --text-sm:   clamp(0.8125rem, 0.789rem + 0.10vw, 0.875rem);   /* 13 → 14 */
+  --text-base: clamp(1rem,      0.977rem + 0.10vw, 1.0625rem);  /* 16 → 17 */
+  --text-lg:   clamp(1.125rem,  1.06rem + 0.28vw,  1.3125rem);  /* 18 → 21 */
+  --text-xl:   clamp(1.25rem,   1.16rem + 0.42vw,  1.5rem);     /* 20 → 24 */
+  --text-2xl:  clamp(1.5rem,    1.36rem + 0.60vw,  1.75rem);    /* 24 → 28 */
+  --text-3xl:  clamp(1.75rem,   1.44rem + 1.39vw,  2.375rem);   /* 28 → 38 */
+  --text-4xl:  clamp(2.125rem,  1.63rem + 2.20vw,  3.25rem);    /* 34 → 52 */
+  --text-5xl:  clamp(2.5rem,    1.63rem + 3.89vw,  4.5rem);     /* 40 → 72 */
+  --text-6xl:  clamp(2.875rem,  1.42rem + 6.48vw,  6rem);       /* 46 → 96 */
+
+  --leading-display: 0.95;
+  --leading-tight:   1.15;
+  --leading-body:    1.65;
+  --tracking-display: -0.02em;
+  --tracking-eyebrow: 0.28em;
+
+  /* ---------- SPACING / RHYTHM ----------
+     Section padding is fluid: compact on mobile, generous on desktop. */
+  --space-section:  clamp(3.5rem, 2.2rem + 5.8vw, 10rem);   /* 56 → 160 */
+  --space-gutter:   clamp(1.25rem, 0.9rem + 1.6vw, 2.5rem); /* 20 → 40  */
+  --space-block:    clamp(2rem, 1.5rem + 2.2vw, 4rem);      /* 32 → 64  */
+  --container-max:  1240px;
+
+  /* ---------- RADII ---------- */
+  --radius-card:  20px;
+  --radius-media: 24px;
+  --radius-chip:  12px;
+  --radius-pill:  999px;
+
+  /* ---------- ELEVATION (warm-tinted, never neutral grey) ---------- */
+  --shadow-sm: 0 2px 12px rgba(107, 16, 40, 0.05);
+  --shadow-md: 0 12px 32px rgba(107, 16, 40, 0.08);
+  --shadow-lg: 0 24px 64px rgba(107, 16, 40, 0.10);
+
+  /* ---------- MOTION ---------- */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-micro:  200ms;
+  --dur-reveal: 500ms;
+  --dur-hero:   800ms;
+
+  /* ---------- TOUCH ----------
+     WCAG 2.2 AA (2.5.8) requires 24px; we hold the stricter 44px. */
+  --touch-min: 44px;
+
+  /* ---------- BREAKPOINTS (mobile-first, min-width only) ---------- */
+  --breakpoint-xs: 22.5rem;  /* 360  small Android            */
+  --breakpoint-sm: 26.75rem; /* 428  large phone              */
+  --breakpoint-md: 48rem;    /* 768  tablet portrait          */
+  --breakpoint-lg: 64rem;    /* 1024 tablet landscape / small laptop */
+  --breakpoint-xl: 80rem;    /* 1280 desktop                  */
+  --breakpoint-2xl: 96rem;   /* 1536 large desktop            */
+}
+
+/* ============================================================
+   SAFE AREA — iPhone notch / Dynamic Island / home indicator
+   ============================================================ */
+:root {
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --nav-h: 72px;
+}
+@media (min-width: 64rem) { :root { --nav-h: 96px; } }
+
+/* ============================================================
+   BASE
+   ============================================================ */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    -webkit-text-size-adjust: 100%;   /* stop iOS landscape auto-inflation */
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--nav-h) + var(--safe-top) + 1rem);
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;               /* guard against horizontal scroll */
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+    margin: 0;
+  }
+  p { text-wrap: pretty; margin: 0; }
+
+  /* Never let a media element cause overflow */
+  img, video, svg, canvas { max-width: 100%; height: auto; display: block; }
+
+  /* 16px minimum on form controls — below this iOS Safari zooms on focus */
+  input, select, textarea, button { font: inherit; font-size: max(1rem, var(--text-base)); }
+
+  /* Visible focus, always. Never removed. */
+  :focus-visible {
+    outline: 3px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection { background: var(--color-gold-soft); color: var(--color-maroon); }
+
+  /* Off-screen sections skip layout+paint until near the viewport.
+     Meaningful on low-end Android with 16 sections on one page. */
+  .cv-auto { content-visibility: auto; contain-intrinsic-size: auto 600px; }
+}
+
+/* ============================================================
+   REDUCED MOTION — global kill switch
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   HERO MEDIA — Ken Burns, floating particles, warm glow
+   GPU-friendly only: transform + opacity, CSS keyframes, no JS loop.
+
+   These are deliberately NOT covered by the generic reduced-motion kill
+   switch above — that block shortens `animation-duration` to 0.01ms, which
+   would make the Ken Burns keyframe complete almost instantly and SNAP to
+   its end state (scale 1.06), not stay still. Scoping the animations
+   themselves inside `no-preference` means, under reduced motion, these rules
+   don't exist at all: the image renders at its plain base state (scale 1,
+   particles hidden, glow static), exactly as specified.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-ken-burns {
+    animation: hero-ken-burns 20s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  .hero-glow {
+    animation: hero-glow-pulse 8s ease-in-out infinite;
+  }
+  .hero-particle {
+    animation: hero-particle-drift var(--particle-duration, 12s) ease-in-out infinite;
+    animation-delay: var(--particle-delay, 0s);
+  }
+}
+
+/* Desktop artwork: fades to nothing on its left edge (into the text column)
+   — a mask makes the pixels transparent, so there is no seam or rectangle,
+   unlike a same-color paint-over gradient. Scoped to `lg`+ only: below that
+   breakpoint the illustration sits alone in the stacked layout with nothing
+   beside it to blend into, so it should stay a full, uncropped rectangle
+   there (its own bottom-fade overlay handles blending on that axis instead). */
+@media (min-width: 64rem) {
+  .hero-artwork-mask {
+    -webkit-mask-image: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 1) 62%,
+      rgba(0, 0, 0, 0.75) 76%,
+      rgba(0, 0, 0, 0.35) 90%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 1) 62%,
+      rgba(0, 0, 0, 0.75) 76%,
+      rgba(0, 0, 0, 0.35) 90%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+}
+
+/* Mobile/tablet artwork: fades to nothing on its bottom edge only. */
+.hero-artwork-mask-mobile {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 55%,
+    rgba(0, 0, 0, 0.7) 75%,
+    rgba(0, 0, 0, 0.25) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 55%,
+    rgba(0, 0, 0, 0.7) 75%,
+    rgba(0, 0, 0, 0.25) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-particle { display: none; }
+  .hero-glow { opacity: 0.12; } /* static — no pulse */
+}
+
+@keyframes hero-ken-burns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+
+@keyframes hero-glow-pulse {
+  0%, 100% { opacity: 0.10; }
+  50%      { opacity: 0.15; }
+}
+
+@keyframes hero-particle-drift {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  12%  { opacity: var(--particle-opacity, 0.5); }
+  88%  { opacity: var(--particle-opacity, 0.5); }
+  100% { transform: translateY(-150px) rotate(28deg); opacity: 0; }
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-gutter);
+}
+
+@utility section-y { padding-block: var(--space-section); }
+
+@utility eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-burgundy);
+}
+
+@utility tap-target {
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@utility tabular { font-variant-numeric: tabular-nums; }
+
+/* Screen-reader-only, but focusable (skip links) */
+@utility sr-only-focusable {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+
+  &:focus-visible {
+    position: fixed;
+    top: calc(var(--safe-top) + 0.5rem);
+    left: 50%;
+    translate: -50% 0;
+    width: auto; height: auto;
+    padding: 0.75rem 1.25rem;
+    clip-path: none;
+    background: var(--color-maroon);
+    color: var(--color-cream);
+    border-radius: var(--radius-pill);
+    z-index: 100;
+  }
+}
