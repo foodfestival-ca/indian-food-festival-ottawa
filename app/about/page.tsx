@@ -3,7 +3,7 @@ import { Store, Handshake, Mail, Target, Eye } from "lucide-react";
 import { Section, Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FormButton } from "@/components/ui/FormButton";
-import { MediaFrame } from "@/components/ui/MediaFrame";
+import { FounderPortrait } from "@/components/about/FounderPortrait";
 import { Contact } from "@/components/home/Contact";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { GoldRule, MandalaCorner } from "@/components/ornament/Ornaments";
@@ -143,11 +143,17 @@ export default function AboutPage() {
             title={`Behind It All: ${festival.organizer.legalName}`}
             accent={festival.organizer.legalName}
           />
-          <RevealGroup className="mx-auto mt-12 grid max-w-[46rem] gap-5 sm:grid-cols-2">
-            {organizers.map((person) => (
+          <RevealGroup className="mx-auto mt-12 grid max-w-[64rem] gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {organizers.map((person, i) => (
               <RevealItem key={person.id}>
                 <article className="h-full overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-white shadow-[var(--shadow-sm)]">
-                  <MediaFrame src={person.image} alt={`Portrait of ${person.name}`} label={person.name} rounded={false} className="aspect-[4/3]" sizes="(max-width: 640px) 100vw, 23rem" />
+                  <FounderPortrait
+                    src={person.image}
+                    alt={`Portrait of ${person.name}`}
+                    position={person.imagePosition}
+                    label={person.name}
+                    priority={i === 0}
+                  />
                   <div className="p-5">
                     <h3 className="font-[family-name:var(--font-display)] text-[length:var(--text-xl)] font-bold text-[var(--color-maroon)]">
                       {person.name}

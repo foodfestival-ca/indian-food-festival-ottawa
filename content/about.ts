@@ -6,6 +6,11 @@ const OrganizerSchema = z.object({
   role: z.string(),
   bio: z.string(),
   image: z.string(),
+  /** CSS `object-position` for the portrait — lets each photo's face framing
+   *  be tuned individually (crop, camera angle, headroom all differ) without
+   *  touching the component. Defaults to "center top" in the component if
+   *  omitted. */
+  imagePosition: z.string().optional(),
 });
 
 export const organizers = z.array(OrganizerSchema).parse([
@@ -15,6 +20,15 @@ export const organizers = z.array(OrganizerSchema).parse([
     role: "Co-Founder",
     bio: "Co-founded the festival in 2024 with the conviction that Ottawa was ready for something at this scale — and was proved right by ten thousand people in a single weekend.",
     image: "/media/team/bhakti.jpg",
+    imagePosition: "center 15%",
+  },
+  {
+    id: "pujan",
+    name: "Pujan Sanura",
+    role: "Co-Founder",
+    bio: "Keeps the festival running on the ground — the team, the timeline and the hundred small decisions on-site that make three days feel effortless from the outside.",
+    image: "/media/team/pujan.jpg",
+    imagePosition: "center 12%",
   },
   {
     id: "sagar",
@@ -22,6 +36,7 @@ export const organizers = z.array(OrganizerSchema).parse([
     role: "Co-Founder",
     bio: "Builds the vendor and partner side of the festival, working with the local businesses and community groups who turn a park into a neighbourhood for three days.",
     image: "/media/team/sagar.jpg",
+    imagePosition: "center 18%",
   },
 ]);
 
