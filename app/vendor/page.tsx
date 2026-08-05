@@ -1,25 +1,37 @@
 import type { Metadata } from "next";
-import { Marketplace } from "@/components/home/Marketplace";
+import { Section, Container } from "@/components/ui/Container";
+import { Reveal } from "@/components/motion/Reveal";
+import { GoldRule, MandalaCorner } from "@/components/ornament/Ornaments";
+import { VendorsShowcase } from "@/components/vendors/VendorsShowcase";
+import { VendorHighlights } from "@/components/vendors/VendorHighlights";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { pageMeta } from "@/lib/seo";
+import { vendorsHero } from "@/content/vendors";
 
 export const metadata: Metadata = pageMeta({
-  title: "Become a Vendor",
+  title: "Meet Our Food Vendors",
   description:
-    "Apply for a food stall or marketplace booth at the Indian Food Festival of Ottawa 2026 — reach fifteen thousand visitors across three days.",
+    "Meet the restaurants of the Indian Food Festival of Ottawa 2026 — over twenty vendors spanning South Indian, Hyderabadi, Himalayan, Gujarati, Maharashtrian and more, each with its own signature menu.",
   path: "/vendor",
 });
 
 /**
- * Dedicated "Become a Vendor" page. Renders the same `<Marketplace />`
- * section that used to sit on the homepage — its "Become a vendor" CTA
- * button is unchanged, so the nav link and the in-section button both lead
- * here, not to two different places.
+ * Food Vendors showcase — replaces the old category-based Marketplace
+ * layout (Local Businesses, Apparel, Accessories, Community Vendors) with a
+ * premium restaurant directory driven entirely by content/vendors.ts.
  *
- * `!pt-[var(--space-block)]` override on the top padding — see the matching
- * comment in app/schedule/page.tsx: without it, the section's own full
- * `section-y` padding stacks on top of this wrapper's nav clearance, leaving
- * a much bigger gap under the nav than Home/About/Passport show.
+ * Structure:
+ *  - Hero (this file, Server Component, static — matches the About page's
+ *    hero pattern: MandalaCorner ornament, eyebrow, GoldRule, display title).
+ *  - VendorsShowcase (client) — search, cuisine filter chips, card grid,
+ *    "View Menu" modal.
+ *  - VendorHighlights (Server Component, static) — closing "A Culinary
+ *    Journey Across India" section.
+ *
+ * `!pt-[var(--space-block)]` on the hero's own padding-top override, same
+ * as every other dedicated page — see the matching comment previously on
+ * this file: without it the first section's full `section-y` padding stacks
+ * on top of the wrapper's nav clearance.
  */
 export default function VendorPage() {
   return (
@@ -27,11 +39,46 @@ export default function VendorPage() {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Become a Vendor", path: "/vendor" },
+          { name: "Food Vendors", path: "/vendor" },
         ])}
       />
+
       <div style={{ paddingTop: "calc(var(--nav-h) + var(--safe-top))" }}>
-        <Marketplace className="!pt-[var(--space-block)]" />
+        {/* Hero */}
+        <section
+          className="relative overflow-hidden bg-[var(--color-cream)]"
+          style={{ paddingTop: "var(--space-block)", paddingBottom: "var(--space-block)" }}
+        >
+          <MandalaCorner className="pointer-events-none absolute -right-24 -top-16 h-72 w-72 text-[var(--color-gold)] opacity-[0.08] lg:h-96 lg:w-96" />
+          <Container className="relative text-center">
+            <Reveal>
+              <p className="eyebrow">{vendorsHero.eyebrow}</p>
+              <GoldRule className="mx-auto mt-3 mb-6 max-w-[12rem]" />
+              <h1 className="mx-auto max-w-[24ch] font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-[var(--leading-display)] text-[var(--color-maroon)]">
+                {vendorsHero.title}
+              </h1>
+              <p className="mx-auto mt-3 max-w-[32ch] font-[family-name:var(--font-display)] text-[length:var(--text-xl)] italic text-[var(--color-saffron-deep)]">
+                {vendorsHero.subtitle}
+              </p>
+              <p className="mx-auto mt-6 max-w-[56ch] text-[length:var(--text-lg)] leading-[var(--leading-body)] text-[var(--color-ink-muted)]">
+                {vendorsHero.description}
+              </p>
+            </Reveal>
+          </Container>
+        </section>
+
+        {/* Showcase — search, filters, grid, modal */}
+        <Section id="vendors" ground="cream-deep" labelledBy="vendors-heading" cv={false}>
+          <h2 id="vendors-heading" className="sr-only-focusable">
+            Food vendors
+          </h2>
+          <VendorsShowcase />
+        </Section>
+
+        {/* Highlights */}
+        <Section id="vendor-highlights" ground="cream">
+          <VendorHighlights />
+        </Section>
       </div>
     </>
   );
