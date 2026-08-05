@@ -1,29 +1,40 @@
 import type { Metadata } from "next";
-import { Gallery } from "@/components/home/Gallery";
+import { ArrowRight } from "lucide-react";
+import { Section, Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
+import { Reveal } from "@/components/motion/Reveal";
+import { MandalaCorner, GoldRule } from "@/components/ornament/Ornaments";
+import { GalleryShowcase } from "@/components/gallery/GalleryShowcase";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata: Metadata = pageMeta({
   title: "Gallery",
   description:
-    "Photos from previous editions of the Indian Food Festival of Ottawa — the crowd, the food, the performances and the marketplace across 2024 and 2025.",
+    "Relive Navatara's Indian Food Festival 2024 — real photos and video from the crowd, the performances and the food, as we prepare for an even bigger 2026.",
   path: "/gallery",
 });
 
 /**
- * Dedicated Gallery page. `<Gallery />` itself is unchanged (maroon ground,
- * same grid/lightbox) — only the wrapper differs from the other new pages:
- * Gallery's own section background is maroon, and rather than a plain
- * unstyled spacer (which would show a strip of the body's cream behind the
- * transparent nav — illegible against the nav's dark-ground cream text), this
- * wrapper carries the SAME maroon background so the colour reaches all the
- * way to the top of the page with no seam, exactly like Passport's own dark
- * hero. Nav.tsx already lists "/gallery" in DARK_HERO_ROUTES to match.
+ * Gallery — replaces the old placeholder grid with real 2024 photography
+ * and video (content/gallery.ts), driven by content only: no gallery card
+ * is hardcoded in JSX.
  *
- * `!pt-[var(--space-block)]` override on the top padding — see the matching
- * comment in app/schedule/page.tsx: without it, the section's own full
- * `section-y` padding stacks on top of this wrapper's nav clearance, leaving
- * a much bigger gap under the nav than Home/About/Passport show.
+ * Structure:
+ *  - Hero (this file, Server Component, static) — maroon ground, matching
+ *    the dark-hero treatment this route already had (Nav.tsx's
+ *    DARK_HERO_ROUTES has included "/gallery" since the multi-page
+ *    conversion, so the nav inverts to cream text expecting a dark section
+ *    right under it — this hero has to stay maroon for that to still look
+ *    correct, not a free colour choice).
+ *  - GalleryShowcase (client) — Photos/Videos filter, masonry grid,
+ *    lightbox.
+ *  - Closing CTA (this file, static) — cream ground, so the Thali rule
+ *    holds against the maroon above it.
+ *
+ * The wrapping div keeps the same maroon background as the hero, same
+ * reasoning as the previous version of this page: a transparent gap here
+ * would show a strip of cream behind the transparent dark-mode nav.
  */
 export default function GalleryPage() {
   return (
@@ -34,8 +45,63 @@ export default function GalleryPage() {
           { name: "Gallery", path: "/gallery" },
         ])}
       />
+
       <div className="bg-[var(--color-maroon)]" style={{ paddingTop: "calc(var(--nav-h) + var(--safe-top))" }}>
-        <Gallery className="!pt-[var(--space-block)]" />
+        {/* Hero */}
+        <section
+          className="relative overflow-hidden bg-[var(--color-maroon)] text-[var(--color-cream)]"
+          style={{ paddingTop: "var(--space-block)", paddingBottom: "var(--space-block)" }}
+        >
+          <MandalaCorner className="pointer-events-none absolute -right-24 -top-16 h-72 w-72 text-[var(--color-gold)] opacity-[0.08] lg:h-96 lg:w-96" />
+          <Container className="relative text-center">
+            <Reveal>
+              <p className="eyebrow text-[var(--color-gold-soft)]">Gallery</p>
+              <GoldRule className="mx-auto mt-3 mb-6 max-w-[12rem]" />
+              <h1 className="mx-auto max-w-[20ch] font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-[var(--leading-display)]">
+                Relive the Festival
+              </h1>
+              <p className="mx-auto mt-3 max-w-[36ch] font-[family-name:var(--font-display)] text-[length:var(--text-xl)] italic text-[var(--color-gold)]">
+                Moments From Navatara&rsquo;s Indian Food Festival 2024
+              </p>
+              <p className="mx-auto mt-6 max-w-[56ch] text-[length:var(--text-lg)] leading-[var(--leading-body)] text-[var(--color-cream)]/80">
+                Experience the colours, culture, music, food and unforgettable memories from last year&rsquo;s
+                festival. Browse through our favourite moments as we prepare for an even bigger celebration in 2026.
+              </p>
+            </Reveal>
+          </Container>
+        </section>
+
+        {/* Showcase — filters + masonry grid + lightbox */}
+        <Section id="gallery" ground="maroon" labelledBy="gallery-heading" cv={false}>
+          <h2 id="gallery-heading" className="sr-only-focusable">
+            2024 photo and video gallery
+          </h2>
+          <GalleryShowcase />
+        </Section>
+
+        {/* Closing CTA */}
+        <Section id="gallery-closing" ground="cream" labelledBy="gallery-closing-heading">
+          <Container>
+            <Reveal className="mx-auto max-w-[42rem] text-center">
+              <h2
+                id="gallery-closing-heading"
+                className="font-[family-name:var(--font-display)] text-[length:var(--text-3xl)] font-bold text-[var(--color-maroon)]"
+              >
+                Thank You for Making 2024 Unforgettable
+              </h2>
+              <p className="mt-4 text-[length:var(--text-base)] leading-[var(--leading-body)] text-[var(--color-ink-muted)]">
+                Thousands of visitors, hundreds of performances, incredible food, and unforgettable memories.
+                We&rsquo;re excited to welcome everyone back for an even bigger celebration in 2026.
+              </p>
+              <div className="mt-8">
+                <Button href="/passport" size="lg">
+                  See You in 2026
+                  <ArrowRight size={18} aria-hidden="true" />
+                </Button>
+              </div>
+            </Reveal>
+          </Container>
+        </Section>
       </div>
     </>
   );
