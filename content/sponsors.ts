@@ -33,6 +33,7 @@ export const sponsors = z.array(SponsorSchema).parse([
   { id: "bhaumikkumar-patel", name: "Bhaumikkumar Patel — Realtor", logo: "/sponsors/bhaumikkumar-patel.jpg" },
   { id: "nishanth-natarajan", name: "Nishanth Natarajan — Realtor", logo: "/sponsors/nishanth-natarajan.jpg" },
   { id: "billyard-insurance-group", name: "Billyard Insurance Group — Westboro", logo: "/sponsors/billyard-insurance-group.png" },
+  { id: "phoenix-homes", name: "Phoenix Homes", logo: "/sponsors/phoenix-homes.jpg" },
 ]);
 
 export type Sponsor = (typeof sponsors)[number];

@@ -62,7 +62,12 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
     .join("");
 
   const inner = sponsor.logo ? (
-    <div className="relative h-20 w-full sm:h-24">
+    // Logo container: h-28/h-32 (was h-20/h-24) — bigger, more premium-feeling
+    // marks. Card padding shrank to match (p-4/p-5, was p-6/p-8) so the extra
+    // logo size doesn't just enlarge the card by the same amount; the net
+    // effect is the logo occupying visibly more of the card, not a bigger
+    // card. object-contain still guarantees no crop/stretch either way.
+    <div className="relative h-28 w-full sm:h-32">
       <Image
         src={sponsor.logo}
         alt={sponsor.name}
@@ -88,7 +93,7 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
 
   const card = (
     <div
-      className="flex h-full min-h-[9.5rem] items-center justify-center rounded-[18px] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-[250ms] ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[var(--shadow-md)] sm:p-8"
+      className="flex h-full min-h-[10.5rem] items-center justify-center rounded-[18px] border border-[var(--color-border)] bg-white p-4 shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-[250ms] ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[var(--shadow-md)] sm:min-h-[12rem] sm:p-5"
     >
       {inner}
     </div>
