@@ -36,7 +36,7 @@ export function VendorsShowcase() {
   }, [query, filter]);
 
   return (
-    <Container>
+    <Container className="!max-w-[100rem]">
       {/* Search */}
       <div className="mx-auto max-w-[32rem]">
         <label htmlFor="vendor-search" className="sr-only-focusable">
@@ -87,9 +87,11 @@ export function VendorsShowcase() {
         })}
       </div>
 
-      {/* Grid */}
+      {/* Grid — 1 / 2 / 3 / 5 per row (mobile / small tablet / tablet / ≥1280px),
+          denser gap to match the smaller cards, so a 1920×1080 desktop shows
+          roughly two full rows (10+ vendors) without scrolling. */}
       {filtered.length > 0 ? (
-        <RevealGroup className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <RevealGroup className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           {filtered.map((vendor) => (
             <RevealItem key={vendor.id} className="h-full">
               <VendorCard vendor={vendor} onOpen={setActive} />
