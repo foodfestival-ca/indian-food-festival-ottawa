@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X, Ticket } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useScrollState } from "@/lib/hooks";
+import { lenisRef } from "@/lib/lenis";
 import { Logo } from "@/components/ui/Logo";
 import { FormButton } from "@/components/ui/FormButton";
 import { festival } from "@/content/festival";
@@ -70,11 +71,19 @@ export function Nav() {
   const isCurrent = (href: string) => pathname === href;
 
   /** Home doubles as "back to top" when you're already on "/" — a plain
-   *  route link to the current page is otherwise a no-op click. */
+   *  route link to the current page is otherwise a no-op click. Goes
+   *  through Lenis's own `scrollTo` (see lib/lenis.ts) when it's running,
+   *  since a native `window.scrollTo` gets silently overwritten by Lenis's
+   *  next animation frame; falls back to native scrolling on touch/
+   *  reduced-motion devices, where Lenis is never instantiated. */
   const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (pathname === "/") {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(0, { immediate: !!reduced });
+      } else {
+        window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+      }
     }
   };
 
