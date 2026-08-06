@@ -2,37 +2,67 @@
 
 import { useMemo, useState } from "react";
 import { useReducedMotion } from "framer-motion";
-import { Play } from "lucide-react";
+import { Play, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { Lightbox, type LightboxItem } from "@/components/gallery/Lightbox";
+import { GoldRule } from "@/components/ornament/Ornaments";
 import { cn } from "@/lib/cn";
 import { galleryItems } from "@/content/gallery";
 
 const TYPE_FILTERS = ["All", "Photos", "Videos"] as const;
 
+/** Sentinel tab id for the Preview Night tab — distinct from any real
+ *  4-digit year string, so it can live in the same `selected` state as the
+ *  year tabs without a separate union type or extra branching. */
+const PREVIEW_NIGHT_TAB = "preview-night";
+
 /**
- * Available festival years, newest first — derived from the data itself
- * (every distinct `year` value actually present in `galleryItems`), not a
- * hardcoded list. Add a 2026 batch to content/gallery.ts and this array
+ * Festival years, newest first — derived from the data itself (every
+ * distinct `year` value among `event: "festival"` items), not a hardcoded
+ * list. Add a 2026 festival batch to content/gallery.ts and this array
  * picks it up automatically, sorted ahead of 2025 and 2024 with no code
- * change needed here.
+ * change needed here. Preview Night items are deliberately excluded here:
+ * they get their own single tab below, never a per-year festival tab.
  */
-const YEARS = Array.from(new Set(galleryItems.map((item) => item.year))).sort(
-  (a, b) => Number(b) - Number(a)
-);
+const FESTIVAL_YEARS = Array.from(
+  new Set(galleryItems.filter((item) => item.event === "festival").map((item) => item.year))
+).sort((a, b) => Number(b) - Number(a));
+
+const HAS_PREVIEW_NIGHT = galleryItems.some((item) => item.event === "preview-night");
+
+/** Newest year among Preview Night items, for the banner title ("Preview
+ *  Night 2026") — computed from data so a future "Preview Night 2027"
+ *  batch relabels the banner automatically. */
+const PREVIEW_NIGHT_YEAR = HAS_PREVIEW_NIGHT
+  ? galleryItems
+      .filter((item) => item.event === "preview-night")
+      .map((item) => item.year)
+      .sort((a, b) => Number(b) - Number(a))[0]
+  : null;
+
+/**
+ * Tabs, in display order: Preview Night first (if any exists), then every
+ * festival year newest-first. This is the one place that decides ordering —
+ * everything downstream (default selection, filtering) just reads this
+ * array, so a future "Preview Night 2027" or a new festival year slots in
+ * automatically with no other code change.
+ */
+const TABS: string[] = [...(HAS_PREVIEW_NIGHT ? [PREVIEW_NIGHT_TAB] : []), ...FESTIVAL_YEARS];
 
 /**
  * Filter chips + masonry grid + lightbox — the interactive core of the
  * /gallery page.
  *
- * Year is a hard partition, not a toggleable filter: exactly one year is
- * ever selected (defaulting to the newest, `YEARS[0]`), and the grid only
- * ever shows that year's media — 2024 and 2025 content is never mixed in
- * the same view. There is deliberately no "All Years" option. The Photos/
- * Videos row is a separate, ordinary filter that narrows further within
- * whichever year is selected.
+ * The tab bar is a hard partition, not a toggleable filter: exactly one tab
+ * is ever selected (defaulting to `TABS[0]` — Preview Night when it exists,
+ * otherwise the newest festival year), and the grid only ever shows that
+ * tab's media. Festival years never mix with each other, and Preview Night
+ * — a standalone event, not part of the festival itself — never mixes with
+ * either. There is deliberately no "All" option. The Photos/Videos row is a
+ * separate, ordinary filter that narrows further within whichever tab is
+ * selected.
  *
  * Masonry is CSS `columns` (2/3/4 at mobile/tablet/desktop), not a JS
  * layout library: each tile is `break-inside-avoid` and sized by its real
@@ -48,7 +78,7 @@ const YEARS = Array.from(new Set(galleryItems.map((item) => item.year))).sort(
  */
 export function GalleryShowcase() {
   const [typeFilter, setTypeFilter] = useState<(typeof TYPE_FILTERS)[number]>("All");
-  const [year, setYear] = useState<(typeof YEARS)[number]>(YEARS[0]!);
+  const [tab, setTab] = useState<string>(TABS[0]!);
   const [index, setIndex] = useState<number | null>(null);
   /** id of the one video currently playing inline in its card, if any. Only
    *  ever one at a time — setting this to a new id is itself what "pauses"
@@ -58,14 +88,20 @@ export function GalleryShowcase() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const reduced = useReducedMotion();
 
+  const isPreviewNight = tab === PREVIEW_NIGHT_TAB;
+
   const filtered = useMemo(() => {
     return galleryItems.filter((i) => {
-      if (i.year !== year) return false;
+      if (isPreviewNight) {
+        if (i.event !== "preview-night") return false;
+      } else {
+        if (i.event !== "festival" || i.year !== tab) return false;
+      }
       if (typeFilter === "Photos" && i.type !== "photo") return false;
       if (typeFilter === "Videos" && i.type !== "video") return false;
       return true;
     });
-  }, [typeFilter, year]);
+  }, [typeFilter, tab, isPreviewNight]);
 
   // Lightbox is photos-only — videos never open it (they play inline in
   // their own card instead), so its index space is the photo subset, not
@@ -87,24 +123,26 @@ export function GalleryShowcase() {
 
   return (
     <Container>
-      {/* Year tabs — newest first, exactly one always selected. This is a
-          hard partition (a different year's media is never in the DOM at
-          the same time as this one), not a filter toggle, so it's rendered
-          as tabs (role="tablist") rather than the pill-toggle group pattern
-          the type filter below uses. */}
-      <div role="tablist" aria-label="Festival year" className="flex flex-wrap justify-center gap-2">
-        {YEARS.map((y) => {
-          const active = year === y;
+      {/* Tabs — newest first (Preview Night, then festival years),
+          exactly one always selected. This is a hard partition (a
+          different tab's media is never in the DOM at the same time as
+          this one), not a filter toggle, so it's rendered as tabs
+          (role="tablist") rather than the pill-toggle group pattern the
+          type filter below uses. */}
+      <div role="tablist" aria-label="Gallery event and year" className="flex flex-wrap justify-center gap-2">
+        {TABS.map((t) => {
+          const active = tab === t;
+          const label = t === PREVIEW_NIGHT_TAB ? "Preview Night" : t;
           return (
             <button
-              key={y}
+              key={t}
               type="button"
               role="tab"
-              id={`gallery-year-tab-${y}`}
+              id={`gallery-tab-${t}`}
               aria-selected={active}
-              aria-controls="gallery-year-panel"
+              aria-controls="gallery-panel"
               onClick={() => {
-                setYear(y);
+                setTab(t);
                 setPlayingId(null);
               }}
               className={cn(
@@ -115,11 +153,35 @@ export function GalleryShowcase() {
                   : "border-[var(--color-cream)]/20 text-[var(--color-cream)]/75 hover:bg-[var(--color-cream)]/10"
               )}
             >
-              {y}
+              {label}
             </button>
           );
         })}
       </div>
+
+      {/* Preview Night banner — only shown while that tab is active. Reuses
+          the same ornament (GoldRule) and type scale as the page's own
+          hero so it reads as part of the same design language, not a new
+          one. Purely additive: the type filter, masonry grid and lightbox
+          below are completely unaffected by whether this renders. */}
+      {isPreviewNight && (
+        <Reveal className="mx-auto mt-8 max-w-[42rem] text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] bg-[var(--color-gold)] px-3 py-1 text-[length:var(--text-xs)] font-semibold uppercase tracking-wide text-[var(--color-ink)]">
+            <Sparkles size={12} aria-hidden="true" />
+            Exclusive Event
+          </span>
+          <h2 className="mx-auto mt-4 font-[family-name:var(--font-display)] text-[length:var(--text-3xl)] font-extrabold leading-tight text-[var(--color-cream)]">
+            Preview Night {PREVIEW_NIGHT_YEAR}
+          </h2>
+          <GoldRule className="mx-auto mt-3 mb-4 max-w-[10rem]" />
+          <p className="font-[family-name:var(--font-display)] text-[length:var(--text-lg)] italic text-[var(--color-gold)]">
+            An exclusive evening celebrating the upcoming Indian Food Festival of Ottawa {PREVIEW_NIGHT_YEAR}.
+          </p>
+          <p className="mt-3 text-[length:var(--text-sm)] leading-[var(--leading-body)] text-[var(--color-cream)]/80">
+            An exclusive first look at the {PREVIEW_NIGHT_YEAR} Indian Food Festival of Ottawa.
+          </p>
+        </Reveal>
+      )}
 
       <div className="mt-3 flex flex-wrap justify-center gap-2" role="group" aria-label="Filter gallery by type">
         {TYPE_FILTERS.map((f) => {
@@ -147,7 +209,7 @@ export function GalleryShowcase() {
         })}
       </div>
 
-      <div id="gallery-year-panel" role="tabpanel" aria-labelledby={`gallery-year-tab-${year}`} className="mt-8 columns-2 gap-4 sm:columns-3 xl:columns-4">
+      <div id="gallery-panel" role="tabpanel" aria-labelledby={`gallery-tab-${tab}`} className="mt-8 columns-2 gap-4 sm:columns-3 xl:columns-4">
         {filtered.map((item, i) => {
           const isPlayingVideo = item.type === "video" && playingId === item.id;
 

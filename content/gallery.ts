@@ -25,6 +25,14 @@ import { z } from "zod";
  * /public/media/gallery/<year>/ — the masonry grid uses these to size each
  * tile's aspect ratio up front (via `aspect-ratio` in CSS), so nothing
  * shifts on load and nothing gets stretched or cropped.
+ *
+ * `event` distinguishes the annual festival itself ("festival", the
+ * default — every pre-existing item below is this) from standalone events
+ * held in the run-up to it, like a Preview Night ("preview-night"). This is
+ * a hard partition in the UI (see GalleryShowcase's tabs): Preview Night
+ * media is never mixed into a festival year's grid and vice versa, even
+ * when they share the same `year`. Add a future event kind (e.g. a launch
+ * party) the same way — new `event` value, `year`, no schema change needed.
  */
 
 export const GALLERY_CATEGORIES = [
@@ -38,13 +46,20 @@ export const GALLERY_CATEGORIES = [
 
 const CategorySchema = z.enum(GALLERY_CATEGORIES);
 
-export const GALLERY_YEARS = ["2024", "2025"] as const;
+export const GALLERY_EVENTS = ["festival", "preview-night"] as const;
 
 const GalleryItemSchema = z.object({
   id: z.string(),
   type: z.enum(["photo", "video"]),
   title: z.string(),
-  year: z.enum(GALLERY_YEARS),
+  /** 4-digit year as a string, e.g. "2026". Deliberately not a fixed enum —
+   *  future years (2027, 2028, ...) are supported by adding data only, no
+   *  code change. GalleryShowcase derives its year tabs from whatever
+   *  distinct values are actually present here. */
+  year: z.string().regex(/^\d{4}$/),
+  /** Defaults to "festival" so every item added before this field existed
+   *  is unaffected — only Preview Night entries need to set this. */
+  event: z.enum(GALLERY_EVENTS).default("festival"),
   category: CategorySchema,
   alt: z.string(),
   width: z.number(),
@@ -61,6 +76,7 @@ const GalleryItemSchema = z.object({
 
 const BASE = "/media/gallery/2024";
 const BASE_2025 = "/media/gallery/2025";
+const BASE_PREVIEW_NIGHT_2026 = "/media/gallery/preview-night-2026";
 
 export const galleryItems = z.array(GalleryItemSchema).parse([
   // ---------- Photos ----------
@@ -628,6 +644,121 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     video: `${BASE_2025}/evening-dance-2025.mp4`,
     thumbnail: `${BASE_2025}/evening-dance-2025-poster.jpg`,
     duration: "0:11",
+    width: 720,
+    height: 1280,
+  },
+
+  // ---------- Preview Night 2026 ----------
+  // A standalone event ahead of the festival itself — see the `event` field
+  // note above the schema for why this is kept structurally separate from
+  // the 2026 festival gallery even though they'll share the same year.
+  {
+    id: "preview-night-poster-2026",
+    type: "photo",
+    title: "The Preview Night Poster",
+    year: "2026",
+    event: "preview-night",
+    category: "Crowd",
+    alt: "A poster for the Indian Food Festival of Ottawa's 2026 Preview Night, framed by bougainvillea flowers",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-poster-2026.jpg`,
+    width: 1280,
+    height: 1920,
+  },
+  {
+    id: "preview-night-henna-1-2026",
+    type: "photo",
+    title: "Henna at Preview Night",
+    year: "2026",
+    event: "preview-night",
+    category: "Crowd",
+    alt: "A henna artist applying a design to a guest's hand at Preview Night while another guest looks on",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-henna-1-2026.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "preview-night-henna-2-2026",
+    type: "photo",
+    title: "A Moment Mid-Henna",
+    year: "2026",
+    event: "preview-night",
+    category: "Crowd",
+    alt: "A henna artist works on a guest's hand while she shares a smile at the table",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-henna-2-2026.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "preview-night-guests-laughing-2026",
+    type: "photo",
+    title: "Guests Sharing a Laugh",
+    year: "2026",
+    event: "preview-night",
+    category: "Crowd",
+    alt: "A group of guests laughing together at a table during Preview Night",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-guests-laughing-2026.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "preview-night-chef-serving-2026",
+    type: "photo",
+    title: "The Chef at Work",
+    year: "2026",
+    event: "preview-night",
+    category: "Food",
+    alt: "A chef in a turban preparing and serving food to guests at Preview Night",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-chef-serving-2026.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "preview-night-toast-2026",
+    type: "photo",
+    title: "A Toast to 2026",
+    year: "2026",
+    event: "preview-night",
+    category: "Crowd",
+    alt: "A speaker addressing guests with a microphone under a wall of bougainvillea flowers",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-toast-2026.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "preview-night-guests-dining-2026",
+    type: "photo",
+    title: "Dinner Under the Flowers",
+    year: "2026",
+    event: "preview-night",
+    category: "Food",
+    alt: "Guests seated and dining together beneath a floral archway, with the Festival Passport poster in the background",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-guests-dining-2026.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "preview-night-team-photo-2026",
+    type: "photo",
+    title: "Meet the Organizers",
+    year: "2026",
+    event: "preview-night",
+    category: "Volunteers",
+    alt: "Four members of the Navatara team posing beside the Indian Food Festival Passport poster",
+    image: `${BASE_PREVIEW_NIGHT_2026}/preview-night-team-photo-2026.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "preview-night-moments-2026",
+    type: "video",
+    title: "Moments From Preview Night",
+    year: "2026",
+    event: "preview-night",
+    category: "Crowd",
+    alt: "Guests mingling, toasting, and celebrating together at the Indian Food Festival Preview Night, surrounded by bougainvillea decor",
+    video: `${BASE_PREVIEW_NIGHT_2026}/preview-night-moments-2026.mp4`,
+    thumbnail: `${BASE_PREVIEW_NIGHT_2026}/preview-night-moments-2026-poster.jpg`,
+    duration: "1:07",
     width: 720,
     height: 1280,
   },
