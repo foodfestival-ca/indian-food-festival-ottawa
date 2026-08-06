@@ -132,7 +132,7 @@ export function GalleryShowcase() {
       <div role="tablist" aria-label="Gallery event and year" className="flex flex-wrap justify-center gap-2">
         {TABS.map((t) => {
           const active = tab === t;
-          const label = t === PREVIEW_NIGHT_TAB ? "Preview Night" : t;
+          const label = t === PREVIEW_NIGHT_TAB ? `Preview Night ${PREVIEW_NIGHT_YEAR}` : t;
           return (
             <button
               key={t}
