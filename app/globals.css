@@ -110,6 +110,25 @@
     scroll-padding-top: calc(var(--nav-h) + var(--safe-top) + 1rem);
   }
 
+  /* Lenis (components/motion/SmoothScroll.tsx) owns scroll physics on
+     desktop/tablet with motion allowed, and tags <html> with a "lenis"
+     class the instant it's constructed. Native `scroll-behavior: smooth`
+     above is for devices where Lenis never runs (touch, prefers-reduced-
+     motion) — on Lenis-driven devices it must be OFF, because Lenis
+     applies its own interpolated scroll position to the real DOM on every
+     animation frame, and the browser wraps each of those native scroll
+     calls in its own smooth-scroll animation when this property is on.
+     Dozens of competing smooth-scroll animations per second — one queued
+     by every rAF tick — never converge, which is what made routes (most
+     visibly Home) appear to load "mid-scroll" instead of at the top: it
+     wasn't a stale scroll position being restored, it was Lenis's reset
+     to 0 endlessly losing a race against the browser re-animating every
+     subsequent frame's correction. This is Lenis's own documented
+     requirement, not a workaround. */
+  html.lenis {
+    scroll-behavior: auto !important;
+  }
+
   body {
     margin: 0;
     background: var(--color-cream);
