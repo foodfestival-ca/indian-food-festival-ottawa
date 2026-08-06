@@ -1,7 +1,6 @@
 import { Ticket, ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { FormButton } from "@/components/ui/FormButton";
 import { Reveal } from "@/components/motion/Reveal";
 import { MandalaCorner, GoldRule } from "@/components/ornament/Ornaments";
 
@@ -33,10 +32,10 @@ export function PassportCTA() {
 
         <Reveal delay={0.1} className="mt-8">
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <FormButton form="passport" variant="primary" size="lg" fluid>
+            <Button href="/passport" variant="primary" size="lg" fluid>
               <Ticket size={18} aria-hidden="true" />
               Get Your Passport
-            </FormButton>
+            </Button>
             <Button href="/passport" variant="onDark" size="lg" fluid>
               How It Works
               <ArrowRight size={17} aria-hidden="true" />
