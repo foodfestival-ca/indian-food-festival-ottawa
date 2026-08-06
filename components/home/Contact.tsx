@@ -7,7 +7,13 @@ import { InstagramIcon, FacebookIcon, YoutubeIcon } from "@/components/ornament/
 import { festival } from "@/content/festival";
 
 const SOCIALS = [
-  { label: "Instagram", href: festival.social.instagram, Icon: InstagramIcon, handle: festival.social.instagramHandle },
+  {
+    label: "Instagram",
+    href: festival.social.instagram,
+    Icon: InstagramIcon,
+    handle: festival.social.instagramHandle,
+    ariaLabel: "Visit our Instagram profile",
+  },
   { label: "Facebook", href: festival.social.facebook, Icon: FacebookIcon, handle: "Indian Food Festival Ottawa" },
   { label: "YouTube", href: festival.social.youtube, Icon: YoutubeIcon, handle: "Indian Food Festival Ottawa" },
 ];
@@ -63,12 +69,13 @@ export function Contact() {
         </div>
 
         <RevealGroup className="mx-auto mt-4 grid max-w-[56rem] gap-4 sm:grid-cols-3">
-          {SOCIALS.map(({ label, href, Icon, handle }) => (
+          {SOCIALS.map(({ label, href, Icon, handle, ariaLabel }) => (
             <RevealItem key={label}>
               <a
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={ariaLabel}
                 className="flex h-full items-center gap-3 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-white/70 p-4 transition-colors hover:border-[var(--color-maroon)]/30"
               >
                 <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--color-maroon)]/8 text-[var(--color-maroon)]">

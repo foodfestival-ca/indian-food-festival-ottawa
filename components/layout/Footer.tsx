@@ -7,7 +7,12 @@ import { GoldRule } from "@/components/ornament/Ornaments";
 import { Logo } from "@/components/ui/Logo";
 
 const socials = [
-  { label: "Instagram", href: festival.social.instagram, Icon: InstagramIcon },
+  {
+    label: "Instagram",
+    href: festival.social.instagram,
+    Icon: InstagramIcon,
+    ariaLabel: "Visit our Instagram profile",
+  },
   { label: "Facebook", href: festival.social.facebook, Icon: FacebookIcon },
   { label: "YouTube", href: festival.social.youtube, Icon: YoutubeIcon },
 ];
@@ -81,13 +86,13 @@ export function Footer() {
             </ul>
 
             <div className="mt-4 flex gap-2">
-              {socials.map(({ label, href, Icon }) => (
+              {socials.map(({ label, href, Icon, ariaLabel }) => (
                 <a
                   key={label}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={label}
+                  aria-label={ariaLabel ?? label}
                   className="tap-target rounded-full border border-[var(--color-cream)]/25 transition-colors hover:border-[var(--color-gold)] hover:text-[var(--color-gold)]"
                 >
                   <Icon size={18} />

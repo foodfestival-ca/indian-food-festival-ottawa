@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SOCIAL_URLS } from "@/content/social";
 
 /**
  * Single source of truth for every festival fact.
@@ -112,10 +113,13 @@ export const festival = FestivalSchema.parse({
   },
 
   social: {
-    instagram: "https://instagram.com/indianfoodfestivalottawa",
+    // Sourced from content/social.ts — the single shared constant every
+    // Instagram link on the site resolves from. Do not hardcode this URL
+    // here or anywhere else.
+    instagram: SOCIAL_URLS.instagram,
     facebook: "https://facebook.com/indianfoodfestivalottawa",
     youtube: "https://youtube.com/@indianfoodfestivalottawa",
-    instagramHandle: "@indianfoodfestivalottawa",
+    instagramHandle: "theindianfoodfestival",
   },
 
   stats: [
