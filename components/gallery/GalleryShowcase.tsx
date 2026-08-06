@@ -8,21 +8,31 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { Lightbox, type LightboxItem } from "@/components/gallery/Lightbox";
 import { cn } from "@/lib/cn";
-import { galleryItems, GALLERY_YEARS } from "@/content/gallery";
+import { galleryItems } from "@/content/gallery";
 
 const TYPE_FILTERS = ["All", "Photos", "Videos"] as const;
-const YEAR_FILTERS = ["All Years", ...GALLERY_YEARS] as const;
+
+/**
+ * Available festival years, newest first — derived from the data itself
+ * (every distinct `year` value actually present in `galleryItems`), not a
+ * hardcoded list. Add a 2026 batch to content/gallery.ts and this array
+ * picks it up automatically, sorted ahead of 2025 and 2024 with no code
+ * change needed here.
+ */
+const YEARS = Array.from(new Set(galleryItems.map((item) => item.year))).sort(
+  (a, b) => Number(b) - Number(a)
+);
 
 /**
  * Filter chips + masonry grid + lightbox — the interactive core of the
  * /gallery page.
  *
- * Two independent filter rows — media type (All/Photos/Videos) and year
- * (All Years/2024/2025) — combine with AND logic, so "2025" + "Videos"
- * narrows straight to just the 2025 highlight reel. The year row is what
- * keeps 2024 and 2025 content distinguishable once they're mixed into one
- * grid, rather than only being able to tell them apart from the small
- * "2024"/"2025" tag the lightbox shows per item.
+ * Year is a hard partition, not a toggleable filter: exactly one year is
+ * ever selected (defaulting to the newest, `YEARS[0]`), and the grid only
+ * ever shows that year's media — 2024 and 2025 content is never mixed in
+ * the same view. There is deliberately no "All Years" option. The Photos/
+ * Videos row is a separate, ordinary filter that narrows further within
+ * whichever year is selected.
  *
  * Masonry is CSS `columns` (2/3/4 at mobile/tablet/desktop), not a JS
  * layout library: each tile is `break-inside-avoid` and sized by its real
@@ -36,18 +46,18 @@ const YEAR_FILTERS = ["All Years", ...GALLERY_YEARS] as const;
  */
 export function GalleryShowcase() {
   const [typeFilter, setTypeFilter] = useState<(typeof TYPE_FILTERS)[number]>("All");
-  const [yearFilter, setYearFilter] = useState<(typeof YEAR_FILTERS)[number]>("All Years");
+  const [year, setYear] = useState<(typeof YEARS)[number]>(YEARS[0]!);
   const [index, setIndex] = useState<number | null>(null);
   const reduced = useReducedMotion();
 
   const filtered = useMemo(() => {
     return galleryItems.filter((i) => {
+      if (i.year !== year) return false;
       if (typeFilter === "Photos" && i.type !== "photo") return false;
       if (typeFilter === "Videos" && i.type !== "video") return false;
-      if (yearFilter !== "All Years" && i.year !== yearFilter) return false;
       return true;
     });
-  }, [typeFilter, yearFilter]);
+  }, [typeFilter, year]);
 
   const lightboxItems: LightboxItem[] = useMemo(
     () =>
@@ -65,7 +75,38 @@ export function GalleryShowcase() {
 
   return (
     <Container>
-      <div className="flex flex-wrap justify-center gap-2" role="group" aria-label="Filter gallery by type">
+      {/* Year tabs — newest first, exactly one always selected. This is a
+          hard partition (a different year's media is never in the DOM at
+          the same time as this one), not a filter toggle, so it's rendered
+          as tabs (role="tablist") rather than the pill-toggle group pattern
+          the type filter below uses. */}
+      <div role="tablist" aria-label="Festival year" className="flex flex-wrap justify-center gap-2">
+        {YEARS.map((y) => {
+          const active = year === y;
+          return (
+            <button
+              key={y}
+              type="button"
+              role="tab"
+              id={`gallery-year-tab-${y}`}
+              aria-selected={active}
+              aria-controls="gallery-year-panel"
+              onClick={() => setYear(y)}
+              className={cn(
+                "tap-target rounded-[var(--radius-pill)] border px-5 text-[length:var(--text-sm)] font-semibold transition-colors",
+                "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-gold)]",
+                active
+                  ? "border-[var(--color-gold)] bg-[var(--color-gold)]/15 text-[var(--color-gold)]"
+                  : "border-[var(--color-cream)]/20 text-[var(--color-cream)]/75 hover:bg-[var(--color-cream)]/10"
+              )}
+            >
+              {y}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 flex flex-wrap justify-center gap-2" role="group" aria-label="Filter gallery by type">
         {TYPE_FILTERS.map((f) => {
           const active = typeFilter === f;
           return (
@@ -88,30 +129,7 @@ export function GalleryShowcase() {
         })}
       </div>
 
-      <div className="mt-3 flex flex-wrap justify-center gap-2" role="group" aria-label="Filter gallery by year">
-        {YEAR_FILTERS.map((y) => {
-          const active = yearFilter === y;
-          return (
-            <button
-              key={y}
-              type="button"
-              onClick={() => setYearFilter(y)}
-              aria-pressed={active}
-              className={cn(
-                "tap-target rounded-[var(--radius-pill)] border px-4 text-[length:var(--text-sm)] font-medium transition-colors",
-                "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-gold)]",
-                active
-                  ? "border-[var(--color-gold)] bg-[var(--color-gold)]/15 text-[var(--color-gold)]"
-                  : "border-[var(--color-cream)]/20 text-[var(--color-cream)]/75 hover:bg-[var(--color-cream)]/10"
-              )}
-            >
-              {y}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-8 columns-2 gap-4 sm:columns-3 xl:columns-4">
+      <div id="gallery-year-panel" role="tabpanel" aria-labelledby={`gallery-year-tab-${year}`} className="mt-8 columns-2 gap-4 sm:columns-3 xl:columns-4">
         {filtered.map((item, i) => (
           <Reveal
             key={item.id}
