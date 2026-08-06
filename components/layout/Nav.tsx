@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import { useScrollState } from "@/lib/hooks";
 import { lenisRef } from "@/lib/lenis";
 import { Logo } from "@/components/ui/Logo";
-import { FormButton } from "@/components/ui/FormButton";
+import { Button } from "@/components/ui/Button";
 import { festival } from "@/content/festival";
 
 /**
@@ -209,15 +209,15 @@ export function Nav() {
                 sits well down the page, so it must also live permanently up
                 here. A maroon button on a maroon hero would disappear, so the
                 outline-on-dark variant takes over there. */}
-            <FormButton
-              form="passport"
+            <Button
+              href="/passport"
               size="sm"
               variant={onDark ? "onDark" : "secondary"}
               className="hidden sm:inline-flex"
             >
               <Ticket size={16} aria-hidden="true" />
               Get Passport
-            </FormButton>
+            </Button>
 
             {/* Hamburger — desktop (≥1024px) never sees this; lg:hidden. */}
             <button
@@ -306,10 +306,10 @@ export function Nav() {
                 })}
               </ul>
               <div className="container-page mt-6">
-                <FormButton form="passport" size="lg" fluid>
+                <Button href="/passport" size="lg" fluid onClick={() => setOpen(false)}>
                   <Ticket size={18} aria-hidden="true" />
                   Get Passport
-                </FormButton>
+                </Button>
               </div>
             </motion.div>
           </motion.div>
