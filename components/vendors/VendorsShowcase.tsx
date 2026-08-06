@@ -87,11 +87,19 @@ export function VendorsShowcase() {
         })}
       </div>
 
-      {/* Grid — 1 / 2 / 3 / 5 per row (mobile / small tablet / tablet / ≥1280px),
+      {/* Grid — 1 / 2 / 3 / 5 per row (mobile / small tablet / tablet / ≥1024px),
           denser gap to match the smaller cards, so a 1920×1080 desktop shows
-          roughly two full rows (10+ vendors) without scrolling. */}
+          roughly two full rows (10+ vendors) without scrolling.
+          5-per-row now triggers at `lg` (1024px) rather than `xl` (1280px) —
+          at the old xl threshold, two people on browser windows just above
+          and just below 1280px CSS-pixels wide (not screen resolution —
+          actual browser viewport width, which shrinks with any non-maximized
+          window, side panel, or OS scaling) would legitimately see a
+          different column count. That's expected responsive behaviour, not
+          a bug, but `lg` makes 5-per-row the common case on ordinary desktop
+          windows instead of requiring a nearly-full-width one. */}
       {filtered.length > 0 ? (
-        <RevealGroup className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+        <RevealGroup className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {filtered.map((vendor) => (
             <RevealItem key={vendor.id} className="h-full">
               <VendorCard vendor={vendor} onOpen={setActive} />

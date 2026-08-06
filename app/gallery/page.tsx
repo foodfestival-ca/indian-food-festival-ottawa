@@ -11,14 +11,22 @@ import { pageMeta } from "@/lib/seo";
 export const metadata: Metadata = pageMeta({
   title: "Gallery",
   description:
-    "Relive Navatara's Indian Food Festival 2024 — real photos and video from the crowd, the performances and the food, as we prepare for an even bigger 2026.",
+    "Relive Navatara's Indian Food Festival — real photos and video from 2024 and 2025, as we prepare for an even bigger 2026.",
   path: "/gallery",
 });
 
 /**
- * Gallery — replaces the old placeholder grid with real 2024 photography
- * and video (content/gallery.ts), driven by content only: no gallery card
- * is hardcoded in JSX.
+ * Gallery — replaces the old placeholder grid with real 2024 AND 2025
+ * photography and video (content/gallery.ts), driven by content only: no
+ * gallery card is hardcoded in JSX.
+ *
+ * The hero/closing copy below was written for 2024 only, then a 2025 batch
+ * was added on top with an explicit ask to keep the two years
+ * distinguishable rather than picking one. Rather than pin the page to
+ * whichever year was uploaded most recently, the copy here now speaks to
+ * both, and GalleryShowcase carries an explicit Year filter (All Years /
+ * 2024 / 2025) plus a small year tag on every tile — so "differentiate
+ * both" is answered structurally, not just in the closing line.
  *
  * Structure:
  *  - Hero (this file, Server Component, static) — maroon ground, matching
@@ -27,8 +35,8 @@ export const metadata: Metadata = pageMeta({
  *    conversion, so the nav inverts to cream text expecting a dark section
  *    right under it — this hero has to stay maroon for that to still look
  *    correct, not a free colour choice).
- *  - GalleryShowcase (client) — Photos/Videos filter, masonry grid,
- *    lightbox.
+ *  - GalleryShowcase (client) — Photos/Videos filter, Year filter, masonry
+ *    grid, lightbox.
  *  - Closing CTA (this file, static) — cream ground, so the Thali rule
  *    holds against the maroon above it.
  *
@@ -61,11 +69,11 @@ export default function GalleryPage() {
                 Relive the Festival
               </h1>
               <p className="mx-auto mt-3 max-w-[36ch] font-[family-name:var(--font-display)] text-[length:var(--text-xl)] italic text-[var(--color-gold)]">
-                Moments From Navatara&rsquo;s Indian Food Festival 2024
+                Moments From Navatara&rsquo;s Indian Food Festival
               </p>
               <p className="mx-auto mt-6 max-w-[56ch] text-[length:var(--text-lg)] leading-[var(--leading-body)] text-[var(--color-cream)]/80">
-                Experience the colours, culture, music, food and unforgettable memories from last year&rsquo;s
-                festival. Browse through our favourite moments as we prepare for an even bigger celebration in 2026.
+                Experience the colours, culture, music, food and unforgettable memories from 2024 and 2025.
+                Browse through our favourite moments as we prepare for an even bigger celebration in 2026.
               </p>
             </Reveal>
           </Container>
@@ -74,7 +82,7 @@ export default function GalleryPage() {
         {/* Showcase — filters + masonry grid + lightbox */}
         <Section id="gallery" ground="maroon" labelledBy="gallery-heading" cv={false}>
           <h2 id="gallery-heading" className="sr-only-focusable">
-            2024 photo and video gallery
+            2024 and 2025 photo and video gallery
           </h2>
           <GalleryShowcase />
         </Section>
@@ -87,7 +95,7 @@ export default function GalleryPage() {
                 id="gallery-closing-heading"
                 className="font-[family-name:var(--font-display)] text-[length:var(--text-3xl)] font-bold text-[var(--color-maroon)]"
               >
-                Thank You for Making 2024 Unforgettable
+                Thank You for Making 2024 &amp; 2025 Unforgettable
               </h2>
               <p className="mt-4 text-[length:var(--text-base)] leading-[var(--leading-body)] text-[var(--color-ink-muted)]">
                 Thousands of visitors, hundreds of performances, incredible food, and unforgettable memories.

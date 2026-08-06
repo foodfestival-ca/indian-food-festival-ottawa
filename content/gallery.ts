@@ -4,33 +4,47 @@ import { z } from "zod";
  * Gallery — single source of truth for the /gallery page.
  *
  * Every item below is real photography/video from Navatara's Indian Food
- * Festival 2024, supplied directly by the client. Two clips from the
- * original upload batch (Parliament Hill "International Day of Yoga"
- * footage) were left out — that's a different Navatara-run event, not the
- * food festival, and this page's hero explicitly frames everything here as
- * "Moments From Navatara's Indian Food Festival 2024," so including them
- * would misrepresent what's shown.
+ * Festival — 2024 and 2025, both supplied directly by the client and kept
+ * distinguishable via `year` (the page's Year filter reads this).
  *
- * `category` is inferred from what's actually in each shot (Crowd /
- * Performances / Food) — the upload didn't come pre-tagged, so these are a
- * best-effort read of the footage itself, not invented themes with nothing
- * behind them.
+ * 2024: two clips from that upload batch (Parliament Hill "International
+ * Day of Yoga" footage) were left out — that's a different Navatara-run
+ * event, not the food festival, so including them would misrepresent what's
+ * shown.
+ *
+ * 2025: one submitted photo turned out to be the SAME kind of yoga/wellness
+ * session, but this time on the festival grounds itself (festival tents
+ * visible behind the group) rather than at a separate Parliament Hill event
+ * — that one genuinely is festival content, so it's included (`yoga-grounds`).
+ *
+ * `category` is inferred from what's actually in each shot — the uploads
+ * don't come pre-tagged, so these are a best-effort read of the footage
+ * itself, not invented themes with nothing behind them.
  *
  * `width`/`height` are the real encoded pixel dimensions of each asset in
- * /public/media/gallery/2024/ — the masonry grid uses these to size each
+ * /public/media/gallery/<year>/ — the masonry grid uses these to size each
  * tile's aspect ratio up front (via `aspect-ratio` in CSS), so nothing
  * shifts on load and nothing gets stretched or cropped.
  */
 
-export const GALLERY_CATEGORIES = ["Crowd", "Performances", "Food"] as const;
+export const GALLERY_CATEGORIES = [
+  "Crowd",
+  "Performances",
+  "Food",
+  "Kids Zone",
+  "Volunteers",
+  "Cultural Shows",
+] as const;
 
 const CategorySchema = z.enum(GALLERY_CATEGORIES);
+
+export const GALLERY_YEARS = ["2024", "2025"] as const;
 
 const GalleryItemSchema = z.object({
   id: z.string(),
   type: z.enum(["photo", "video"]),
   title: z.string(),
-  year: z.literal("2024"),
+  year: z.enum(GALLERY_YEARS),
   category: CategorySchema,
   alt: z.string(),
   width: z.number(),
@@ -46,6 +60,7 @@ const GalleryItemSchema = z.object({
 });
 
 const BASE = "/media/gallery/2024";
+const BASE_2025 = "/media/gallery/2025";
 
 export const galleryItems = z.array(GalleryItemSchema).parse([
   // ---------- Photos ----------
@@ -192,6 +207,232 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     video: `${BASE}/roti-griddle.mp4`,
     thumbnail: `${BASE}/roti-griddle-poster.jpg`,
     duration: "0:39",
+    width: 720,
+    height: 1280,
+  },
+
+  // ---------- 2025 Photos ----------
+  {
+    id: "dancer-portrait",
+    type: "photo",
+    title: "Mid-Performance",
+    year: "2025",
+    category: "Performances",
+    alt: "A performer in embroidered white, mid-move, on the festival grounds",
+    image: `${BASE_2025}/dancer-portrait.jpg`,
+    width: 1220,
+    height: 1600,
+  },
+  {
+    id: "kids-high-five",
+    type: "photo",
+    title: "High Fives All Around",
+    year: "2025",
+    category: "Kids Zone",
+    alt: "A performer high-fiving young dancers in red and white tracksuits",
+    image: `${BASE_2025}/kids-high-five.jpg`,
+    width: 1220,
+    height: 1600,
+  },
+  {
+    id: "team-group-photo",
+    type: "photo",
+    title: "The Team Behind It All",
+    year: "2025",
+    category: "Volunteers",
+    alt: "The organising team posing together under the festival's main tent",
+    image: `${BASE_2025}/team-group-photo.jpg`,
+    width: 1920,
+    height: 1080,
+  },
+  {
+    id: "yoga-session",
+    type: "photo",
+    title: "Morning Wellness Session",
+    year: "2025",
+    category: "Crowd",
+    alt: "A large group taking part in a guided wellness session on the festival grounds",
+    image: `${BASE_2025}/yoga-session.jpg`,
+    width: 1920,
+    height: 1080,
+  },
+  {
+    id: "yoga-grounds",
+    type: "photo",
+    title: "Stretching It Out",
+    year: "2025",
+    category: "Crowd",
+    alt: "Festival-goers stretching on mats on the festival grounds, tents visible behind them",
+    image: `${BASE_2025}/yoga-grounds.jpg`,
+    width: 1920,
+    height: 1440,
+  },
+  {
+    id: "green-sari-dancer",
+    type: "photo",
+    title: "Classical Solo",
+    year: "2025",
+    category: "Performances",
+    alt: "A classical dancer in a green and gold sari performing under the stage tent at dusk",
+    image: `${BASE_2025}/green-sari-dancer.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+  {
+    id: "volunteers-group-1",
+    type: "photo",
+    title: "On-Site Team",
+    year: "2025",
+    category: "Volunteers",
+    alt: "Four volunteers posing together under the festival's main tent banner",
+    image: `${BASE_2025}/volunteers-group-1.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+  {
+    id: "flag-procession",
+    type: "photo",
+    title: "Flags Held High",
+    year: "2025",
+    category: "Performances",
+    alt: "A performer in white and orange raising a drumstick and flag during a procession",
+    image: `${BASE_2025}/flag-procession.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+  {
+    id: "chatting-with-visitors",
+    type: "photo",
+    title: "Meeting the Community",
+    year: "2025",
+    category: "Volunteers",
+    alt: "Organisers speaking with visitors near a food vendor's tent",
+    image: `${BASE_2025}/chatting-with-visitors.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "fried-snacks-platter",
+    type: "photo",
+    title: "Fresh Off the Pan",
+    year: "2025",
+    category: "Food",
+    alt: "A platter of fried snacks arranged around a bowl of spiced filling",
+    image: `${BASE_2025}/fried-snacks-platter.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "folk-costume-couple",
+    type: "photo",
+    title: "In Full Regalia",
+    year: "2025",
+    category: "Cultural Shows",
+    alt: "A couple in bright pink and white traditional folk costume holding ceremonial canes",
+    image: `${BASE_2025}/folk-costume-couple.jpg`,
+    width: 988,
+    height: 1600,
+  },
+  {
+    id: "kids-team-food-signs",
+    type: "photo",
+    title: "Name That Dish",
+    year: "2025",
+    category: "Kids Zone",
+    alt: "A large group of children and adults celebrating, holding up dish name signs",
+    image: `${BASE_2025}/kids-team-food-signs.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "volunteers-group-2",
+    type: "photo",
+    title: "Festival Crew",
+    year: "2025",
+    category: "Volunteers",
+    alt: "Three volunteers in festival t-shirts standing together on the grounds",
+    image: `${BASE_2025}/volunteers-group-2.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "henna-art",
+    type: "photo",
+    title: "Henna on the Spot",
+    year: "2025",
+    category: "Crowd",
+    alt: "A visitor having intricate henna applied to their hand at a festival stall",
+    image: `${BASE_2025}/henna-art.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+  {
+    id: "tents-and-crowd",
+    type: "photo",
+    title: "Under the Tents",
+    year: "2025",
+    category: "Crowd",
+    alt: "Rows of white tents with visitors seated and eating beneath them",
+    image: `${BASE_2025}/tents-and-crowd.jpg`,
+    width: 1920,
+    height: 1280,
+  },
+  {
+    id: "sponsor-rewards-booth",
+    type: "photo",
+    title: "Win Big While You Feast",
+    year: "2025",
+    category: "Crowd",
+    alt: "A sponsor booth volunteer holding up a rewards programme poster",
+    image: `${BASE_2025}/sponsor-rewards-booth.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+  {
+    id: "zaika-stall",
+    type: "photo",
+    title: "Zaika's Counter",
+    year: "2025",
+    category: "Food",
+    alt: "A vendor smiling behind the counter at the Zaika food stall, drink dispensers in front",
+    image: `${BASE_2025}/zaika-stall.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+  {
+    id: "spiderman-face-paint",
+    type: "photo",
+    title: "Kids Zone Face Painting",
+    year: "2025",
+    category: "Kids Zone",
+    alt: "A child having a Spider-Man design face-painted at the Kids Zone",
+    image: `${BASE_2025}/spiderman-face-paint.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+  {
+    id: "food-sampling-prep",
+    type: "photo",
+    title: "Plating the Samples",
+    year: "2025",
+    category: "Food",
+    alt: "A volunteer plating small food samples into bowls at a tasting table",
+    image: `${BASE_2025}/food-sampling-prep.jpg`,
+    width: 1066,
+    height: 1599,
+  },
+
+  // ---------- 2025 Videos ----------
+  {
+    id: "highlights-reel-2025",
+    type: "video",
+    title: "2025 Highlights Reel",
+    year: "2025",
+    category: "Performances",
+    alt: "A highlight reel of dance performances from the 2025 festival",
+    video: `${BASE_2025}/2025-highlights-reel.mp4`,
+    thumbnail: `${BASE_2025}/2025-highlights-reel-poster.jpg`,
+    duration: "0:27",
     width: 720,
     height: 1280,
   },

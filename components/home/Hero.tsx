@@ -3,7 +3,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Calendar, MapPin, Ticket, CalendarDays, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { FormButton } from "@/components/ui/FormButton";
 import { Countdown } from "@/components/home/Countdown";
 import { HeroParticles } from "@/components/home/HeroParticles";
 import { MandalaCorner, GoldRule } from "@/components/ornament/Ornaments";
@@ -103,23 +102,28 @@ export function Hero() {
               </li>
             </motion.ul>
 
-            {/* CTA hierarchy: ① Passport ② Schedule ③ Explore.
+            {/* CTA hierarchy: ① Explore ② Schedule ③ Passport.
+                Explore Festival and Get Passport swapped slots (and thus
+                prominence) at the client's request — Get Passport now also
+                links straight to the /passport page itself rather than
+                opening the registration form directly from the homepage;
+                the form is still one tap away once someone's on that page.
                 Full-width stacked on mobile for thumb-width targets. */}
             <motion.div
               {...rise(0.3)}
               className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
             >
-              <FormButton form="passport" size="lg" variant="primary" fluid>
-                <Ticket size={18} aria-hidden="true" />
-                Get Passport
-              </FormButton>
+              <Button href="#why-visit" size="lg" variant="primary" fluid>
+                Explore Festival
+                <ArrowRight size={17} aria-hidden="true" />
+              </Button>
               <Button href="/schedule" size="lg" variant="outline" fluid>
                 <CalendarDays size={18} aria-hidden="true" />
                 View Schedule
               </Button>
-              <Button href="#why-visit" size="lg" variant="ghost" fluid>
-                Explore Festival
-                <ArrowRight size={17} aria-hidden="true" />
+              <Button href="/passport" size="lg" variant="ghost" fluid>
+                <Ticket size={18} aria-hidden="true" />
+                Get Passport
               </Button>
             </motion.div>
           </div>

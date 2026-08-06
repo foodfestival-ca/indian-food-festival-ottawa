@@ -8,13 +8,21 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { Lightbox, type LightboxItem } from "@/components/gallery/Lightbox";
 import { cn } from "@/lib/cn";
-import { galleryItems } from "@/content/gallery";
+import { galleryItems, GALLERY_YEARS } from "@/content/gallery";
 
-const FILTERS = ["All", "Photos", "Videos"] as const;
+const TYPE_FILTERS = ["All", "Photos", "Videos"] as const;
+const YEAR_FILTERS = ["All Years", ...GALLERY_YEARS] as const;
 
 /**
  * Filter chips + masonry grid + lightbox — the interactive core of the
  * /gallery page.
+ *
+ * Two independent filter rows — media type (All/Photos/Videos) and year
+ * (All Years/2024/2025) — combine with AND logic, so "2025" + "Videos"
+ * narrows straight to just the 2025 highlight reel. The year row is what
+ * keeps 2024 and 2025 content distinguishable once they're mixed into one
+ * grid, rather than only being able to tell them apart from the small
+ * "2024"/"2025" tag the lightbox shows per item.
  *
  * Masonry is CSS `columns` (2/3/4 at mobile/tablet/desktop), not a JS
  * layout library: each tile is `break-inside-avoid` and sized by its real
@@ -27,15 +35,19 @@ const FILTERS = ["All", "Photos", "Videos"] as const;
  * components/gallery/Lightbox.tsx, unchanged) is what actually plays them.
  */
 export function GalleryShowcase() {
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const [typeFilter, setTypeFilter] = useState<(typeof TYPE_FILTERS)[number]>("All");
+  const [yearFilter, setYearFilter] = useState<(typeof YEAR_FILTERS)[number]>("All Years");
   const [index, setIndex] = useState<number | null>(null);
   const reduced = useReducedMotion();
 
   const filtered = useMemo(() => {
-    if (filter === "Photos") return galleryItems.filter((i) => i.type === "photo");
-    if (filter === "Videos") return galleryItems.filter((i) => i.type === "video");
-    return galleryItems;
-  }, [filter]);
+    return galleryItems.filter((i) => {
+      if (typeFilter === "Photos" && i.type !== "photo") return false;
+      if (typeFilter === "Videos" && i.type !== "video") return false;
+      if (yearFilter !== "All Years" && i.year !== yearFilter) return false;
+      return true;
+    });
+  }, [typeFilter, yearFilter]);
 
   const lightboxItems: LightboxItem[] = useMemo(
     () =>
@@ -53,14 +65,14 @@ export function GalleryShowcase() {
 
   return (
     <Container>
-      <div className="flex flex-wrap justify-center gap-2" role="group" aria-label="Filter gallery">
-        {FILTERS.map((f) => {
-          const active = filter === f;
+      <div className="flex flex-wrap justify-center gap-2" role="group" aria-label="Filter gallery by type">
+        {TYPE_FILTERS.map((f) => {
+          const active = typeFilter === f;
           return (
             <button
               key={f}
               type="button"
-              onClick={() => setFilter(f)}
+              onClick={() => setTypeFilter(f)}
               aria-pressed={active}
               className={cn(
                 "tap-target rounded-[var(--radius-pill)] px-4 text-[length:var(--text-sm)] font-medium transition-colors",
@@ -71,6 +83,29 @@ export function GalleryShowcase() {
               )}
             >
               {f}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 flex flex-wrap justify-center gap-2" role="group" aria-label="Filter gallery by year">
+        {YEAR_FILTERS.map((y) => {
+          const active = yearFilter === y;
+          return (
+            <button
+              key={y}
+              type="button"
+              onClick={() => setYearFilter(y)}
+              aria-pressed={active}
+              className={cn(
+                "tap-target rounded-[var(--radius-pill)] border px-4 text-[length:var(--text-sm)] font-medium transition-colors",
+                "focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-gold)]",
+                active
+                  ? "border-[var(--color-gold)] bg-[var(--color-gold)]/15 text-[var(--color-gold)]"
+                  : "border-[var(--color-cream)]/20 text-[var(--color-cream)]/75 hover:bg-[var(--color-cream)]/10"
+              )}
+            >
+              {y}
             </button>
           );
         })}
@@ -99,6 +134,13 @@ export function GalleryShowcase() {
                 sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
               />
+
+              <span
+                aria-hidden="true"
+                className="absolute left-2 top-2 rounded-[var(--radius-chip)] bg-[var(--color-ink)]/60 px-1.5 py-0.5 text-[length:var(--text-xs)] font-medium text-white"
+              >
+                {item.year}
+              </span>
 
               {item.type === "video" && (
                 <>
