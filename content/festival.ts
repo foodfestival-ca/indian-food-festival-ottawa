@@ -108,7 +108,7 @@ export const festival = FestivalSchema.parse({
     name: "Navatara Inc.",
     legalName: "Navatara Inc.",
     founders: ["Bhakti Sheth", "Sagar Vora"],
-    email: "hello@indianfoodfestival.ca",
+    email: "info@indianfoodfestival.ca",
     url: "https://indianfoodfestival.ca",
   },
 

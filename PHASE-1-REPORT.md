@@ -77,10 +77,10 @@ export const googleForms = {
 };
 ```
 
-**Current behaviour with blanks:** each button falls back to a pre-filled email to `hello@indianfoodfestival.ca`. Nothing is broken or dead-ends — but the passport flow is not really live until the form URL is in.
+**Current behaviour with blanks:** each button falls back to a pre-filled email to `info@indianfoodfestival.ca`. Nothing is broken or dead-ends — but the passport flow is not really live until the form URL is in.
 
 **2. Festival email address**
-`content/festival.ts` currently uses `hello@indianfoodfestival.ca`. Confirm or replace.
+`content/festival.ts` currently uses `info@indianfoodfestival.ca`. Confirm or replace.
 
 **3. Social media URLs**
 Instagram, Facebook and YouTube URLs in `content/festival.ts` are best guesses. Please confirm the real handles.

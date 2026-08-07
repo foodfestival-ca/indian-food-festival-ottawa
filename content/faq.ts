@@ -56,7 +56,7 @@ export const faqs = z.array(FaqSchema).parse([
   },
   {
     q: "How can I become a vendor or sponsor?",
-    a: "Visit the Get Involved section for booth options, sponsorship packages and application forms, or email hello@indianfoodfestival.ca.",
+    a: "Visit the Get Involved section for booth options, sponsorship packages and application forms, or email info@indianfoodfestival.ca.",
   },
 ]);
 
