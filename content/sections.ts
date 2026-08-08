@@ -24,7 +24,7 @@ const SectionCopySchema = z.object({
 export const sectionCopy = {
   whyVisit: SectionCopySchema.parse({
     eyebrow: "Why You'll Love It",
-    title: "Five Reasons to Clear Your Weekend",
+    title: "Reasons to Clear Your Weekend",
     accent: "Clear Your Weekend",
     intro:
       "Fifteen thousand people came last year. Here is what they came for — and what you'd be walking into.",

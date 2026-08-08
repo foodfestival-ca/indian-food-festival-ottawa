@@ -117,16 +117,16 @@ export const festival = FestivalSchema.parse({
     // Instagram link on the site resolves from. Do not hardcode this URL
     // here or anywhere else.
     instagram: SOCIAL_URLS.instagram,
-    facebook: "https://facebook.com/indianfoodfestivalottawa",
+    facebook: "https://www.facebook.com/profile.php?id=61561209986037",
     youtube: "https://youtube.com/@indianfoodfestivalottawa",
     instagramHandle: "theindianfoodfestival",
   },
 
   stats: [
-    { value: 100,   suffix: "+", label: "Food Vendors",      sub: "From across India" },
-    { value: 50,    suffix: "+", label: "Live Performances", sub: "Music, Dance & More" },
-    { value: 15000, suffix: "+", label: "Happy Visitors",    sub: "Every Year" },
-    { value: 3,     suffix: "",  label: "Amazing Days",      sub: "Full of Celebration" },
+    { value: 25,    suffix: "",  label: "Food Vendors",      sub: "From across India" },
+    { value: 15,    suffix: "+", label: "Product Vendors",   sub: "& Local Businesses" },
+    { value: 35,    suffix: "+", label: "Performances",      sub: "Music, Dance & More" },
+    { value: 10000, suffix: "+", label: "Happy Visitors",    sub: "Every Year" },
   ],
 });
 

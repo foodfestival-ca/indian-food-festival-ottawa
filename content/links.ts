@@ -12,8 +12,9 @@
 import { festival } from "@/content/festival";
 
 export const googleForms = {
-  /** "Get Passport" — every passport CTA across the site. */
-  passport: "",
+  /** "Get Passport" — every passport CTA across the site. Reserved via
+   *  Eventbrite rather than a Google Form. */
+  passport: "https://www.eventbrite.com/e/indian-food-festival-of-ottawa-2026-tickets-1992183332977",
   /** "Become a Vendor" — marketplace + about page. */
   vendor: "",
   /** "Become a Sponsor" — sponsors section. */
