@@ -63,7 +63,7 @@ export function VendorsShowcase() {
       <div
         className="mt-6 flex flex-wrap justify-center gap-2"
         role="group"
-        aria-label="Filter vendors by cuisine"
+        aria-label="Filter vendors by category"
       >
         {FILTERS.map((f) => {
           const isActive = filter === f;

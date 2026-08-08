@@ -46,6 +46,8 @@ export const VENDOR_CATEGORIES = [
   "Tarot & Wellness",
 ] as const;
 
+export type VendorCategory = (typeof VENDOR_CATEGORIES)[number];
+
 const VendorCategorySchema = z.enum(VENDOR_CATEGORIES);
 
 const VendorSchema = z.object({
@@ -57,6 +59,24 @@ const VendorSchema = z.object({
   image: z.string(),
   menuItems: z.array(z.string()),
 });
+
+/**
+ * Categories that are festival vendors but not food/restaurant vendors.
+ * `isFoodVendor()` reads this instead of any component hardcoding vendor
+ * names, so VendorModal's copy (and anything else that needs to branch on
+ * vendor type) stays correct automatically as vendors are added or their
+ * `category` changes — no per-vendor special-casing anywhere in the UI.
+ * Every value in VENDOR_CATEGORIES not listed here is treated as food.
+ */
+export const NON_FOOD_CATEGORIES: readonly VendorCategory[] = [
+  "Henna Art",
+  "Fashion & Jewelry",
+  "Tarot & Wellness",
+];
+
+export function isFoodVendor(vendor: { category: VendorCategory }): boolean {
+  return !NON_FOOD_CATEGORIES.includes(vendor.category);
+}
 
 export const vendors = z.array(VendorSchema).parse([
   {
@@ -285,7 +305,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Street Food",
     description:
       "A unique festival experience celebrating Surat's famous late-night egg food culture — from Surati Locho with egg and spicy gotala to rich bhurji, half fry, signature egg rolls, cheese specialties, and egg pulao, plus vegetarian favourites like pav bhaji and masala pav for everyone.",
-    image: "",
+    image: "/vendors/taste-of-egg.jpg",
     menuItems: ["Surati Locho", "Egg Bhurji", "Egg Half Fry", "Egg Rolls", "Egg Pulao", "Pav Bhaji", "Masala Pav"],
   },
   {

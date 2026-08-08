@@ -3,16 +3,28 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { X, UtensilsCrossed } from "lucide-react";
-import type { Vendor } from "@/content/vendors";
+import { X, UtensilsCrossed, Sparkles } from "lucide-react";
+import { isFoodVendor, type Vendor } from "@/content/vendors";
 
 /**
- * "View Menu" modal — one vendor's signature dishes.
+ * "View Menu" modal — one vendor's signature dishes for food vendors, or
+ * whatever supported detail exists for non-food festival vendors (henna,
+ * fashion/jewelry, tarot).
  *
  * Structurally the same accessible-dialog pattern as `components/gallery/
  * Lightbox.tsx` (portal, focus trap, Escape to close, body-scroll lock,
  * focus restoration) trimmed down to a single static panel — no
  * prev/next/swipe, since a menu card has nothing to page through.
+ *
+ * Every optional field (`cuisine`, `description`, `menuItems`) is rendered
+ * conditionally: several vendors only have a confirmed name + logo, and an
+ * empty eyebrow / empty paragraph / empty "Signature Menu Items" heading
+ * with nothing under it would look like a bug rather than a vendor we
+ * simply don't have more confirmed detail for yet. `isFoodVendor()` (from
+ * content/vendors.ts, driven by `category` — never a hardcoded vendor name)
+ * decides the menu section's heading and icon: "Signature Menu Items" for
+ * food vendors, "Vendor Details" for everyone else, and the whole section
+ * only renders at all when `menuItems` actually has content.
  */
 export function VendorModal({ vendor, onClose }: { vendor: Vendor | null; onClose: () => void }) {
   const open = vendor !== null;
@@ -96,33 +108,41 @@ export function VendorModal({ vendor, onClose }: { vendor: Vendor | null; onClos
               <X size={20} aria-hidden="true" />
             </button>
 
-            <p className="eyebrow">{vendor.cuisine}</p>
+            {vendor.cuisine && <p className="eyebrow">{vendor.cuisine}</p>}
             <h3
               id="vendor-modal-title"
-              className="mt-2 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold text-[var(--color-maroon)]"
+              className={`font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold text-[var(--color-maroon)] ${vendor.cuisine ? "mt-2" : ""}`}
             >
               {vendor.name}
             </h3>
-            <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[var(--color-ink-muted)]">
-              {vendor.description}
-            </p>
+            {vendor.description && (
+              <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[var(--color-ink-muted)]">
+                {vendor.description}
+              </p>
+            )}
 
-            <div className="mt-6 border-t border-[var(--color-border)] pt-5">
-              <h4 className="flex items-center gap-2 text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.14em] text-[var(--color-maroon)]">
-                <UtensilsCrossed size={15} aria-hidden="true" />
-                Signature Menu Items
-              </h4>
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                {vendor.menuItems.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-[var(--radius-chip)] bg-[var(--color-cream)] px-3 py-2 text-[length:var(--text-sm)] text-[var(--color-ink)]"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {vendor.menuItems.length > 0 && (
+              <div className="mt-6 border-t border-[var(--color-border)] pt-5">
+                <h4 className="flex items-center gap-2 text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.14em] text-[var(--color-maroon)]">
+                  {isFoodVendor(vendor) ? (
+                    <UtensilsCrossed size={15} aria-hidden="true" />
+                  ) : (
+                    <Sparkles size={15} aria-hidden="true" />
+                  )}
+                  {isFoodVendor(vendor) ? "Signature Menu Items" : "Vendor Details"}
+                </h4>
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {vendor.menuItems.map((item) => (
+                    <li
+                      key={item}
+                      className="rounded-[var(--radius-chip)] bg-[var(--color-cream)] px-3 py-2 text-[length:var(--text-sm)] text-[var(--color-ink)]"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </motion.div>
         </motion.div>
       )}

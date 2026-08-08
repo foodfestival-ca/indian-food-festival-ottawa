@@ -70,7 +70,7 @@ export default function VendorPage() {
         {/* Showcase — search, filters, grid, modal */}
         <Section id="vendors" ground="cream-deep" labelledBy="vendors-heading" cv={false}>
           <h2 id="vendors-heading" className="sr-only-focusable">
-            Food vendors
+            Festival vendors
           </h2>
           <VendorsShowcase />
         </Section>
