@@ -85,10 +85,18 @@ function PerformanceCard({
         sizes={feature ? "(max-width: 1024px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
       />
 
-      {/* Scrim guarantees text contrast over any photograph */}
+      {/* Scrim guarantees text contrast over any photograph. Strengthened from
+          the original /55 mid-stop — the illustrated performance artwork
+          (bright neon stage lighting, gold temple backdrops) is busier and
+          higher-contrast than the plain gradient placeholder this scrim was
+          first tuned against, so the old stop let saturated colour bleed
+          through behind the eyebrow and icon badge. A darker, higher-reaching
+          gradient (opaque further up, and never fully transparent even at
+          the top) keeps the white/cream text and icon readable regardless of
+          how bright the underlying artwork is, on every card. */}
       <span
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-[var(--color-maroon)] via-[var(--color-maroon)]/55 to-transparent"
+        className="absolute inset-0 bg-gradient-to-t from-[var(--color-maroon)] from-15% via-[var(--color-maroon)]/80 via-55% to-[var(--color-maroon)]/35"
       />
 
       <div className="relative flex h-full flex-col justify-end p-5 sm:p-6">
