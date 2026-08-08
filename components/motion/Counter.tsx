@@ -18,7 +18,7 @@ interface CounterProps {
  */
 export function Counter({ value, suffix = "", duration = 1600, className }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-15%" });
+  const inView = useInView(ref, { once: true, margin: "0px" });
   const reduced = useReducedMotion();
   const [display, setDisplay] = useState(0);
 
