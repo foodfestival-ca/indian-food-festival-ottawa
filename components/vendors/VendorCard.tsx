@@ -7,11 +7,10 @@ import type { Vendor } from "@/content/vendors";
 /**
  * One vendor tile in the showcase grid.
  *
- * `image` is empty for every vendor in content/vendors.ts (the source
- * document had no photography), so in practice this always renders the
- * initials placeholder — but the `Image` branch is kept live so a vendor
- * can get real artwork later just by filling in `image` in the data file,
- * with no component change needed. Placeholder logos use `object-contain`
+ * `image` is set for vendors with a supplied logo (see content/vendors.ts)
+ * and empty for the rest, which renders the initials placeholder — a vendor
+ * without artwork yet gets one automatically just by filling in `image` in
+ * the data file, with no component change needed. Logos use `object-contain`
  * per spec (never crop/stretch a logo); real photography would use
  * `object-cover` — decided by whether `logo` mode applies, same convention
  * as `components/home/Sponsors.tsx`.

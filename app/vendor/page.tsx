@@ -9,7 +9,7 @@ import { pageMeta } from "@/lib/seo";
 import { vendorsHero } from "@/content/vendors";
 
 export const metadata: Metadata = pageMeta({
-  title: "Meet Our Food Vendors",
+  title: "Meet Our Festival Vendors",
   description:
     "Meet the restaurants of the Indian Food Festival of Ottawa 2026 — over twenty vendors spanning South Indian, Hyderabadi, Himalayan, Gujarati, Maharashtrian and more, each with its own signature menu.",
   path: "/vendor",
@@ -39,7 +39,7 @@ export default function VendorPage() {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Food Vendors", path: "/vendor" },
+          { name: "Festival Vendors", path: "/vendor" },
         ])}
       />
 

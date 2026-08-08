@@ -1,15 +1,19 @@
 import { z } from "zod";
 
 /**
- * Food Vendors — single source of truth for the /vendor page.
+ * Vendors — single source of truth for the /vendor page.
  *
- * Sourced verbatim from "Meet the Food Vendors.docx" (names, cuisines,
- * descriptions and menu items). Adding or removing a vendor only requires
+ * Originally sourced verbatim from "Meet the Food Vendors.docx" (names,
+ * cuisines, descriptions and menu items). The client has since confirmed
+ * the festival's vendor roster also includes non-food vendors (henna,
+ * jewellery/accessories, tarot), so a handful of `VENDOR_CATEGORIES` values
+ * exist purely to bucket those. Adding or removing a vendor only requires
  * editing this file — components/vendors/* renders whatever is here, with
  * no vendor data hardcoded in JSX.
  *
- * `image` is intentionally empty for every vendor — the source document had
- * no vendor photography or logos to attach. `VendorCard` falls back to a
+ * `image` holds a real vendor logo (in `/public/vendors/`) where one has
+ * been supplied and confidently matched to a vendor by name; it stays empty
+ * for vendors without a supplied logo yet. `VendorCard` falls back to a
  * premium initials placeholder in that case (same graceful-fallback pattern
  * already used for sponsors without artwork), so nothing renders as a
  * broken image.
@@ -18,6 +22,10 @@ import { z } from "zod";
  * below. It's a single primary cuisine bucket chosen for vendors whose
  * document listing spans more than one (e.g. "Hyderabadi & North Indian");
  * `cuisine` keeps the full text from the document for display on the card.
+ * For non-food vendors added later with only a logo confirmed (no source
+ * document), `cuisine`/`description`/`menuItems` are left empty rather than
+ * invented — `VendorCard`/`VendorModal` render fine with empty strings/
+ * arrays here, just without that optional line of copy.
  */
 
 export const VENDOR_CATEGORIES = [
@@ -33,6 +41,9 @@ export const VENDOR_CATEGORIES = [
   "Café",
   "Beverages",
   "Fusion",
+  "Henna Art",
+  "Fashion & Jewelry",
+  "Tarot & Wellness",
 ] as const;
 
 const VendorCategorySchema = z.enum(VENDOR_CATEGORIES);
@@ -55,18 +66,17 @@ export const vendors = z.array(VendorSchema).parse([
     category: "South Indian",
     description:
       "Experience the authentic flavours of South India with crispy dosas, soft idlis, medu vadas, sambar, and spicy appetizers like Cauliflower 65. Dosa King celebrates the comforting breakfasts and street food traditions of Tamil Nadu and Karnataka.",
-    image: "",
+    image: "/vendors/dosa-king.png",
     menuItems: ["Dosa", "Idli", "Medu Vada", "Sambar", "Cauliflower 65"],
   },
   {
-    id: "everest-kitchen",
-    name: "Everest Kitchen",
-    cuisine: "Nepalese & Himalayan",
-    category: "Nepalese",
-    description:
-      "Bringing the warm and comforting flavours of the Himalayas, Everest Kitchen serves handmade momos and flavourful chowmein with both vegetarian and chicken options, offering an authentic taste of Nepal.",
-    image: "",
-    menuItems: ["Veg Momos", "Chicken Momos", "Chowmein"],
+    id: "everest-cuisine",
+    name: "Everest Cuisine",
+    cuisine: "",
+    category: "Himalayan",
+    description: "",
+    image: "/vendors/everest-cuisine.png",
+    menuItems: [],
   },
   {
     id: "chawlas",
@@ -75,7 +85,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "North Indian",
     description:
       "Known for hearty North Indian comfort food, Chawlas brings fluffy chole bhature, crispy pakoras, golden jalebi, and refreshing mango lassi — a true taste of Punjab's rich culinary traditions.",
-    image: "",
+    image: "/vendors/chawlas.jpg",
     menuItems: ["Chole Bhature", "Pakoras", "Jalebi", "Mango Lassi"],
   },
   {
@@ -85,7 +95,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Street Food",
     description:
       "A paradise for chaat lovers, Zaika recreates India's bustling street food scene with buttery pav bhaji, tangy chole kulche, crispy samosas, bhel puri, dahi vada, onion kachori, and freshly brewed masala tea.",
-    image: "",
+    image: "/vendors/zaika.jpg",
     menuItems: ["Pav Bhaji", "Chole Kulche", "Samosas", "Bhel Puri", "Dahi Vada", "Onion Kachori", "Masala Tea"],
   },
   {
@@ -95,7 +105,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Hyderabadi",
     description:
       "Famous for aromatic Hyderabadi biryanis, Bawarchi brings together royal flavours with Chicken 65, Butter Chicken, Paneer Tikka Masala, freshly baked naan, and traditional Indian beverages like badam milk and rose milk.",
-    image: "",
+    image: "/vendors/bawarchi.png",
     menuItems: ["Chicken Biryani", "Chicken 65", "Butter Chicken", "Paneer Tikka Masala", "Naan", "Badam Milk", "Rose Milk"],
   },
   {
@@ -105,7 +115,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Café",
     description:
       "A modern take on Indian comfort food, Vylora Café blends stuffed kulchas, aloo tikka chaat, Indo-Chinese Hakka noodles, specialty coffees, handcrafted lemonades, and indulgent milkshakes into a contemporary café experience.",
-    image: "",
+    image: "/vendors/vylora-cafe.jpg",
     menuItems: ["Stuffed Kulchas", "Aloo Tikka Chaat", "Hakka Noodles", "Specialty Coffee", "Lemonade", "Milkshakes"],
   },
   {
@@ -115,7 +125,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Gujarati",
     description:
       "Discover the vibrant flavours of Gujarat through iconic dishes like dabeli, vada pav, pav bhaji, papdi no lot (khichu), methi na gota, and sabudana khichdi — simple, comforting, and packed with authentic regional spices.",
-    image: "",
+    image: "/vendors/spice-handi.jpg",
     menuItems: ["Dabeli", "Vada Pav", "Pav Bhaji", "Khichu", "Methi Na Gota", "Sabudana Khichdi"],
   },
   {
@@ -125,7 +135,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Himalayan",
     description:
       "Dedicated to authentic Himalayan dumplings, Café De Momo serves freshly prepared chicken and paneer momos that are juicy, flavourful, and perfect for sharing.",
-    image: "",
+    image: "/vendors/cafe-de-momo.png",
     menuItems: ["Chicken Momos", "Paneer Momos"],
   },
   {
@@ -135,7 +145,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Beverages",
     description:
       "Recharge between food stops with handcrafted iced coffees, flavoured coffee creations, matcha beverages, blue pea drinks, and refreshing fruit-inspired specialties.",
-    image: "",
+    image: "/vendors/craving-coffee-company.png",
     menuItems: ["Iced Coffee", "Flavoured Coffee", "Matcha", "Blue Pea Drinks", "Fruit Specialties"],
   },
   {
@@ -145,7 +155,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Beverages",
     description:
       "A perfect stop for refreshing beverages and light bites, featuring authentic chai, pani puri, samosas, falooda, masala soda, lemonade, sweets, and classic Indian café favourites.",
-    image: "",
+    image: "/vendors/chai-talks.jpg",
     menuItems: ["Chai", "Pani Puri", "Samosas", "Falooda", "Masala Soda", "Lemonade", "Sweets"],
   },
   {
@@ -165,7 +175,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Himalayan",
     description:
       "Serving handmade dumplings, Himalayan burgers, noodles, spring rolls, and refreshing mango lassi, this vendor blends traditional Himalayan recipes with modern street food favourites.",
-    image: "",
+    image: "/vendors/himalayan-momo.jpg",
     menuItems: ["Momos", "Himalayan Burgers", "Noodles", "Spring Rolls", "Mango Lassi"],
   },
   {
@@ -175,7 +185,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Fusion",
     description:
       "A creative fusion kitchen featuring butter chicken poutine, paneer poutine, masala fries, rice bowls, samosas, and bread pakoras — bringing together Canadian comfort food with bold Indian flavours.",
-    image: "",
+    image: "/vendors/desi-tadka.jpg",
     menuItems: ["Butter Chicken Poutine", "Paneer Poutine", "Masala Fries", "Rice Bowls", "Samosas", "Bread Pakoras"],
   },
   {
@@ -185,7 +195,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "South Indian",
     description:
       "Offering a delicious mix of South Indian breakfast classics like punugulu, Mysore bonda, idly, dosa, and poori alongside fragrant chicken and paneer biryanis.",
-    image: "",
+    image: "/vendors/celebrations.png",
     menuItems: ["Punugulu", "Mysore Bonda", "Idly", "Dosa", "Poori", "Chicken Biryani", "Paneer Biryani"],
   },
   {
@@ -195,7 +205,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Maharashtrian",
     description:
       "Experience the authentic home-style flavours of Maharashtra through festive delicacies including modak, puran poli, pithla bhakri, varan bhatti, shrikhand, chakli, shakarpale, buttermilk, and traditional chutneys.",
-    image: "",
+    image: "/vendors/mahesh-foods.jpg",
     menuItems: ["Modak", "Puran Poli", "Pithla Bhakri", "Varan Bhatti", "Shrikhand", "Chakli", "Shakarpale", "Buttermilk"],
   },
   {
@@ -205,7 +215,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Maharashtrian",
     description:
       "Bringing the bold flavours of western India with misal pav, sabudana khichdi, ragda pattice, cut vada, thalipith, kokam juice, and solkadhi — perfect for those looking to explore authentic Maharashtrian cuisine.",
-    image: "",
+    image: "/vendors/swaaha.jpg",
     menuItems: ["Misal Pav", "Sabudana Khichdi", "Ragda Pattice", "Cut Vada", "Thalipith", "Kokam Juice", "Solkadhi"],
   },
   {
@@ -215,7 +225,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Beverages",
     description:
       "A refreshing destination featuring handcrafted lemonades, fresh fruit coolers, traditional Indian drinks like aam panna and jaljeera, flavoured lassis, milkshakes, jigarthanda, and nostalgic bun maska.",
-    image: "",
+    image: "/vendors/freshly.jpg",
     menuItems: ["Lemonades", "Fruit Coolers", "Aam Panna", "Jaljeera", "Lassi", "Milkshakes", "Jigarthanda", "Bun Maska"],
   },
   {
@@ -235,7 +245,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Street Food",
     description:
       "Serving youthful street café favourites including Maggi, kulhad pizza, burgers, pani puri, bhel puri, sev puri, and loaded chaat creations that combine comfort food with Indian flavours.",
-    image: "",
+    image: "/vendors/chai-and-juice.jpg",
     menuItems: ["Maggi", "Kulhad Pizza", "Burgers", "Pani Puri", "Bhel Puri", "Sev Puri", "Loaded Chaat"],
   },
   {
@@ -245,7 +255,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Desserts",
     description:
       "Cool off with colourful ice gola, falooda, ice cream, cold cocoa, strawberry kunafa, jamun shots, masala soda, and creative dessert combinations including samosa poutine.",
-    image: "",
+    image: "/vendors/iceflame.jpg",
     menuItems: ["Ice Gola", "Falooda", "Ice Cream", "Cold Cocoa", "Strawberry Kunafa", "Jamun Shots", "Masala Soda", "Samosa Poutine"],
   },
   {
@@ -255,7 +265,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Hyderabadi",
     description:
       "One of the festival's largest menus, Shaaz showcases the rich food culture of Hyderabad with signature Chicken 65, aromatic biryanis, mandi, haleem, authentic dosas, idlis, shawarmas, Irani chai, Osmania biscuits, kulfis, and traditional café favourites that celebrate the city's famous culinary heritage.",
-    image: "",
+    image: "/vendors/shaaz.jpg",
     menuItems: ["Chicken 65", "Biryani", "Mandi", "Haleem", "Dosa", "Idli", "Shawarma", "Irani Chai", "Osmania Biscuits", "Kulfi"],
   },
   {
@@ -265,7 +275,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "North Indian",
     description:
       "Bringing traditional North Indian comfort food with samosa chaat, papdi chaat, and classic aloo puri halwa prepared using authentic family recipes.",
-    image: "",
+    image: "/vendors/indian-curry-and-kebab-house.png",
     menuItems: ["Samosa Chaat", "Papdi Chaat", "Aloo Puri Halwa"],
   },
   {
@@ -278,14 +288,59 @@ export const vendors = z.array(VendorSchema).parse([
     image: "",
     menuItems: ["Surati Locho", "Egg Bhurji", "Egg Half Fry", "Egg Rolls", "Egg Pulao", "Pav Bhaji", "Masala Pav"],
   },
+  {
+    id: "flaunt-it-by-f",
+    name: "Flaunt It by F",
+    cuisine: "Henna Art by Fatima Ehsan",
+    category: "Henna Art",
+    description: "",
+    image: "/vendors/flaunt-it-by-f.jpg",
+    menuItems: [],
+  },
+  {
+    id: "glorious-gleam-by-aditi",
+    name: "Glorious Gleam by Aditi",
+    cuisine: "Fashion Accessories, Jewelry & More",
+    category: "Fashion & Jewelry",
+    description: "",
+    image: "/vendors/glorious-gleam-by-aditi.jpg",
+    menuItems: [],
+  },
+  {
+    id: "tarot-ocean",
+    name: "Tarot Ocean",
+    cuisine: "Divine Insights Await",
+    category: "Tarot & Wellness",
+    description: "",
+    image: "/vendors/tarot-ocean.jpg",
+    menuItems: [],
+  },
+  {
+    id: "the-bling-baari",
+    name: "The Bling Baari",
+    cuisine: "",
+    category: "Fashion & Jewelry",
+    description: "",
+    image: "/vendors/the-bling-baari.jpg",
+    menuItems: [],
+  },
+  {
+    id: "bbg-bangle-box-girl",
+    name: "BBG (Bangle Box Girl)",
+    cuisine: "",
+    category: "Fashion & Jewelry",
+    description: "",
+    image: "/vendors/bbg-bangle-box-girl.jpg",
+    menuItems: [],
+  },
 ]);
 
 export type Vendor = (typeof vendors)[number];
 
 /** Hero copy — the intro paragraph is taken verbatim from the document. */
 export const vendorsHero = {
-  eyebrow: "Food Vendors",
-  title: "Meet Our Food Vendors",
+  eyebrow: "Festival Vendors",
+  title: "Meet Our Festival Vendors",
   subtitle: "Every Bite Tells a Story",
   description:
     "The Indian Food Festival of Ottawa 2026 brings together some of the region's most exciting restaurants, each representing a different corner of India's diverse culinary landscape. From authentic regional specialties and legendary street food to Himalayan favourites, indulgent desserts, and refreshing beverages, every vendor offers a unique experience waiting to be discovered.",
