@@ -111,7 +111,7 @@ export const vendors = z.array(VendorSchema).parse([
   {
     id: "zaika",
     name: "Zaika",
-    cuisine: "Indian Street Food",
+    cuisine: "Authentic Homemade Food",
     category: "Street Food",
     description:
       "A paradise for chaat lovers, Zaika recreates India's bustling street food scene with buttery pav bhaji, tangy chole kulche, crispy samosas, bhel puri, dahi vada, onion kachori, and freshly brewed masala tea.",
@@ -160,7 +160,7 @@ export const vendors = z.array(VendorSchema).parse([
   },
   {
     id: "craving-coffee-company",
-    name: "Craving Coffee Company",
+    name: "Cravings Coffee Company",
     cuisine: "Specialty Coffee & Refreshments",
     category: "Beverages",
     description:
@@ -231,7 +231,7 @@ export const vendors = z.array(VendorSchema).parse([
   {
     id: "swaaha",
     name: "Swaaha Pure Maharashtrian Cuisine",
-    cuisine: "Maharashtrian Street Food",
+    cuisine: "Pure Maharashtrian Cuisine",
     category: "Maharashtrian",
     description:
       "Bringing the bold flavours of western India with misal pav, sabudana khichdi, ragda pattice, cut vada, thalipith, kokam juice, and solkadhi — perfect for those looking to explore authentic Maharashtrian cuisine.",
