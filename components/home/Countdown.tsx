@@ -1,174 +1,72 @@
 "use client";
 
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useCountdown } from "@/lib/useCountdown";
 import { festival } from "@/content/festival";
 import { Button } from "@/components/ui/Button";
-import { TicketNotch, GoldRule, MandalaCorner } from "@/components/ornament/Ornaments";
 
-// `center` is each medallion's horizontal position (% from the card's left
-// edge), measured directly off the artwork — bundled onto each unit rather
-// than kept in a parallel array so rendering never needs to index into a
-// second array by position.
 const SUB_UNITS = [
-  { key: "hours", label: "Hours", center: 29.6 },
-  { key: "minutes", label: "Minutes", center: 51.9 },
-  { key: "seconds", label: "Seconds", center: 74.0 },
+  { key: "hours", label: "Hours" },
+  { key: "minutes", label: "Minutes" },
+  { key: "seconds", label: "Seconds" },
 ] as const;
 
-// Percentage geometry measured directly off the reference artwork
-// (public/media/hero/countdown-card.png, 672×719, cropped tight to the
-// card's own silhouette — re-measured after the mask was regenerated with
-// a wider safety margin, see the file comment below) — see the long
-// comment further down for how these were derived and why they exist.
-const DAY_BOX = { left: 38.1, top: 28.1, width: 23.9, height: 18.8 };
-const MEDALLION_BOX = { top: 60.3, width: 17, height: 9.4 };
-const CARD_PAPER = "#F7D7A3";
-const MEDALLION_FILL = "#520817";
+// The card's own blank "content well" as a percentage box, measured off
+// public/media/hero/countdown-card.png (982×1193): everything below the
+// gold divider under the crown motif and above the peacock/lotus cluster is
+// bare parchment, left blank in the artwork specifically so live content
+// could be laid on top of it. All countdown text lives inside this one box
+// — a single centred flex column, not a separate hand-measured position per
+// line — so it re-centres itself automatically for whichever phase's
+// content is currently shortest/tallest, and scales with the card at every
+// breakpoint since it's percentage-based against the same box the image
+// itself scales within.
+const CONTENT_WELL = { left: 18, top: 18.5, width: 66, height: 70 };
 
 /**
- * Hero countdown — round 5: the client supplied the actual reference
- * artwork directly ("cant we use the picture") after four rounds of
- * hand-authored SVG ornament (paisleys, a peacock, a scalloped medallion,
- * a lotus) still read as noticeably plainer than the reference's illustrated
- * card. Round 5 uses that artwork directly instead of continuing to
- * approximate it in vector shapes.
+ * Hero countdown — round 6: the client supplied a second reference asset,
+ * this time with the card's centre panel left intentionally blank (no
+ * placeholder digits baked in at all). That removes the reason round 5
+ * needed patch-and-overlay: there's nothing to hide anymore, so every line
+ * of text — including "The Countdown Begins" and the date, which round 5
+ * still left as picture pixels — is now real HTML laid directly onto bare
+ * parchment inside `CONTENT_WELL`.
  *
  * WHAT'S IMAGE, WHAT'S REAL TEXT
- * The card frame — the arched/scalloped silhouette, the maroon+gold double
- * border, both peacocks, the corner florals, the crown motif, the side
- * vines and the bottom lotus — is `public/media/hero/countdown-card.png`,
- * a cropped, background-removed version of the client's reference PNG (the
- * photographic backdrop baked into the original crop was masked out by
- * hand-tracing the card's silhouette in this session, since no background-
- * removal model was reachable from this sandbox). The first mask traced the
- * silhouette too tightly and clipped slivers of the card's own border/vine
- * artwork in a few spots — visible as small missing bits of background right
- * at the edge. The mask was regenerated with a ~15px outward safety margin
- * (better to let a thin, barely-visible sliver of the original photo bleed
- * in at the very edge than to lose real card artwork), which is why this
- * crop is a few pixels larger than the first pass.
+ * The entire frame — arched/scalloped silhouette, maroon+gold double
+ * border, crown motif, both side vines, both peacocks, and the bottom
+ * lotus — is `public/media/hero/countdown-card.png`. As with round 5's
+ * asset, this is a hand-masked crop of the client's supplied PNG (its own
+ * photographic backdrop removed by tracing the card's silhouette in this
+ * session — no background-removal model is reachable from this sandbox).
+ * Every word of text on the card, for all three phases, is real DOM
+ * content positioned inside `CONTENT_WELL` — none of it is part of the
+ * picture.
  *
- * Everything that actually changes at runtime is still real, live HTML laid
- * on top of the artwork at measured percentage positions, NOT baked into
- * the picture:
- *   - the big day count (`DAY_BOX`)
- *   - the three Hours/Minutes/Seconds digits (each `SUB_UNITS` entry's `center`)
- * Each sits on a small patch (sampled directly from the artwork's own
- * paper/medallion fill — `CARD_PAPER` / `MEDALLION_FILL`) that fully covers
- * the reference's static placeholder digits before the live value draws on
- * top. The patch itself carries a same-colour blurred `boxShadow` rather
- * than a hard-edged fill — a flat rectangle read as a visible seam against
- * the artwork's subtly textured paper once this was live; the blur feathers
- * the patch's border into that texture so it isn't a legible rectangle at
- * normal viewing size, while its solid centre still fully hides the baked
- * digits underneath. `useCountdown()` is the only source for any of these
- * values — nothing is hardcoded.
+ * THREE PHASES, ONE IMAGE. The artwork has no phase-specific content baked
+ * in (unlike round 5's asset), so the same frame is reused for all three
+ * `useCountdown()` phases — "counting" shows the day/hour/minute/second
+ * breakdown, "live" shows the in-progress message, "ended" shows the
+ * thank-you + gallery CTA — all drawn inside the same blank well rather
+ * than swapping frames or falling back to a different card design.
  *
- * The static line art the picture already carries correctly for our actual
- * dates — "THE COUNTDOWN BEGINS", "DAYS TO GO", the HOURS/MINUTES/SECONDS
- * captions, and "AUGUST 21–23, 2026 · OTTAWA" — is left as picture pixels
- * rather than re-overlaid with duplicate text, since it happens to already
- * match `festival.dateLabel`/`festival.venue.city` exactly. That is a real
- * coupling worth flagging: if those values ever change in
- * `content/festival.ts`, this artwork would need to be regenerated/re-cropped
- * to match — it will not update itself the way the day/hour/minute/second
- * numbers do. A `sr-only-focusable` paragraph gives screen readers the full
- * live sentence regardless, since none of the picture's own text is exposed
- * to assistive tech.
- *
- * ONLY THE "COUNTING" PHASE USES THIS ARTWORK. The reference depicts a
- * single moment — days still to go, with three digit medallions — and has
- * no equivalent composition for "the festival is happening now" or "thanks
- * for coming." Rather than force those two (rarer, shorter-lived) states
- * into a card built for different content, they keep the simpler on-brand
- * frame the site used before this round (double gold border, corner
- * TicketNotch, MandalaCorner watermark) — still on the same silhouette
- * language, just without the artwork.
- *
- * `lib/useCountdown.ts` and `content/festival.ts` were not touched.
+ * `useCountdown()` and `festival` remain the only source for every dynamic
+ * value (days/hours/minutes/seconds, dateLabel, venue.city) — nothing is
+ * hardcoded, and neither `lib/useCountdown.ts` nor `content/festival.ts`
+ * was touched. `c.ready` (false only until the client's first tick — see
+ * useCountdown.ts) still gates real numbers vs "--" placeholders, so there
+ * is no hydration mismatch and no incorrect flash of a phase before the
+ * real one resolves.
  */
 export function Countdown() {
   const c = useCountdown(festival.startsAt, festival.endsAt);
-
-  const srSummary = c.ready
-    ? c.phase === "counting"
-      ? `${c.days} days, ${c.hours} hours, ${c.minutes} minutes until the festival begins.`
-      : c.phase === "live"
-        ? "The festival is happening now."
-        : "The festival has ended. Thank you for celebrating with us."
-    : "";
-
-  if (c.phase !== "counting") {
-    return (
-      <div className="relative mx-auto w-full max-w-[20rem] sm:max-w-[22rem]">
-        <div
-          className="relative overflow-hidden px-6 py-7 sm:px-7 sm:py-8"
-          style={{
-            borderRadius: "999px 999px 26px 26px",
-            background:
-              "radial-gradient(120% 65% at 50% 0%, rgba(255,252,245,0.995) 0%, rgba(253,247,232,0.985) 45%, rgba(248,237,213,0.975) 100%)",
-            border: "2.5px solid var(--color-maroon)",
-            boxShadow: "0 22px 48px rgba(42,26,24,0.34), 0 6px 18px rgba(42,26,24,0.18)",
-          }}
-        >
-          <TicketNotch side="left" />
-          <TicketNotch side="right" />
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-[6px] rounded-[999px_999px_20px_20px]"
-            style={{ border: "1px solid rgba(196,145,54,0.4)" }}
-          />
-          <MandalaCorner className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 text-[var(--color-gold)] opacity-[0.08]" />
-
-          <div className="relative">
-            {c.phase === "live" && (
-              <div className="py-2 text-center">
-                <span className="inline-flex items-center gap-2">
-                  <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-[var(--color-emerald)]" />
-                  <span className="eyebrow text-[var(--color-emerald)]">Happening Now</span>
-                </span>
-                <p className="mt-3 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold text-[var(--color-maroon)]">
-                  Festival Is Happening Now!
-                </p>
-                <p className="mt-1.5 text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
-                  Come celebrate food, culture, music and community.
-                </p>
-                <GoldRule className="mx-auto mt-4 max-w-[7rem]" />
-                <p className="mt-3 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-muted)]/85">
-                  {festival.dateLabel} · {festival.venue.city}
-                </p>
-              </div>
-            )}
-
-            {c.phase === "ended" && (
-              <div className="py-2 text-center">
-                <p className="eyebrow">Until Next Year</p>
-                <p className="mt-3 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold text-[var(--color-maroon)]">
-                  Thank You for Celebrating With Us
-                </p>
-                <p className="mt-1.5 text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
-                  Relive the memories, explore the gallery and stay tuned for what&rsquo;s next.
-                </p>
-                <div className="mt-4">
-                  <Button href="/gallery" size="sm" variant="outline">
-                    Explore Festival Gallery
-                    <ArrowRight size={15} aria-hidden="true" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-        <p className="sr-only-focusable">{srSummary}</p>
-      </div>
-    );
-  }
+  const reduced = useReducedMotion();
 
   return (
     <div className="relative mx-auto w-full max-w-[19rem] sm:max-w-[21rem]">
-      <div className="relative" style={{ aspectRatio: "672 / 719" }}>
+      <div className="relative" style={{ aspectRatio: "982 / 1193" }}>
         <Image
           src="/media/hero/countdown-card.png"
           alt=""
@@ -178,58 +76,109 @@ export function Countdown() {
           className="object-contain drop-shadow-[0_18px_38px_rgba(42,26,24,0.3)]"
         />
 
-        {/* Day count — patch hides the artwork's static placeholder digits,
-            the live value from useCountdown() draws on top. */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute flex flex-col items-center justify-center text-center"
           style={{
-            left: `${DAY_BOX.left}%`,
-            top: `${DAY_BOX.top}%`,
-            width: `${DAY_BOX.width}%`,
-            height: `${DAY_BOX.height}%`,
+            left: `${CONTENT_WELL.left}%`,
+            top: `${CONTENT_WELL.top}%`,
+            width: `${CONTENT_WELL.width}%`,
+            height: `${CONTENT_WELL.height}%`,
           }}
         >
-          <span
-            className="absolute inset-0"
-            style={{ background: CARD_PAPER, boxShadow: `0 0 16px 12px ${CARD_PAPER}` }}
-            aria-hidden="true"
-          />
-          <span className="relative tabular font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-none text-[var(--color-maroon)] sm:text-[length:var(--text-6xl)]">
-            {c.ready ? c.days : "--"}
-          </span>
+          {c.phase === "counting" && (
+            <>
+              <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.22em] text-[var(--color-saffron-deep)] sm:text-[length:var(--text-sm)]">
+                The Countdown Begins
+              </p>
+
+              <motion.span
+                className="tabular mt-1 block font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-none text-[var(--color-maroon)] sm:mt-2 sm:text-[length:var(--text-6xl)]"
+                animate={reduced ? undefined : { opacity: [1, 0.85, 1] }}
+                transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+              >
+                {c.ready ? c.days : "--"}
+              </motion.span>
+              <span className="block text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-muted)]">
+                Days To Go
+              </span>
+
+              <div className="mt-3 flex items-start justify-center gap-4 border-t border-[var(--color-maroon)]/20 pt-3 sm:mt-4 sm:gap-6 sm:pt-4">
+                {SUB_UNITS.map((u, i) => (
+                  <div key={u.key} className="relative px-1.5 text-center sm:px-2">
+                    <span
+                      className="tabular block font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold leading-none text-[var(--color-maroon)] sm:text-[length:var(--text-3xl)]"
+                      /* Seconds must not be announced — a live region
+                         ticking every second is unusable with a screen
+                         reader. */
+                      aria-hidden={u.key === "seconds" ? "true" : undefined}
+                    >
+                      {c.ready ? String(c[u.key]).padStart(2, "0") : "--"}
+                    </span>
+                    <span className="mt-1 block text-[9px] font-medium uppercase tracking-[0.1em] text-[var(--color-ink-muted)] sm:text-[10px]">
+                      {u.label}
+                    </span>
+                    {i < SUB_UNITS.length - 1 && (
+                      <span aria-hidden="true" className="absolute -right-2 top-1 h-7 w-px bg-[var(--color-maroon)]/20 sm:-right-3" />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <p className="sr-only-focusable">
+                {c.ready ? `${c.days} days until the festival begins.` : ""}
+              </p>
+
+              <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]/85 sm:mt-4 sm:text-[11px]">
+                {festival.dateLabel} · {festival.venue.city}
+              </p>
+            </>
+          )}
+
+          {c.phase === "live" && (
+            <>
+              <span className="inline-flex items-center gap-2">
+                <motion.span
+                  aria-hidden="true"
+                  className="h-2.5 w-2.5 rounded-full bg-[var(--color-emerald)]"
+                  animate={reduced ? undefined : { opacity: [1, 0.35, 1] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <span className="eyebrow text-[var(--color-emerald)]">Happening Now</span>
+              </span>
+              <p className="mt-3 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold uppercase leading-tight text-[var(--color-maroon)] sm:text-[length:var(--text-3xl)]">
+                The Festival Is Happening Now!
+              </p>
+              <p className="mt-2 max-w-[85%] text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
+                Come celebrate food, culture, music and community.
+              </p>
+              <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]/85">
+                {festival.dateLabel} · {festival.venue.city}
+              </p>
+            </>
+          )}
+
+          {/* No date is guessed here — "Thank You" without a specific year
+              avoids asserting a 2027 edition that isn't in the canonical
+              festival data. */}
+          {c.phase === "ended" && (
+            <>
+              <p className="eyebrow">Until Next Year</p>
+              <p className="mt-3 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold uppercase leading-tight text-[var(--color-maroon)] sm:text-[length:var(--text-3xl)]">
+                Thank You For Celebrating With Us
+              </p>
+              <p className="mt-2 max-w-[85%] text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
+                Relive the memories, explore the gallery and stay tuned for what&rsquo;s next.
+              </p>
+              <div className="mt-4">
+                <Button href="/gallery" size="sm" variant="outline">
+                  Explore Festival Gallery
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Button>
+              </div>
+            </>
+          )}
         </div>
-
-        {/* Hours / Minutes / Seconds digits — same patch-then-overlay
-            treatment, one per medallion already drawn in the artwork. */}
-        {SUB_UNITS.map((u) => (
-          <div
-            key={u.key}
-            className="absolute flex items-center justify-center"
-            style={{
-              left: `${u.center - MEDALLION_BOX.width / 2}%`,
-              top: `${MEDALLION_BOX.top}%`,
-              width: `${MEDALLION_BOX.width}%`,
-              height: `${MEDALLION_BOX.height}%`,
-            }}
-          >
-            <span
-              className="absolute inset-0"
-              style={{ background: MEDALLION_FILL, boxShadow: `0 0 7px 4px ${MEDALLION_FILL}` }}
-              aria-hidden="true"
-            />
-            <span
-              className="relative tabular font-[family-name:var(--font-display)] text-[length:var(--text-lg)] font-bold leading-none text-[var(--color-cream)] sm:text-[length:var(--text-xl)]"
-              /* Seconds must not be announced — a live region ticking every
-                 second is unusable with a screen reader. */
-              aria-hidden={u.key === "seconds" ? "true" : undefined}
-            >
-              {c.ready ? String(c[u.key]).padStart(2, "0") : "--"}
-            </span>
-          </div>
-        ))}
       </div>
-
-      <p className="sr-only-focusable">{srSummary}</p>
     </div>
   );
 }
