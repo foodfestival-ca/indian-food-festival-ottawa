@@ -218,16 +218,18 @@ function HeroMedia() {
         className="absolute inset-0 hidden lg:block"
         style={{
           background:
-            "linear-gradient(100deg, rgba(253,248,240,0.95) 0%, rgba(253,248,240,0.88) 24%, rgba(253,248,240,0.42) 46%, rgba(253,248,240,0.1) 62%, transparent 76%)",
+            "linear-gradient(100deg, rgba(253,248,240,0.97) 0%, rgba(253,248,240,0.91) 26%, rgba(253,248,240,0.48) 48%, rgba(253,248,240,0.12) 64%, transparent 78%)",
         }}
       />
       {/* Soft dark pool behind the countdown card's corner (bottom-right of
           its column, where `lg:self-end` puts it) — just enough to lift the
-          card's own gold border/shadow off the artwork without a hard edge. */}
+          card's own maroon border/shadow off the artwork without a hard
+          edge. Slightly deeper than before now that the card's border is a
+          heavier maroon line rather than a hairline gold one. */}
       <div
         className="absolute inset-0 hidden lg:block"
         style={{
-          background: "radial-gradient(42% 55% at 80% 90%, rgba(20,12,10,0.30) 0%, rgba(20,12,10,0.1) 55%, transparent 78%)",
+          background: "radial-gradient(46% 60% at 80% 88%, rgba(20,12,10,0.38) 0%, rgba(20,12,10,0.14) 55%, transparent 80%)",
         }}
       />
 

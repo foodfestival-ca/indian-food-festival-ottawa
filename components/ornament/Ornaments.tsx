@@ -75,6 +75,47 @@ export function TicketNotch({ side = "left" }: { side?: "left" | "right" }) {
   );
 }
 
+/** Small gem/finial marking the apex of an arched shape — sits astride the
+ *  top edge of the countdown card's dome, half on/half off. currentColor
+ *  for the outer facets, a fixed cream core so it reads as a "set stone"
+ *  rather than a flat diamond. */
+export function PeakGem({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M12 1 L15.2 8.2 22.5 12 15.2 15.8 12 23 8.8 15.8 1.5 12 8.8 8.2Z" fill="currentColor" opacity="0.92" />
+      <circle cx="12" cy="12" r="2.6" fill="var(--color-cream)" opacity="0.95" />
+    </svg>
+  );
+}
+
+/** Small lotus-bud flourish that hangs beneath the countdown card's lower
+ *  edge — the "pointed drop" cue an arched invitation card usually closes
+ *  on. currentColor for the petal line-work, a single saffron accent dot
+ *  at the bud's centre (the one spot of warm colour allowed this low on
+ *  the card, per the "restrained, not clip-art" brief). */
+export function LotusCap({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 40 24"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g fill="none" strokeWidth="1.1" strokeLinecap="round">
+        <path d="M20 1 C23 6 25 9 20 15 C15 9 17 6 20 1Z" fill="currentColor" stroke="none" opacity="0.85" />
+        <path d="M20 5 C25 8 30 9 35 6" stroke="currentColor" opacity="0.45" />
+        <path d="M20 5 C15 8 10 9 5 6" stroke="currentColor" opacity="0.45" />
+        <circle cx="20" cy="13" r="1.8" fill="var(--color-saffron)" opacity="0.9" />
+      </g>
+    </svg>
+  );
+}
+
 export function DottedArc({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 240 24" className={cn("w-full", className)} aria-hidden="true" focusable="false">
