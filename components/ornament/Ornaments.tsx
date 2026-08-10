@@ -116,6 +116,119 @@ export function LotusCap({ className }: { className?: string }) {
   );
 }
 
+/** Stylized ornamental peacock, Rajasthani/Mughal-invitation style rather
+ *  than a literal illustration — a curved body/neck line, a small crested
+ *  head, and a fanned tail of teardrop feathers each tipped with a small
+ *  concentric "eye" (the one place fixed brand accent colours — emerald,
+ *  gold, saffron — are used, everything else is `currentColor` line-work so
+ *  the bird recolors with its parent like the rest of the ornament family).
+ *  Drawn facing right; mirror with a `-scale-x-100` utility to face left. */
+export function PeacockOrnament({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 110 130"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
+        {/* Tail fan, five feathers radiating from the tail base. */}
+        {[
+          { d: "M34 96 C22 70 18 40 30 12", eye: [30, 12] },
+          { d: "M36 98 C28 74 28 46 42 18", eye: [42, 18] },
+          { d: "M40 100 C38 78 42 52 56 28", eye: [56, 28] },
+          { d: "M45 101 C48 82 58 60 70 40", eye: [70, 40] },
+          { d: "M50 100 C58 86 72 70 82 54", eye: [82, 54] },
+        ].map((f, i) => (
+          <g key={i} opacity={0.85 - i * 0.06}>
+            <path d={f.d} />
+            <circle cx={f.eye[0]} cy={f.eye[1]} r="4.2" opacity="0.9" />
+            <circle
+              cx={f.eye[0]}
+              cy={f.eye[1]}
+              r="2.1"
+              fill={i % 2 === 0 ? "var(--color-emerald)" : "var(--color-saffron)"}
+              stroke="none"
+              opacity="0.85"
+            />
+            <circle cx={f.eye[0]} cy={f.eye[1]} r="0.8" fill="var(--color-gold)" stroke="none" />
+          </g>
+        ))}
+        {/* Body + arched neck. */}
+        <path d="M34 98 C30 106 34 114 44 116 C54 118 60 112 58 104" opacity="0.9" />
+        <path d="M44 116 C50 108 54 92 66 78 C74 68 78 56 76 46" opacity="0.9" />
+        {/* Head + small crest. */}
+        <circle cx="77" cy="42" r="5" fill="currentColor" stroke="none" opacity="0.9" />
+        <path d="M76 36 L74 30 M78 35 L79 29 M80 37 L84 32" opacity="0.8" />
+        {/* Legs. */}
+        <path d="M46 116 L44 126 M52 117 L52 127" opacity="0.6" />
+      </g>
+    </svg>
+  );
+}
+
+/** Larger, more detailed paisley than `CornerFlourish` — a filled comma body
+ *  with an inner curl and a trailing dot, the classic Indian "mango" motif.
+ *  Used where the ornament needs more presence than a corner accent (flanking
+ *  the bottom finial, mid-card). currentColor-driven. */
+export function PaisleyMotif({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 40 56"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M20 2 C34 2 36 20 26 30 C18 38 20 44 30 46 C24 52 10 52 6 42 C2 32 8 26 14 22 C22 16 22 8 20 2Z"
+        fill="currentColor"
+        opacity="0.5"
+      />
+      <path
+        d="M20 8 C28 10 29 20 22 26"
+        fill="none"
+        stroke="var(--color-cream)"
+        strokeWidth="1"
+        opacity="0.55"
+      />
+      <circle cx="30" cy="46" r="1.6" fill="var(--color-saffron)" opacity="0.85" />
+    </svg>
+  );
+}
+
+/** Small five-petal flower with two leaves — fills a gap near the bottom
+ *  finial or a corner without repeating the paisley motif. Petals and leaf
+ *  keep to the brand's saffron/emerald accents; the rest is currentColor. */
+export function FloralSprig({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g stroke="currentColor" strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.7">
+        <path d="M16 20 C12 24 8 24 5 27" />
+        <path d="M16 20 C10 21 7 18 4 19" />
+      </g>
+      <ellipse cx="7" cy="24" rx="3.4" ry="1.8" fill="var(--color-emerald)" opacity="0.6" transform="rotate(-30 7 24)" />
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <ellipse
+          key={deg}
+          cx="16"
+          cy="12"
+          rx="3.2"
+          ry="6"
+          fill="var(--color-saffron)"
+          opacity="0.75"
+          transform={`rotate(${deg} 16 16)`}
+        />
+      ))}
+      <circle cx="16" cy="16" r="2.4" fill="var(--color-gold)" opacity="0.95" />
+    </svg>
+  );
+}
+
 export function DottedArc({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 240 24" className={cn("w-full", className)} aria-hidden="true" focusable="false">

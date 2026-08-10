@@ -13,14 +13,11 @@ import {
   CornerFlourish,
   PeakGem,
   LotusCap,
+  PeacockOrnament,
+  PaisleyMotif,
+  FloralSprig,
 } from "@/components/ornament/Ornaments";
 
-// Four "paisley" leaf flourishes at the corners, plus two more (rotated 90°)
-// at the mid-sides — the extra pair is new, giving the card ornament along
-// all four edges rather than just the corners, per the "ornate invitation"
-// reference. The top pair sits lower than a plain rectangle's corners would
-// (top-9, not top-2) so they land on the card's straight side walls rather
-// than getting swallowed by the domed top.
 const CORNERS = [
   "absolute left-2.5 top-9 text-[var(--color-gold)]",
   "absolute right-2.5 top-9 -scale-x-100 text-[var(--color-gold)]",
@@ -40,47 +37,53 @@ const SUB_UNITS = [
 ] as const;
 
 /**
- * Hero countdown — "invitation card" redesign.
+ * Hero countdown — "ornate Indian invitation" redesign, round 2.
  *
- * Reproduces the reference's ornate, arched invitation-card silhouette in
- * real markup rather than an image:
- *  - Silhouette: a very large border-radius on the two top corners only
- *    (clamped by the CSS spec to half the card's own width, so it always
- *    renders as a smooth dome regardless of viewport — no hand-authored
- *    breakpoint-specific path needed) domes the top into an arch. A
- *    `PeakGem` finial sits astride the apex and a `LotusCap` hangs off the
- *    bottom edge, so the card reads as "shaped," not a plain rectangle,
- *    at both ends.
- *  - Border: a heavier maroon outer line (was a hairline gold one) plus the
- *    existing inset gold rule a few pixels in — a real double-line frame,
- *    the printed-invitation cue, now in the deeper of the two ink colours
- *    the reference uses for its outline.
- *  - Ornament: the four corner paisleys plus two new mid-side ones and the
- *    centred MandalaCorner watermark carry the "paisley / floral / mandala"
- *    brief — all `aria-hidden`, all low-opacity enough to never sit under
- *    text at a contrast-affecting strength.
- *  - Surface: the day-number badge behind "Hours/Minutes/Seconds" moved off
- *    a solid maroon fill (which the reference uses) to a translucent
- *    saffron/orange wash instead — the one deliberate departure from the
- *    reference, per direct client note: keep the ornament, make the small
- *    timer badges themselves a "little transparent... orange" instead of a
- *    solid block colour.
+ * Round 1 built the arched/domed silhouette (huge top-corner radius, clamped
+ * by CSS to a smooth dome at any width), the maroon double-line border, and
+ * a first pass at corner ornament. This round adds the pieces the client's
+ * reference ("4th concept") called out specifically that round 1 didn't
+ * have: two facing peacocks flanking the dome, denser paisley/floral
+ * ornament around the bottom finial, and a fully opaque ivory surface (round
+ * 1's sub-unit badges were a translucent orange wash; that read as *less*
+ * finished against the busy hero photo, so this round goes back to solid
+ * fills for anything text sits on, per the reference).
  *
- * Hierarchy, copy and all live values are unchanged and still come straight
- * from `useCountdown()`/`festival` — nothing here is hardcoded.
+ * Ornament budget: every new decorative element is `aria-hidden`, drawn in
+ * `currentColor` (recolored per-instance via a Tailwind text-color utility)
+ * with at most one or two fixed accent colours (peacock feather "eyes",
+ * florals) so the palette stays inside the existing maroon/gold/saffron/
+ * emerald set rather than introducing new hues. None of it sits behind text
+ * at meaningful opacity — the two exceptions (MandalaCorner watermark, the
+ * glow behind the day number) are unchanged from round 1 and were already
+ * tuned low enough not to affect contrast.
+ *
+ * Countdown hierarchy, copy, and every dynamic value below still come
+ * straight from `useCountdown()`/`festival` — nothing here is hardcoded,
+ * and `lib/useCountdown.ts` / `content/festival.ts` were not touched.
  */
 export function Countdown() {
   const c = useCountdown(festival.startsAt, festival.endsAt);
   const reduced = useReducedMotion();
 
   return (
-    <div className="relative mx-auto w-full max-w-[19rem] sm:max-w-[21rem]">
+    <div className="relative mx-auto w-full max-w-[20rem] sm:max-w-[22rem]">
+      {/* Peacocks — perched just outside the dome's shoulders, facing
+          inward toward the countdown. Scaled down below `sm` per the
+          "reduce scale on mobile, don't remove" brief. */}
+      <PeacockOrnament
+        className="pointer-events-none absolute -left-8 top-2 h-16 w-14 text-[var(--color-maroon)] opacity-80 sm:-left-11 sm:top-0 sm:h-20 sm:w-[4.25rem]"
+      />
+      <PeacockOrnament
+        className="pointer-events-none absolute -right-8 top-2 h-16 w-14 -scale-x-100 text-[var(--color-maroon)] opacity-80 sm:-right-11 sm:top-0 sm:h-20 sm:w-[4.25rem]"
+      />
+
       <div
         className="relative overflow-visible px-6 pb-6 pt-11 sm:px-7 sm:pb-7 sm:pt-12"
         style={{
           borderRadius: "999px 999px 26px 26px",
           background:
-            "radial-gradient(120% 65% at 50% 0%, rgba(255,251,242,0.97) 0%, rgba(253,246,230,0.95) 45%, rgba(247,235,209,0.93) 100%)",
+            "radial-gradient(120% 65% at 50% 0%, rgba(255,252,245,0.995) 0%, rgba(253,247,232,0.985) 45%, rgba(248,237,213,0.975) 100%)",
           border: "2.5px solid var(--color-maroon)",
           boxShadow: "0 22px 48px rgba(42,26,24,0.34), 0 6px 18px rgba(42,26,24,0.18)",
           transform: "translateZ(0)",
@@ -89,20 +92,25 @@ export function Countdown() {
         <TicketNotch side="left" />
         <TicketNotch side="right" />
 
-        {/* Second inset rule — the double-line border, now traced in gold a
-            few pixels inside the maroon outer edge, following the same
-            domed-top silhouette as the card itself. */}
+        {/* Second inset rule — the double-line border, traced in gold a few
+            pixels inside the maroon outer edge, following the same domed
+            silhouette as the card itself. */}
         <span
           aria-hidden="true"
           className="pointer-events-none absolute inset-[6px] rounded-[999px_999px_20px_20px]"
-          style={{ border: "1px solid rgba(196,145,54,0.38)" }}
+          style={{ border: "1px solid rgba(196,145,54,0.4)" }}
         />
 
         {/* Apex finial — astride the top edge of the dome. */}
         <PeakGem className="pointer-events-none absolute left-1/2 top-0 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-[var(--color-gold)]" />
 
-        {/* Bottom lotus drop — hangs just off the lower edge. */}
+        {/* Bottom finial cluster — lotus drop flanked by a small paisley on
+            each side, matching the reference's denser base ornament. */}
         <LotusCap className="pointer-events-none absolute bottom-0 left-1/2 h-6 w-10 -translate-x-1/2 translate-y-1/2 text-[var(--color-maroon)]" />
+        <PaisleyMotif className="pointer-events-none absolute bottom-0 left-[26%] h-7 w-5 translate-y-1/3 -rotate-12 text-[var(--color-gold)] opacity-70" />
+        <PaisleyMotif className="pointer-events-none absolute bottom-0 right-[26%] h-7 w-5 translate-y-1/3 rotate-12 -scale-x-100 text-[var(--color-gold)] opacity-70" />
+        <FloralSprig className="pointer-events-none absolute bottom-1 left-3 h-6 w-6 opacity-80" />
+        <FloralSprig className="pointer-events-none absolute bottom-1 right-3 h-6 w-6 -scale-x-100 opacity-80" />
 
         {CORNERS.map((cls, i) => (
           <CornerFlourish key={i} className={cn("h-6 w-6 opacity-70", cls)} />
@@ -115,8 +123,8 @@ export function Countdown() {
             content via z-index, low enough opacity to never affect contrast. */}
         <MandalaCorner className="pointer-events-none absolute left-1/2 top-[54%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 text-[var(--color-gold)] opacity-[0.08]" />
 
-        {/* Extremely subtle static gold glow behind the focal number —
-            not animated, just a soft warmth. */}
+        {/* Extremely subtle static gold glow behind the focal number — not
+            animated, just a soft warmth. */}
         {c.phase === "counting" && (
           <span
             aria-hidden="true"
@@ -149,21 +157,25 @@ export function Countdown() {
                 </span>
               </div>
 
-              {/* Hours / Minutes / Seconds — each a little transparent-orange
-                  "timer" badge (translucent saffron wash, not a solid fill)
-                  rather than equal-weight digital-clock cells. */}
-              <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[var(--color-gold)]/25 pt-4">
+              <GoldRule className="mx-auto mt-3 max-w-[6rem]" />
+
+              {/* Hours / Minutes / Seconds — solid maroon "medallion" badges
+                  with a thin gold ring and cream digits, matching the
+                  reference's opaque timer badges (crystal-clear against the
+                  hero photo behind the card, not a translucent wash). */}
+              <div className="mt-4 grid grid-cols-3 gap-2 pt-1">
                 {SUB_UNITS.map((u) => (
                   <div key={u.key} className="text-center">
                     <div
                       className="mx-auto flex h-12 w-12 items-center justify-center rounded-full sm:h-14 sm:w-14"
                       style={{
-                        background: "rgba(232,121,43,0.14)",
-                        border: "1px solid rgba(232,121,43,0.35)",
+                        background: "var(--color-maroon)",
+                        border: "1.5px solid var(--color-gold)",
+                        boxShadow: "inset 0 0 0 2px rgba(253,248,240,0.18)",
                       }}
                     >
                       <span
-                        className="tabular font-[family-name:var(--font-display)] text-[length:var(--text-lg)] font-bold leading-none text-[var(--color-maroon)] sm:text-[length:var(--text-xl)]"
+                        className="tabular font-[family-name:var(--font-display)] text-[length:var(--text-lg)] font-bold leading-none text-[var(--color-cream)] sm:text-[length:var(--text-xl)]"
                         /* Seconds must not be announced — a live region
                            ticking every second is unusable with a screen
                            reader. */
