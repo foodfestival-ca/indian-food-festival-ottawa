@@ -12,6 +12,8 @@ import {
   CrownOrnament,
   VineBorder,
   PeacockOrnament,
+  PinkBlossom,
+  ScallopedMedallion,
   LotusBloom,
 } from "@/components/ornament/Ornaments";
 
@@ -22,38 +24,33 @@ const SUB_UNITS = [
 ] as const;
 
 /**
- * Hero countdown — "ornate Indian invitation" redesign, round 3.
+ * Hero countdown — "ornate Indian invitation" redesign, round 4.
  *
- * Rounds 1–2 built the domed silhouette and added ornament, but scattered it
- * around the card's edges (corner flourishes, peacocks up near the crown)
- * rather than reproducing the reference's actual *structure*: a decorative
- * top crest, a traced vine running down each inner edge, and a pair of
- * peacocks anchored at the base flanking a full lotus bloom — three
- * integrated zones, not loose accents. This round rebuilds the ornament
- * layer around those three zones specifically:
+ * Round 4 matches the client's reference crop directly rather than a general
+ * "more ornate" pass. Three concrete corrections from round 3:
  *
- *  - TOP: `CrownOrnament`, a symmetrical gold scrollwork crest astride the
- *    dome's apex (was a single small gem).
- *  - SIDES: `VineBorder` traces both inner edges top-to-bottom (was nothing
- *    — round 2's "side flourish" was two 20×20px corner icons, not a frame
- *    element).
- *  - BASE: two `PeacockOrnament`s — now a filled, coloured illustration
- *    (emerald body, gold/maroon tail eyes) rather than thin currentColor
- *    line-art — sit at the bottom-left/right corners facing the centre,
- *    flanking a full `LotusBloom` (a filled five-petal flower, not the
- *    small `LotusCap` bud from earlier rounds).
+ *  1. The peacocks move from the very bottom row up to flank the
+ *     Hours/Minutes/Seconds + date band, tail curling down toward the
+ *     bottom corners — the reference's birds sit beside that content, not
+ *     underneath it. Their tail is now one large curling paisley shape (a
+ *     teal-blue fixed colour) rather than a fan of separate feathers, with
+ *     a small `PinkBlossom` tucked above each — matching the reference's
+ *     "bird + flower" cluster on both sides.
+ *  2. The Hours/Minutes/Seconds badges sit on a `ScallopedMedallion` (a
+ *     ten-bump fluted disc) instead of a plain circle — the reference's
+ *     medallions read as flower-shaped badges, not dots.
+ *  3. `LotusBloom` is now pink/magenta (was saffron) and hangs as a pendant
+ *     below the card's own bottom edge, overlapping the border like the
+ *     reference's flower — the card wrapper is `overflow-visible` again so
+ *     that intentional overlap isn't clipped (everything else stays inside
+ *     the card's own padding box, so this doesn't reopen the edge-clipping
+ *     risk rounds 1–2 had).
  *
- * All of it lives *inside* the card's own box (no negative-offset overflow
- * outside the card, unlike round 2's peacocks) — that removes the desktop/
- * tablet/mobile clipping risk entirely rather than needing per-breakpoint
- * offset tuning. `MandalaCorner` remains as a faint centred watermark; the
- * double-line maroon/gold border and domed top-corner radius are unchanged
- * from round 1.
- *
- * The card surface stays a near-opaque ivory gradient so the hero photograph
- * never shows through, and the Hours/Minutes/Seconds badges stay solid
- * maroon medallions with cream digits — both carried over from round 2 for
- * contrast.
+ * `CrownOrnament` at the apex and `VineBorder` down both inner edges are
+ * unchanged in kind from round 3, just re-spaced so the vine stops above
+ * the new peacock zone instead of running through it. `MandalaCorner`
+ * remains a faint centred watermark; the maroon double-line border and
+ * domed top-corner radius are unchanged since round 1.
  *
  * Countdown hierarchy, copy, and every dynamic value below still come
  * straight from `useCountdown()`/`festival`; `lib/useCountdown.ts` and
@@ -66,7 +63,7 @@ export function Countdown() {
   return (
     <div className="relative mx-auto w-full max-w-[20rem] sm:max-w-[22rem]">
       <div
-        className="relative overflow-hidden px-7 pb-8 pt-11 sm:px-8 sm:pb-9 sm:pt-12"
+        className="relative overflow-visible px-7 pb-9 pt-11 sm:px-8 sm:pb-10 sm:pt-12"
         style={{
           borderRadius: "999px 999px 26px 26px",
           background:
@@ -88,13 +85,34 @@ export function Countdown() {
           style={{ border: "1px solid rgba(196,145,54,0.4)" }}
         />
 
-        {/* SIDES — vine tracing both inner edges, top to bottom. Sits inside
-            the card's own padding, well clear of the centred text column. */}
-        <VineBorder className="absolute left-2.5 top-12 bottom-10 h-auto w-3.5 text-[var(--color-gold)] opacity-70 sm:left-3 sm:w-4" />
-        <VineBorder className="absolute right-2.5 top-12 bottom-10 h-auto w-3.5 -scale-x-100 text-[var(--color-gold)] opacity-70 sm:right-3 sm:w-4" />
+        {/* SIDES — vine tracing both inner edges, stopping above the
+            peacock zone lower down so the two ornament layers don't
+            overlap. */}
+        <VineBorder className="absolute left-2.5 top-12 bottom-32 h-auto w-3.5 text-[var(--color-gold)] opacity-70 sm:left-3 sm:w-4 sm:bottom-36" />
+        <VineBorder className="absolute right-2.5 top-12 bottom-32 h-auto w-3.5 -scale-x-100 text-[var(--color-gold)] opacity-70 sm:right-3 sm:w-4 sm:bottom-36" />
+
+        {/* BASE — peacocks flanking the medallion/date band, tails curling
+            down toward the bottom corners, a small pink blossom above each,
+            and a lotus pendant hanging below the card's own bottom border.
+            Sized against the "counting" phase's content (medallions + date
+            line fill the lower third of the card, matching the reference);
+            the "live"/"ended" phases are shorter and have no medallion row
+            to sit beside, so this cluster only renders for "counting" to
+            avoid the birds overlapping shorter body copy. Positioned inside
+            the card's own box on the horizontal axis (no clipping risk);
+            only the lotus is allowed to overlap the bottom edge. */}
+        {c.phase === "counting" && (
+          <>
+            <PeacockOrnament className="pointer-events-none absolute bottom-9 left-0 h-24 w-16 text-[#1C6E86] sm:bottom-10 sm:h-28 sm:w-20" />
+            <PeacockOrnament className="pointer-events-none absolute bottom-9 right-0 h-24 w-16 -scale-x-100 text-[#1C6E86] sm:bottom-10 sm:h-28 sm:w-20" />
+            <PinkBlossom className="pointer-events-none absolute bottom-[7.5rem] left-2 h-7 w-7 sm:bottom-[8.5rem] sm:left-2.5" />
+            <PinkBlossom className="pointer-events-none absolute bottom-[7.5rem] right-2 h-7 w-7 -scale-x-100 sm:bottom-[8.5rem] sm:right-2.5" />
+            <LotusBloom className="pointer-events-none absolute -bottom-4 left-1/2 h-9 w-14 -translate-x-1/2 sm:-bottom-5 sm:h-10 sm:w-16" />
+          </>
+        )}
 
         {/* TOP — gold scrollwork crest astride the dome's apex. */}
-        <CrownOrnament className="pointer-events-none absolute left-1/2 top-1 h-6 w-[5.5rem] -translate-x-1/2 text-[var(--color-gold)] sm:h-7 sm:w-24" />
+        <CrownOrnament className="pointer-events-none absolute left-1/2 top-1 h-6 w-24 -translate-x-1/2 text-[var(--color-gold)] sm:h-7 sm:w-28" />
 
         {/* Mandala watermark — decorative only, sits behind every phase's
             content via z-index, low enough opacity to never affect contrast. */}
@@ -136,22 +154,17 @@ export function Countdown() {
 
               <GoldRule className="mx-auto mt-3 max-w-[6rem]" />
 
-              {/* Hours / Minutes / Seconds — solid maroon "medallion" badges
-                  with a thin gold ring and cream digits: opaque and
-                  crystal-clear against the hero photo behind the card. */}
+              {/* Hours / Minutes / Seconds — a scalloped, flower-shaped
+                  medallion (fluted rim, not a plain circle) with cream
+                  digits centred on top: opaque and crystal-clear against
+                  the hero photo behind the card. */}
               <div className="mt-4 grid grid-cols-3 gap-2 pt-1">
                 {SUB_UNITS.map((u) => (
                   <div key={u.key} className="text-center">
-                    <div
-                      className="mx-auto flex h-12 w-12 items-center justify-center rounded-full sm:h-14 sm:w-14"
-                      style={{
-                        background: "var(--color-maroon)",
-                        border: "1.5px solid var(--color-gold)",
-                        boxShadow: "inset 0 0 0 2px rgba(253,248,240,0.18)",
-                      }}
-                    >
+                    <div className="relative mx-auto flex h-14 w-14 items-center justify-center sm:h-16 sm:w-16">
+                      <ScallopedMedallion className="absolute inset-0 h-full w-full" />
                       <span
-                        className="tabular font-[family-name:var(--font-display)] text-[length:var(--text-lg)] font-bold leading-none text-[var(--color-cream)] sm:text-[length:var(--text-xl)]"
+                        className="relative z-10 tabular font-[family-name:var(--font-display)] text-[length:var(--text-lg)] font-bold leading-none text-[var(--color-cream)] sm:text-[length:var(--text-xl)]"
                         /* Seconds must not be announced — a live region
                            ticking every second is unusable with a screen
                            reader. */
@@ -224,17 +237,6 @@ export function Countdown() {
               </div>
             </div>
           )}
-
-          {/* BASE — a full lotus bloom flanked by two peacocks, facing
-              inward, anchored to the bottom of the card. Present in every
-              phase (it's part of the card's frame, not the countdown
-              content), sized down slightly under `sm` per the "reduce
-              scale, don't remove" brief. */}
-          <div className="mt-5 flex items-end justify-center gap-1 sm:mt-6">
-            <PeacockOrnament className="h-11 w-9 shrink-0 -translate-y-1 sm:h-12 sm:w-10" />
-            <LotusBloom className="h-9 w-12 shrink-0 sm:h-10 sm:w-14" />
-            <PeacockOrnament className="h-11 w-9 shrink-0 -translate-y-1 -scale-x-100 sm:h-12 sm:w-10" />
-          </div>
         </div>
       </div>
     </div>

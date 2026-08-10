@@ -116,69 +116,153 @@ export function LotusCap({ className }: { className?: string }) {
   );
 }
 
-/** Ornamental peacock, redrawn as a compact filled illustration for the
- *  countdown card's lower corners — a squat fanned-tail bird perched at the
- *  base of the card, the way the reference invitation places its pair of
- *  peacocks flanking the bottom lotus rather than up near the crown. Unlike
- *  the rest of this file, this one carries its own fixed brand palette
- *  (emerald body, gold/maroon eye-spots, saffron beak) instead of
- *  `currentColor` — the reference peacock reads as a coloured illustration,
- *  not a monotone line icon, and that colour is what makes it recognizable
- *  at a glance rather than "a tiny generic flourish." Drawn perched at the
- *  bottom-left, tail fanning up and to the right; mirror with `-scale-x-100`
- *  for the bottom-right side so both birds face the centre lotus. */
+/** Ornamental peacock, redrawn to match the client's reference: a single
+ *  large curling paisley-shaped tail (not a fan of separate feathers) in a
+ *  teal-blue body colour, with small gold "eyes" set into the curl — the
+ *  Rajasthani-invitation convention of drawing the peacock's tail as one
+ *  fused paisley rather than individual plumes. Two fixed hex colours live
+ *  here (a teal peacock-blue, distinct from the brand's warm palette)
+ *  because the reference is explicit about a blue/teal bird; everything
+ *  else (eyes, crest, beak) stays inside the existing gold/maroon/saffron
+ *  set. Drawn perched at the bottom-left, tail curling up and to the right;
+ *  mirror with `-scale-x-100` for the bottom-right side so both birds face
+ *  the centre. */
 export function PeacockOrnament({ className }: { className?: string }) {
-  const feathers = [
-    { rot: -58, len: 40 },
-    { rot: -38, len: 47 },
-    { rot: -18, len: 51 },
-    { rot: 2, len: 49 },
-    { rot: 22, len: 43 },
-    { rot: 40, len: 35 },
-  ];
+  const PEACOCK = "#1C6E86";
+  const PEACOCK_DEEP = "#155164";
   return (
     <svg
-      viewBox="0 0 76 92"
+      viewBox="0 0 70 100"
       className={cn("pointer-events-none select-none", className)}
       aria-hidden="true"
       focusable="false"
     >
-      {/* Fanned tail — filled petal feathers pivoting from the tail base,
-          alternating emerald/gold with a small maroon-and-saffron eye. */}
-      {feathers.map((f, i) => (
-        <g key={i} transform={`rotate(${f.rot} 26 78)`} opacity={0.95}>
-          <path
-            d={`M26 78 C ${26 - 7} ${78 - f.len * 0.55} ${26 - 3.5} ${78 - f.len} 26 ${78 - f.len - 5} C ${26 + 3.5} ${78 - f.len} ${26 + 7} ${78 - f.len * 0.55} 26 78 Z`}
-            fill={i % 2 === 0 ? "var(--color-emerald)" : "var(--color-gold)"}
-            opacity="0.88"
-          />
-          <circle cx="26" cy={78 - f.len - 1} r="3.1" fill="var(--color-maroon)" opacity="0.9" />
-          <circle cx="26" cy={78 - f.len - 1} r="1.4" fill="var(--color-saffron)" />
+      {/* Tail — one large paisley curl. */}
+      <path
+        d="M28 62 C50 60 62 44 55 24 C50 10 34 5 23 13 C14 19 14 32 25 36 C33 39 39 33 36 25"
+        fill="none"
+        stroke={PEACOCK}
+        strokeWidth="7.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M28 62 C50 60 62 44 55 24 C50 10 34 5 23 13 C14 19 14 32 25 36 C33 39 39 33 36 25"
+        fill="none"
+        stroke={PEACOCK_DEEP}
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      {/* Gold "eyes" set along the curl. */}
+      {[
+        [53, 26],
+        [42, 13],
+        [25, 17],
+        [24, 31],
+      ].map(([x, y], i) => (
+        <g key={i}>
+          <circle cx={x} cy={y} r="3.6" fill="var(--color-gold)" opacity="0.92" />
+          <circle cx={x} cy={y} r="1.6" fill="var(--color-maroon)" />
         </g>
       ))}
       {/* Body. */}
-      <ellipse cx="26" cy="80" rx="8.5" ry="10.5" fill="var(--color-emerald)" opacity="0.95" />
-      <ellipse cx="24" cy="83" rx="6" ry="7.5" fill="var(--color-maroon)" opacity="0.22" />
+      <ellipse cx="22" cy="72" rx="9.5" ry="14" fill={PEACOCK} />
+      <ellipse cx="20" cy="76" rx="6" ry="9" fill={PEACOCK_DEEP} opacity="0.4" />
       {/* Neck + head, curved forward and up. */}
-      <path
-        d="M30 74 C38 68 43 58 41 48"
-        stroke="var(--color-emerald)"
-        strokeWidth="6.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <circle cx="42" cy="45" r="5" fill="var(--color-emerald)" />
+      <path d="M27 61 C33 53 37 45 35 37" stroke={PEACOCK} strokeWidth="6.5" fill="none" strokeLinecap="round" />
+      <circle cx="36" cy="34" r="4.8" fill={PEACOCK} />
       {/* Crest. */}
       <path
-        d="M41 40 L39.5 34 M42.5 39.5 L43.5 33 M44.5 40.5 L48 35"
+        d="M35 29 L34 23 M37.2 28.5 L38.5 22.5 M39.4 30 L43 25"
         stroke="var(--color-gold)"
         strokeWidth="1.4"
         strokeLinecap="round"
       />
       {/* Beak. */}
-      <path d="M46.5 45 L51 46 L46.5 48Z" fill="var(--color-saffron)" />
+      <path d="M40 34 L44.5 35 L40 37.5Z" fill="var(--color-saffron)" />
       {/* Legs. */}
-      <path d="M23 89 L22 92 M28 89 L29 92" stroke="var(--color-maroon)" strokeWidth="1.3" strokeLinecap="round" />
+      <path d="M18 85 L17 92 M25 85 L26 92" stroke="var(--color-maroon)" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Small filled blossom, a pink-toned sibling of `FloralSprig` — sits beside
+ *  each peacock the way the reference tucks a small flower above the bird
+ *  rather than repeating the same saffron sprig everywhere. Structurally
+ *  identical to `FloralSprig` (five petals + a leaf), only the palette
+ *  differs, so this stays a separate small component rather than adding a
+ *  colour-prop branch to a component used elsewhere with the brand saffron. */
+export function PinkBlossom({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M16 20 C12 24 8 24 5 27"
+        stroke="var(--color-emerald)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.7"
+      />
+      <ellipse cx="7" cy="24" rx="3.4" ry="1.8" fill="var(--color-emerald)" opacity="0.6" transform="rotate(-30 7 24)" />
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <ellipse
+          key={deg}
+          cx="16"
+          cy="12"
+          rx="3.2"
+          ry="6"
+          fill="#D9548C"
+          opacity="0.85"
+          transform={`rotate(${deg} 16 16)`}
+        />
+      ))}
+      <circle cx="16" cy="16" r="2.4" fill="var(--color-gold)" opacity="0.95" />
+    </svg>
+  );
+}
+
+/** Scalloped medallion — a fluted-rim disc (ten shallow bumps) used behind
+ *  the Hours/Minutes/Seconds digits instead of a plain circle, matching the
+ *  reference's flower-like badge shape. The rim geometry is generated once
+ *  at module scope (a static path string — the shape never changes) rather
+ *  than recomputed per render. */
+const SCALLOP_PATH = (() => {
+  const bumps = 10;
+  const cx = 50;
+  const cy = 50;
+  const rOuter = 47;
+  const rInner = 39;
+  let d = "";
+  for (let i = 0; i < bumps; i++) {
+    const a1 = (i / bumps) * 2 * Math.PI - Math.PI / 2;
+    const a2 = ((i + 0.5) / bumps) * 2 * Math.PI - Math.PI / 2;
+    const a3 = ((i + 1) / bumps) * 2 * Math.PI - Math.PI / 2;
+    const x1 = cx + rInner * Math.cos(a1);
+    const y1 = cy + rInner * Math.sin(a1);
+    const xm = cx + rOuter * Math.cos(a2);
+    const ym = cy + rOuter * Math.sin(a2);
+    const x3 = cx + rInner * Math.cos(a3);
+    const y3 = cy + rInner * Math.sin(a3);
+    d += (i === 0 ? `M ${x1} ${y1} ` : "") + `Q ${xm} ${ym} ${x3} ${y3} `;
+  }
+  return d + "Z";
+})();
+
+export function ScallopedMedallion({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={SCALLOP_PATH} fill="var(--color-maroon)" stroke="var(--color-gold)" strokeWidth="2.2" />
+      <circle cx="50" cy="50" r="35" fill="none" stroke="var(--color-gold)" strokeWidth="1" opacity="0.5" />
     </svg>
   );
 }
@@ -243,10 +327,12 @@ export function VineBorder({ className }: { className?: string }) {
   );
 }
 
-/** Full, filled lotus bloom for the base of the card — five saffron petals
- *  around a gold centre with a pair of emerald leaf strokes, considerably
- *  larger and more figurative than `LotusCap`'s thin bud, matching the
- *  reference's colourful bottom flower rather than a small line motif. */
+/** Full, filled lotus bloom that hangs as a pendant beneath the card's
+ *  bottom edge — pink/magenta petals around a gold-and-saffron centre with
+ *  a pair of emerald leaf strokes, matching the reference's colourful
+ *  bottom flower (the one other place, besides the peacocks, where the
+ *  reference departs from the maroon/gold/ivory palette for a deliberate
+ *  accent). */
 export function LotusBloom({ className }: { className?: string }) {
   const petals = [-42, -21, 0, 21, 42];
   return (
@@ -260,12 +346,13 @@ export function LotusBloom({ className }: { className?: string }) {
         <path
           key={deg}
           d="M32 40 C24 29 24 15 32 4 C40 15 40 29 32 40Z"
-          fill={i === 2 ? "var(--color-saffron)" : "var(--color-saffron-deep)"}
-          opacity={i === 2 ? 0.96 : 0.78}
+          fill={i === 2 ? "#E85FA0" : "#C94480"}
+          opacity={i === 2 ? 0.96 : 0.8}
           transform={`rotate(${deg} 32 40)`}
         />
       ))}
-      <circle cx="32" cy="33" r="4.4" fill="var(--color-gold)" opacity="0.95" />
+      <circle cx="32" cy="33" r="4.6" fill="var(--color-gold)" opacity="0.95" />
+      <circle cx="32" cy="33" r="2.2" fill="var(--color-saffron)" opacity="0.9" />
       <path d="M14 43 C21 39 27 39 32 43" stroke="var(--color-emerald)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.75" />
       <path d="M50 43 C43 39 37 39 32 43" stroke="var(--color-emerald)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.75" />
     </svg>
