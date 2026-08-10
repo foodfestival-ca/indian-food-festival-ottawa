@@ -10,10 +10,12 @@ import { festival } from "@/content/festival";
 import { EASE_BRAND } from "@/lib/motion";
 
 /**
- * MOBILE      single column, content stacked, ornamental frame below,
+ * MOBILE      single column, content stacked,
  *             min-height uses svh so iOS browser chrome can't clip it
  * TABLET      wider measure, CTAs go inline, larger display type
- * DESKTOP     two columns — narrative left, ornamental frame right
+ * DESKTOP     single content column, left-aligned, capped to a readable
+ *             measure — the festival photograph fills the rest of the
+ *             section naturally behind it (see `HeroMedia`)
  *
  * v4 — reverted back to the overlay composition (v3's "countdown below the
  * illustration" redesign was not approved: the overlay was visually stronger,
@@ -25,7 +27,7 @@ import { EASE_BRAND } from "@/lib/motion";
  *      nowhere else — no hard edge, no visible shape.
  *   2. A frosted glass panel on the countdown card (translucent white +
  *      backdrop-blur + hairline border + soft shadow) instead of a solid
- *      card — see Countdown.tsx. The artwork stays visible through it.
+ *      card. The artwork stays visible through it.
  *
  * v5 — the static illustration became the uploaded MP4 (<HeroVideo />).
  *
@@ -51,8 +53,7 @@ import { EASE_BRAND } from "@/lib/motion";
  *      out first on tall frames without losing the shot's main subject.
  * v7 — full-bleed: the artwork now covers the ENTIRE hero section rather
  * than sitting in a boxed 58%-wide panel on the right with a plain cream
- * field on the left. The two-column grid below (narrative left, countdown
- * right) is untouched — only what's painted BEHIND it changed, from
+ * field on the left. Only what's painted BEHIND the content changed, from
  * "cream, then an image box floated on top of the right half" to "one
  * continuous photograph behind everything, with gradient scrims doing the
  * work of keeping text readable." Concretely:
@@ -66,69 +67,32 @@ import { EASE_BRAND } from "@/lib/motion";
  *     fading out before the skyline so the photograph reads clearly on the
  *     right), a top-to-bottom cream scrim on mobile (content stacks over
  *     the full image there, so it needs a full-height wash rather than a
- *     side one), and one soft dark radial behind the countdown card's
- *     corner so its ticket surface has something to sit "on" without a
- *     hard-edged panel.
- *   - Fewer overlapping gradients than the boxed version had (no separate
- *     glow + two masks + two washes) — this was also a chance to simplify,
- *     per the brief's own "avoid excessive gradients."
+ *     side one).
+ *   - Fewer overlapping gradients than the boxed version had — this was
+ *     also a chance to simplify, per the brief's own "avoid excessive
+ *     gradients."
  *
- * v8 — the countdown card was removed entirely (component, dedicated
- * column, and its supporting scrim) so a new countdown design could be
- * built from scratch. Briefly a single-column layout.
+ * v8 — the countdown card (component, dedicated column, and its
+ * supporting scrim) was removed entirely so a new countdown design could
+ * be built from scratch separately. Single-column layout, as above.
  *
- * v9 — a new ornamental frame (`public/media/hero/countdown-frame.png`,
- * a client-supplied transparent PNG — arch, gold/maroon border, floral
- * vines, twin peacocks, a lotus base, and a blank cream centre) returns
- * to the right side, reintroducing the two-column grid from before v8.
- * This step places the artwork ONLY — the frame's centre is intentionally
- * left empty; a future task will mount a real countdown component inside
- * it (see the comment beside the `<Image src=".../countdown-frame.png" />`
- * below for exactly where that overlay should attach). Unlike every
- * earlier countdown-card round, this asset is used completely as-is: no
- * masking/background-removal pipeline, no hand-measured content well, no
- * CSS/SVG redraw — it's the client's own supplied artwork, already
- * transparent, rendered with `object-contain` inside an aspect-ratio box
- * that matches its real pixel dimensions (1536×1024) exactly, so nothing
- * crops, stretches, or letterboxes it at any breakpoint.
+ * v9/v10 — an experiment: a client-supplied transparent ornamental frame
+ * (`public/media/hero/countdown-frame.png`) was placed in a reintroduced
+ * right-hand column, sized up over two rounds. The second sizing pass
+ * caused a real regression (the headline wrapping onto four lines instead
+ * of two at normal desktop widths), which was root-caused to the frame's
+ * column eating into the headline's space with no protected minimum.
  *
- * v10 — fixes a real regression from the previous sizing pass: shrinking
- * the narrative column's `fr` share to grow the frame let "Tastes Like
- * India" / "Feels Like Home" wrap onto four lines instead of two at
- * normal desktop widths. Two changes fix this together rather than
- * trading one off against the other:
- *   1. The narrative column is no longer sized by a grid `fr` fraction —
- *      it's a fixed `42rem` (672px) track. That specific number isn't
- *      arbitrary: it's the exact `max-w-2xl` the headline column used
- *      back when this was a single-column layout (v8) and reliably
- *      stayed on two lines at normal desktop widths — reusing it as a
- *      hard floor makes the "no wrap" guarantee an actual constraint
- *      instead of a hope. The frame's column is `1fr` — it gets 100% of
- *      whatever room is left over, so it grows freely with viewport
- *      width instead of being capped by a fixed fraction of a fixed
- *      container.
- *   2. The two-column split now only engages at `xl:` (1280px) instead
- *      of `lg:` (1024px), and this section stopped using the sitewide
- *      `container-page` utility (max-width 1240px) in favour of its own
- *      wider `max-w-[1680px]` wrapper with tighter, fixed gutters. Both
- *      changes exist for the same reason: a 672px-wide protected column
- *      plus a genuinely large frame simply doesn't fit inside 1240px of
- *      usable width at 1024px — the previous rounds' wrapping bug and
- *      undersized frame were really the same problem (not enough total
- *      room) wearing two different symptoms. Below 1280px there still
- *      isn't room for both side by side without compromising one of
- *      them, so the layout stays single-column (frame stacks below the
- *      narrative, full width, same as mobile) — the client's own stated
- *      target range for the two-column composition was 1280–1600px, and
- *      that's exactly where this layout switches on.
- * Because the frame's column is now `1fr` against a fixed sibling rather
- * than a fraction against a fixed container, it grows with the viewport:
- * roughly break-even with the previous round right at the 1280px edge
- * (where there's the least room to spare), then meaningfully larger
- * — well past the requested 35–40% — at the 1440–1680px widths that
- * cover most real desktop and laptop screens, capped only by this
- * section's own 1680px ceiling so it doesn't grow unreasonably large on
- * ultra-wide monitors.
+ * v11 — the frame experiment is reverted. Per the client's explicit
+ * direction, the Hero is back to the clean v8 single-column layout: no
+ * grid, no reserved right-hand column, `container-page` (not a
+ * hero-specific wider wrapper) for the content max-width, and `lg:` (not
+ * `xl:`) as the breakpoint where the narrative column switches from
+ * centred to left-aligned. `countdown-frame.png` itself is left in place
+ * in `public/media/hero/` (not deleted) — it's simply unreferenced here
+ * for now, per the client's note that it may be used again. Nothing in
+ * `lib/useCountdown.ts` or `content/festival.ts` was ever touched by any
+ * of this.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -153,113 +117,72 @@ export function Hero() {
       <MandalaCorner className="pointer-events-none absolute -left-24 -top-16 h-72 w-72 text-[var(--color-gold)] opacity-[0.07] lg:h-96 lg:w-96" />
       <MandalaCorner className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 text-[var(--color-maroon)] opacity-[0.05] lg:h-[26rem] lg:w-[26rem]" />
 
-      {/* Hero-specific wrapper instead of the sitewide `container-page`
-          (max-width 1240px): this section needs materially more usable
-          width than that at `xl:` to fit a fixed, wrap-safe narrative
-          column alongside a genuinely large frame — see the v10 note
-          above. Gutters are fixed rather than the sitewide clamp so the
-          extra width isn't immediately eaten back up by growing padding. */}
-      <div className="relative z-10 mx-auto w-full max-w-[1680px] px-5 sm:px-6 xl:px-6">
-        <div className="grid items-center gap-10 xl:grid-cols-[42rem_1fr] xl:gap-6">
-          <div className="mx-auto max-w-2xl text-center xl:mx-0 xl:max-w-none xl:text-left">
-            <motion.p {...rise(0)} className="eyebrow">
-              A Celebration of Flavours, Culture &amp; Community
-            </motion.p>
-            <GoldRule className="mx-auto mt-3 max-w-[15rem] xl:mx-0" />
+      <div className="container-page relative z-10">
+        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+          <motion.p {...rise(0)} className="eyebrow">
+            A Celebration of Flavours, Culture &amp; Community
+          </motion.p>
+          <GoldRule className="mx-auto mt-3 max-w-[15rem] lg:mx-0" />
 
-            <motion.h1
-              id="hero-heading"
-              {...rise(0.08)}
-              className="mt-5 font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-[var(--leading-display)] text-[var(--color-maroon)]"
-            >
-              Tastes Like <span className="text-[var(--color-saffron)]">India</span>
-              <br />
-              Feels Like <span className="text-[var(--color-emerald)]">Home</span>
-            </motion.h1>
-
-            <motion.p
-              {...rise(0.16)}
-              className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] xl:mx-0"
-            >
-              Three days of incredible food, culture, music and celebration that brings us all together.
-            </motion.p>
-
-            <motion.ul
-              {...rise(0.22)}
-              className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] xl:justify-start"
-            >
-              <li className="flex items-center gap-2">
-                <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
-                {festival.dateLabel}
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
-                {festival.venue.name}
-              </li>
-              <li>
-                <span className="rounded-[var(--radius-pill)] bg-[var(--color-emerald)]/12 px-3 py-1 font-semibold text-[var(--color-emerald)]">
-                  {festival.admission}
-                </span>
-              </li>
-            </motion.ul>
-
-            {/* CTA hierarchy: ① Explore ② Schedule ③ Passport.
-                Explore Festival and Get Passport swapped slots (and thus
-                prominence) at the client's request — Get Passport now also
-                links straight to the /passport page itself rather than
-                opening the registration form directly from the homepage;
-                the form is still one tap away once someone's on that page.
-                Full-width stacked on mobile for thumb-width targets. */}
-            <motion.div
-              {...rise(0.3)}
-              className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center xl:justify-start"
-            >
-              <Button href="#why-visit" size="lg" variant="primary" fluid>
-                Explore Festival
-                <ArrowRight size={17} aria-hidden="true" />
-              </Button>
-              <Button href="/schedule" size="lg" variant="outline" fluid>
-                <CalendarDays size={18} aria-hidden="true" />
-                View Schedule
-              </Button>
-              <Button href="/passport" size="lg" variant="ghost" fluid>
-                <Ticket size={18} aria-hidden="true" />
-                Get Passport
-              </Button>
-            </motion.div>
-          </div>
-
-          {/* Ornamental frame — decorative artwork only, no countdown yet.
-              The aspect-ratio box below is locked to the asset's own real
-              pixel dimensions (1536×1024, 3:2) so `object-contain` never
-              needs to letterbox, crop, or stretch it at any width. Stacks
-              full-width below the narrative column below `xl:` (mobile,
-              tablet, and small-desktop widths all get the same generous
-              stacked treatment); from `xl:` up it sits in the grid's `1fr`
-              column — i.e. it gets 100% of whatever width is left over
-              once the fixed 42rem narrative column and gutters are
-              accounted for, so it keeps growing as the viewport widens
-              rather than being capped by a fixed fraction. See the v10
-              note above for why this replaced the previous `fr`-split
-              approach. */}
-          <motion.div
-            {...rise(0.38)}
-            className="relative mx-auto w-full max-w-[27rem] sm:max-w-[32rem] xl:mx-0 xl:max-w-none"
+          <motion.h1
+            id="hero-heading"
+            {...rise(0.08)}
+            className="mt-5 font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-[var(--leading-display)] text-[var(--color-maroon)]"
           >
-            <div className="relative w-full" style={{ aspectRatio: "1536 / 1024" }}>
-              <Image
-                src="/media/hero/countdown-frame.png"
-                alt=""
-                aria-hidden="true"
-                fill
-                sizes="(min-width: 1280px) 55vw, (min-width: 640px) 32rem, 27rem"
-                className="object-contain"
-              />
-              {/* Future countdown overlay mounts here — an absolutely
-                  positioned child (`absolute inset-0 flex items-center
-                  justify-center` or similar) sized to sit inside the
-                  frame's own blank cream panel, not the full box above. */}
-            </div>
+            Tastes Like <span className="text-[var(--color-saffron)]">India</span>
+            <br />
+            Feels Like <span className="text-[var(--color-emerald)]">Home</span>
+          </motion.h1>
+
+          <motion.p
+            {...rise(0.16)}
+            className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
+          >
+            Three days of incredible food, culture, music and celebration that brings us all together.
+          </motion.p>
+
+          <motion.ul
+            {...rise(0.22)}
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
+          >
+            <li className="flex items-center gap-2">
+              <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
+              {festival.dateLabel}
+            </li>
+            <li className="flex items-center gap-2">
+              <MapPin size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
+              {festival.venue.name}
+            </li>
+            <li>
+              <span className="rounded-[var(--radius-pill)] bg-[var(--color-emerald)]/12 px-3 py-1 font-semibold text-[var(--color-emerald)]">
+                {festival.admission}
+              </span>
+            </li>
+          </motion.ul>
+
+          {/* CTA hierarchy: ① Explore ② Schedule ③ Passport.
+              Explore Festival and Get Passport swapped slots (and thus
+              prominence) at the client's request — Get Passport now also
+              links straight to the /passport page itself rather than
+              opening the registration form directly from the homepage;
+              the form is still one tap away once someone's on that page.
+              Full-width stacked on mobile for thumb-width targets. */}
+          <motion.div
+            {...rise(0.3)}
+            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
+          >
+            <Button href="#why-visit" size="lg" variant="primary" fluid>
+              Explore Festival
+              <ArrowRight size={17} aria-hidden="true" />
+            </Button>
+            <Button href="/schedule" size="lg" variant="outline" fluid>
+              <CalendarDays size={18} aria-hidden="true" />
+              View Schedule
+            </Button>
+            <Button href="/passport" size="lg" variant="ghost" fluid>
+              <Ticket size={18} aria-hidden="true" />
+              Get Passport
+            </Button>
           </motion.div>
         </div>
       </div>
