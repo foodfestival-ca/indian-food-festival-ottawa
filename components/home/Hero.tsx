@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Calendar, MapPin, Ticket, CalendarDays, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -8,7 +9,6 @@ import { HeroParticles } from "@/components/home/HeroParticles";
 import { MandalaCorner, GoldRule } from "@/components/ornament/Ornaments";
 import { festival } from "@/content/festival";
 import { EASE_BRAND } from "@/lib/motion";
-import { cn } from "@/lib/cn";
 
 /**
  * MOBILE      single column, content stacked, countdown below CTAs,
@@ -29,11 +29,33 @@ import { cn } from "@/lib/cn";
  *      backdrop-blur + hairline border + soft shadow) instead of a solid
  *      card — see Countdown.tsx. The artwork stays visible through it.
  *
- * v5 — the static illustration is now the uploaded MP4 (see <HeroVideo />
- * below). Every surrounding layer (mask, glow, timer-area darken, bottom
- * fade, particles, the "zoom out ~10%" scale wrapper, the layout itself) is
- * untouched — only the single media element inside each block changed from
- * an <Image> to a <video>.
+ * v5 — the static illustration became the uploaded MP4 (<HeroVideo />).
+ *
+ * v6 — swapped back to a static image (<HeroImage />), and swapped WHICH
+ * image: the previous artwork was one performer close up, which read as a
+ * portrait rather than "the festival, in Ottawa." The new artwork is a wide
+ * scene — a festival entrance arch, food stalls, string lights and a
+ * recognisable-but-not-dominant skyline at dusk — closer to what the
+ * homepage needs to communicate at a glance. Two decisions behind the
+ * format switch specifically:
+ *   1. Performance: a hero-scale MP4 (the old asset was ~2.4MB, fetched on
+ *      every visit) is real weight for something that, now that it's a
+ *      wide establishing shot rather than a performer mid-motion, doesn't
+ *      gain much from actually moving. A single optimized JPEG plus a very
+ *      slow CSS/Framer scale (see <HeroImage />) reads as "alive" without
+ *      the download, decode or battery cost of video.
+ *   2. The old "zoom out ~10%, origin near the face" scale wrapper existed
+ *      specifically to keep a person's face anchored while revealing more
+ *      of the frame at the edges. There's no single face to anchor to in a
+ *      wide scene, so that wrapper and its comment are gone; the image is
+ *      simply object-cover positioned to favour the arch/skyline/lights
+ *      band over the busier rangoli pattern at the very bottom, which crops
+ *      out first on tall frames without losing the shot's main subject.
+ * The mask, glow, particles and bottom fade are otherwise untouched. The
+ * timer-area radial mask was resized/lowered to track the countdown card,
+ * which itself moved toward the bottom of its column (see the JSX below) so
+ * it sits over the calmer lower part of the new scene instead of the arch
+ * sign and skyline.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -128,7 +150,16 @@ export function Hero() {
             </motion.div>
           </div>
 
-          <motion.div {...rise(0.38)} className="mx-auto w-full max-w-[30rem] lg:max-w-none">
+          {/* `lg:self-end`: overrides the grid's own `items-center` for just
+              this child, so on desktop the card sits toward the bottom of
+              its column — over the calmer lower portion of the new artwork
+              (past the arch sign and skyline) — rather than dead-centre
+              across the middle of the scene. Unchanged on mobile, where it
+              already follows the text/CTAs in normal document flow. */}
+          <motion.div
+            {...rise(0.38)}
+            className="mx-auto w-full max-w-[30rem] lg:max-w-none lg:self-end lg:pb-6"
+          >
             <Countdown />
           </motion.div>
         </div>
@@ -158,44 +189,36 @@ function HeroMedia() {
         className="absolute hidden lg:block"
         style={{ top: "-100px", right: "-8%", width: "58%", height: "125%" }}
       >
-        {/* zoomed out ~10%: scaling this frame down (rather than the image
-            alone) around an origin near the drummer's face keeps her face
-            anchored while revealing more of the drum and surrounding scene
-            at the edges — everything inside (image, glow, particles) scales
-            together, so the Ken Burns motion stays proportionally the same. */}
-        <div
-          className="relative h-full w-full"
-          style={{ transform: "scale(0.9)", transformOrigin: "50% 20%" }}
-        >
-          {/* CSS `mask-image` on a <video> itself is unreliable in Chromium —
-              the element's separate compositor layer frequently fails to
-              mask at all, rendering the whole video invisible instead of
-              faded. Masking a plain wrapping div instead (with the video as
-              a normal child) sidesteps that entirely. */}
+        <div className="relative h-full w-full">
+          {/* CSS `mask-image` on a <video> was unreliable in Chromium; kept
+              masking a plain wrapping div (with the media as a normal
+              child) since that still applies to <Image>. */}
           <div className="hero-artwork-mask absolute inset-0 overflow-hidden">
-            <HeroVideo objectPosition="50% 14%" />
+            <HeroImage objectPosition="50% 32%" />
           </div>
 
-          {/* warm glow behind the performer */}
+          {/* warm ambient glow, unchanged in spirit — the new scene already
+              has its own dusk lighting, so this just adds a touch more
+              warmth centred on the arch/skyline band rather than a face */}
           <div
-            className="hero-glow absolute left-1/2 top-[30%] h-[42%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            className="hero-glow absolute left-1/2 top-[28%] h-[38%] w-[64%] -translate-x-1/2 -translate-y-1/2 rounded-full"
             style={{
               background: "radial-gradient(closest-side, var(--color-gold) 0%, transparent 72%)",
               mixBlendMode: "screen",
-              opacity: 0.1,
+              opacity: 0.08,
             }}
           />
 
-          {/* soft radial mask behind the timer only: gently darkens/softens
-              the artwork right where the countdown card sits (the card
-              itself renders in the content grid above this layer, roughly
-              centered in this same region) — diffuse falloff, no visible
-              edge, purely to lift the glass card's readability. */}
+          {/* soft radial mask behind the timer only — resized and moved
+              down to track the countdown card, which now sits near the
+              bottom of its column (see the `lg:self-end` card below)
+              instead of dead-centre. Diffuse falloff, no visible edge,
+              purely to lift the card's readability against the artwork. */}
           <div
-            className="absolute left-1/2 top-1/2 h-[74%] w-[94%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            className="absolute left-1/2 top-[78%] h-[52%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full"
             style={{
               background:
-                "radial-gradient(closest-side, rgba(20,12,10,0.30) 0%, rgba(20,12,10,0.16) 45%, rgba(20,12,10,0.05) 68%, transparent 82%)",
+                "radial-gradient(closest-side, rgba(20,12,10,0.32) 0%, rgba(20,12,10,0.17) 45%, rgba(20,12,10,0.05) 68%, transparent 82%)",
             }}
           />
 
@@ -209,12 +232,9 @@ function HeroMedia() {
       {/* mobile/tablet: full-bleed, top-anchored, mask-faded at the bottom
           only (single-column layout, no left/right seam to worry about) */}
       <div className="absolute inset-x-0 top-0 h-[64%] lg:hidden">
-        <div
-          className="relative h-full w-full"
-          style={{ transform: "scale(0.9)", transformOrigin: "50% 25%" }}
-        >
+        <div className="relative h-full w-full">
           <div className="hero-artwork-mask-mobile absolute inset-0 overflow-hidden">
-            <HeroVideo objectPosition="50% 18%" />
+            <HeroImage objectPosition="50% 30%" />
           </div>
 
           {/* same soft timer-area mask on mobile — the countdown sits toward
@@ -257,48 +277,38 @@ function HeroMedia() {
 }
 
 /**
- * The hero illustration, now the uploaded MP4 instead of a static photo.
- * Fills its parent exactly like the old `<Image fill>` did (absolute,
- * inset-0, object-cover) so it drops into the same mask/glow/particle
- * stack with no other layout change.
+ * The hero illustration — a static optimized image instead of the previous
+ * autoplaying MP4 (see the v6 note above). `next/image` handles the actual
+ * format/size negotiation (AVIF/WebP, responsive `srcset`) at request time,
+ * so the ~400KB source JPEG here is a ceiling, not what any given visitor
+ * downloads.
  *
- * - autoplay + muted + loop + playsInline + no controls, per the brief.
- * - `preload="metadata"` only — the browser fetches just enough to know
- *   duration/dimensions up front rather than the whole clip.
- * - `prefers-reduced-motion`: autoPlay is simply never set, so the video
- *   never starts and the poster frame stays on screen as a static image.
- *   No JS pause/play juggling needed.
- *
- * Why this element is now ALWAYS at opacity 1, with no loading/fade state:
- * the previous version hid it (opacity 0) until an `onLoadedData` callback
- * fired, to fade it in smoothly. That callback is not guaranteed to fire
- * promptly — with `preload="metadata"`, a browser only has to know
- * duration/dimensions, not decode an actual frame, until playback truly
- * starts; if autoplay is throttled or delayed for any reason, the callback
- * can arrive late or never, and the element sat invisible indefinitely with
- * nothing else to fall back on. That was the bug ("video not visible").
- * The fix removes the failure mode at its root instead of patching around
- * it: `poster` is the video's own real first frame, so it's already the
- * correct image to show, and rendering it at full opacity from the very
- * first paint means there is no state to get stuck in — the video is either
- * showing its poster or showing itself playing, never neither.
+ * The "very slow background movement" asked for is a single, extremely
+ * gentle scale drift (1 → 1.025 → 1) over 24s, looping, on the wrapping
+ * `motion.div` — cheap (transform-only, GPU-composited) and, unlike the old
+ * video, costs nothing when it's not actually animating (no decode loop,
+ * no autoplay-policy edge cases, no battery draw). Skipped entirely under
+ * `prefers-reduced-motion`, same as everywhere else in this file.
  */
-function HeroVideo({ objectPosition }: { objectPosition: string }) {
+function HeroImage({ objectPosition }: { objectPosition: string }) {
   const reduced = useReducedMotion();
 
   return (
-    <video
-      aria-hidden="true"
-      className={cn("absolute inset-0 h-full w-full object-cover")}
-      style={{ objectPosition }}
-      poster="/media/hero/festival-drummer-poster.jpg?v=3"
-      autoPlay={!reduced}
-      muted
-      loop
-      playsInline
-      preload="metadata"
+    <motion.div
+      className="absolute inset-0 h-full w-full"
+      animate={reduced ? undefined : { scale: [1, 1.025, 1] }}
+      transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
     >
-      <source src="/media/hero/festival-drummer.mp4?v=3" type="video/mp4" />
-    </video>
+      <Image
+        src="/media/hero/festival-ottawa.jpg"
+        alt=""
+        aria-hidden="true"
+        fill
+        priority
+        sizes="(max-width: 1024px) 100vw, 58vw"
+        style={{ objectPosition }}
+        className="object-cover"
+      />
+    </motion.div>
   );
 }

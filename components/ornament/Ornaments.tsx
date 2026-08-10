@@ -41,6 +41,27 @@ export function MandalaCorner({ className }: { className?: string }) {
   );
 }
 
+/** A single paisley-leaf corner flourish, anchored top-left. Rotate with a
+ *  Tailwind rotate utility to reuse at the other three corners of a card —
+ *  see Countdown.tsx. currentColor-driven, same thin-stroke language as
+ *  MandalaCorner and GoldRule's diamond, so all three read as one family. */
+export function CornerFlourish({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={cn("pointer-events-none select-none", className)}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g stroke="currentColor" fill="none" strokeWidth="1.1" strokeLinecap="round">
+        <path d="M2 16 C2 8 8 2 16 2" opacity="0.65" />
+        <path d="M2 9 C2 5 5 2 9 2" opacity="0.45" />
+        <path d="M2 2 C8 2 8 9 3 10 C1 6 1 4 2 2Z" fill="currentColor" stroke="none" opacity="0.5" />
+      </g>
+    </svg>
+  );
+}
+
 /** The ticket-notch panel edge used by the countdown, per the design reference. */
 export function TicketNotch({ side = "left" }: { side?: "left" | "right" }) {
   return (

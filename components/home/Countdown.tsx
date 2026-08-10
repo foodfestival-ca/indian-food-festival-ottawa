@@ -4,8 +4,16 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useCountdown } from "@/lib/useCountdown";
 import { festival } from "@/content/festival";
+import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
-import { TicketNotch, GoldRule, MandalaCorner } from "@/components/ornament/Ornaments";
+import { TicketNotch, GoldRule, MandalaCorner, CornerFlourish } from "@/components/ornament/Ornaments";
+
+const CORNERS = [
+  "absolute left-2 top-2 text-[var(--color-gold)]",
+  "absolute right-2 top-2 -scale-x-100 text-[var(--color-gold)]",
+  "absolute bottom-2 left-2 -scale-y-100 text-[var(--color-gold)]",
+  "absolute bottom-2 right-2 -scale-x-100 -scale-y-100 text-[var(--color-gold)]",
+] as const;
 
 const SUB_UNITS = [
   { key: "hours", label: "Hours" },
@@ -17,12 +25,12 @@ const SUB_UNITS = [
  * Hero countdown — redesigned as a compact festival-ticket-style overlay
  * rather than a large glassmorphism panel.
  *
- * Two things changed on purpose from the previous version:
+ * Two things changed on purpose from the plain-card version this replaced:
  *  1. Footprint: capped to `max-w-[18rem]`/`20rem` (was unconstrained at
- *     `lg`, filling most of its grid column) so more of the hero artwork —
- *     and the performer's face — stays visible around it. Hero.tsx's own
- *     layout, mask and video are untouched; this is the only lever available
- *     from inside this component to shrink what actually covers the image.
+ *     `lg`, filling most of its grid column) so more of the hero artwork
+ *     stays visible around it. Hero.tsx separately moved this card toward
+ *     the bottom of its column (`lg:self-end`) so it sits over the calmer
+ *     lower part of the scene rather than the arch/skyline band.
  *  2. Hierarchy: "Days" is now the single visual focal point (large
  *     display-face number, own line) with Hours/Minutes/Seconds demoted to
  *     a smaller supporting row underneath, plus a date/location line sourced
@@ -30,12 +38,14 @@ const SUB_UNITS = [
  *     equal-weight digital-clock cells.
  *
  * Surface: a warm cream-tinted translucent panel (not stark glass), a
- * hairline gold-toned border and a soft shadow, with a low-opacity
- * MandalaCorner watermark centered behind the numbers — decorative only
- * (aria-hidden), never strong enough to compete with the text sitting on
- * top of it. Same backdrop-filter-on-its-own-layer fix as before (see the
- * `transform`/`willChange` below) so the blur doesn't lag behind the
- * ancestor's entrance transform in Chromium.
+ * double-line gold border (an outer hairline on the card itself plus a
+ * second inset rule a few pixels in — the printed-invitation cue, not a
+ * single flat edge), four small paisley corner flourishes, and a
+ * low-opacity MandalaCorner watermark centered behind the numbers —
+ * decorative only (aria-hidden), never strong enough to compete with the
+ * text sitting on top of it. Same backdrop-filter-on-its-own-layer fix as
+ * before (see the `transform`/`willChange` below) so the blur doesn't lag
+ * behind the ancestor's entrance transform in Chromium.
  */
 export function Countdown() {
   const c = useCountdown(festival.startsAt, festival.endsAt);
@@ -57,6 +67,19 @@ export function Countdown() {
     >
       <TicketNotch side="left" />
       <TicketNotch side="right" />
+
+      {/* Second inset rule — the double-line border. Sits a few pixels in
+          from the card's own outer border, same gold hue at a lighter
+          weight, rounded to match. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-[5px] rounded-[calc(var(--radius-card)-5px)]"
+        style={{ border: "1px solid rgba(196,145,54,0.22)" }}
+      />
+
+      {CORNERS.map((cls, i) => (
+        <CornerFlourish key={i} className={cn("h-6 w-6 opacity-70", cls)} />
+      ))}
 
       {/* Mandala watermark — decorative only, sits behind every phase's
           content via z-index, low enough opacity to never affect contrast. */}
