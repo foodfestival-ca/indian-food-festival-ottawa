@@ -116,7 +116,7 @@ export function Hero() {
       <MandalaCorner className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 text-[var(--color-maroon)] opacity-[0.05] lg:h-[26rem] lg:w-[26rem]" />
 
       <div className="container-page relative z-10">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
             <motion.p {...rise(0)} className="eyebrow">
               A Celebration of Flavours, Culture &amp; Community
@@ -191,10 +191,26 @@ export function Hero() {
               needs to letterbox, crop, or stretch it at any width. Stacks
               full-width below the narrative column on mobile/tablet
               (normal grid flow, no explicit stacking rules needed); sits
-              in its own `0.85fr` column on the right from `lg:` up. */}
+              in its own column on the right from `lg:` up.
+
+              Sizing pass: bumped ~20–25% over the previous round at every
+              breakpoint (mobile 19rem→23rem, tablet 22rem→27rem) and, on
+              desktop, both the explicit caps (28rem/36rem, up from an
+              uncapped column that rendered ~24rem at the 1024px boundary
+              and ~29.5rem on typical wider laptops/desktops) and the grid
+              column's own share (`1fr_1.1fr`, up from `1.15fr_0.85fr`,
+              since a shift toward the right column was the only way to
+              raise the container-capped ceiling — the previous split
+              left the frame's effective maximum unchanged on any screen
+              ≥1240px, which is most desktops). The left column keeps the
+              larger share below `lg:` and only gives up part of its share
+              here; CSS Grid guarantees the two columns can never overlap
+              regardless of the split, so the only real trade-off is the
+              headline column being somewhat narrower on desktop than
+              before — worth a visual check after this change. */}
           <motion.div
             {...rise(0.38)}
-            className="relative mx-auto w-full max-w-[19rem] sm:max-w-[22rem] lg:mx-0 lg:max-w-none"
+            className="relative mx-auto w-full max-w-[23rem] sm:max-w-[27rem] lg:mx-0 lg:max-w-[28rem] xl:max-w-[36rem]"
           >
             <div className="relative w-full" style={{ aspectRatio: "1536 / 1024" }}>
               <Image
@@ -202,7 +218,7 @@ export function Hero() {
                 alt=""
                 aria-hidden="true"
                 fill
-                sizes="(min-width: 1024px) 26rem, (min-width: 640px) 22rem, 19rem"
+                sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 28rem, (min-width: 640px) 27rem, 23rem"
                 className="object-contain"
               />
               {/* Future countdown overlay mounts here — an absolutely
