@@ -168,20 +168,20 @@ export function Hero() {
             </motion.div>
           </div>
 
-          {/* `lg:self-end`: overrides the grid's own `items-center` for just
-              this child, so on desktop the card sits toward the bottom of
-              its column — over the calmer lower portion of the new artwork
-              (past the arch sign and skyline) — rather than dead-centre
-              across the middle of the scene. Unchanged on mobile, where it
-              already follows the text/CTAs in normal document flow.
-              `lg:pb-16` (was `lg:pb-6`) gives the card's own bottom edge —
-              the lotus pendant — real clearance above the section's own
-              bottom edge, since it was sitting close enough to feel
-              clipped/crowded there. The card's actual on-screen size is
-              capped by its own `max-w` in Countdown.tsx, not here. */}
+          {/* `lg:self-center` keeps the card near the grid's own vertical
+              centring, with a slight downward nudge (`lg:mt-10`) so it
+              sits a little below true centre rather than dead-level with
+              the headline. `lg:ml-auto lg:mr-[8%]` right-aligns it within
+              its own column with ~8% of the column's width as breathing
+              room from the hero's right edge. The card itself is now a
+              plain HTML/CSS card (see Countdown.tsx) rather than an
+              image, so its height is simply whatever its content needs —
+              nothing here is sized to accommodate an illustration's
+              proportions any more. The card's max width is capped by its
+              own `max-w` in Countdown.tsx, not here. */}
           <motion.div
             {...rise(0.38)}
-            className="mx-auto w-full max-w-[30rem] lg:max-w-none lg:self-end lg:pb-16"
+            className="mx-auto w-full max-w-[30rem] lg:mx-0 lg:ml-auto lg:mr-[8%] lg:max-w-none lg:self-center lg:mt-10"
           >
             <Countdown />
           </motion.div>
@@ -226,15 +226,18 @@ function HeroMedia() {
             "linear-gradient(100deg, rgba(253,248,240,0.97) 0%, rgba(253,248,240,0.91) 26%, rgba(253,248,240,0.48) 48%, rgba(253,248,240,0.12) 64%, transparent 78%)",
         }}
       />
-      {/* Soft dark pool behind the countdown card's corner (bottom-right of
-          its column, where `lg:self-end` puts it) — just enough to lift the
-          card's own maroon border/shadow off the artwork without a hard
-          edge. Slightly deeper than before now that the card's border is a
-          heavier maroon line rather than a hairline gold one. */}
+      {/* Soft dark pool roughly under where the countdown card now sits
+          (right column, `lg:self-center` + a slight downward nudge) —
+          just enough to lift the card's own cream surface and shadow off
+          the photograph without a hard edge. The card is a near-opaque
+          HTML/CSS surface now rather than translucent parchment, so this
+          matters less for legibility than it used to, but it still helps
+          the card read as sitting "on" the scene instead of pasted over
+          it. */}
       <div
         className="absolute inset-0 hidden lg:block"
         style={{
-          background: "radial-gradient(46% 60% at 80% 88%, rgba(20,12,10,0.38) 0%, rgba(20,12,10,0.14) 55%, transparent 80%)",
+          background: "radial-gradient(42% 52% at 78% 55%, rgba(20,12,10,0.30) 0%, rgba(20,12,10,0.10) 55%, transparent 80%)",
         }}
       />
 
