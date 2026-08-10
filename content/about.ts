@@ -27,7 +27,7 @@ export const organizers = z.array(OrganizerSchema).parse([
   {
     id: "pujan",
     name: "Pujan Sanura",
-    role: "Co-Founder · Team Lead",
+    role: "Team Lead",
     bio: "Keeps the festival running on the ground — the team, the timeline and the hundred small decisions on-site that make three days feel effortless from the outside.",
     image: "/media/team/pujan.jpg",
     objectPosition: "center 16%",
