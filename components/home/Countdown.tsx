@@ -12,17 +12,18 @@ import { TicketNotch, GoldRule, MandalaCorner } from "@/components/ornament/Orna
 // than kept in a parallel array so rendering never needs to index into a
 // second array by position.
 const SUB_UNITS = [
-  { key: "hours", label: "Hours", center: 30 },
-  { key: "minutes", label: "Minutes", center: 52.3 },
-  { key: "seconds", label: "Seconds", center: 74.5 },
+  { key: "hours", label: "Hours", center: 29.6 },
+  { key: "minutes", label: "Minutes", center: 51.9 },
+  { key: "seconds", label: "Seconds", center: 74.0 },
 ] as const;
 
 // Percentage geometry measured directly off the reference artwork
-// (public/media/hero/countdown-card.png, 670×713, cropped tight to the
-// card's own silhouette) — see the long comment below for how these were
-// derived and why they exist at all.
-const DAY_BOX = { left: 38.5, top: 27.5, width: 24, height: 19 };
-const MEDALLION_BOX = { top: 60, width: 17, height: 9.5 };
+// (public/media/hero/countdown-card.png, 672×719, cropped tight to the
+// card's own silhouette — re-measured after the mask was regenerated with
+// a wider safety margin, see the file comment below) — see the long
+// comment further down for how these were derived and why they exist.
+const DAY_BOX = { left: 38.1, top: 28.1, width: 23.9, height: 18.8 };
+const MEDALLION_BOX = { top: 60.3, width: 17, height: 9.4 };
 const CARD_PAPER = "#F7D7A3";
 const MEDALLION_FILL = "#520817";
 
@@ -41,8 +42,13 @@ const MEDALLION_FILL = "#520817";
  * a cropped, background-removed version of the client's reference PNG (the
  * photographic backdrop baked into the original crop was masked out by
  * hand-tracing the card's silhouette in this session, since no background-
- * removal model was reachable from this sandbox — see the file header note
- * below on that mask's precision).
+ * removal model was reachable from this sandbox). The first mask traced the
+ * silhouette too tightly and clipped slivers of the card's own border/vine
+ * artwork in a few spots — visible as small missing bits of background right
+ * at the edge. The mask was regenerated with a ~15px outward safety margin
+ * (better to let a thin, barely-visible sliver of the original photo bleed
+ * in at the very edge than to lose real card artwork), which is why this
+ * crop is a few pixels larger than the first pass.
  *
  * Everything that actually changes at runtime is still real, live HTML laid
  * on top of the artwork at measured percentage positions, NOT baked into
@@ -158,7 +164,7 @@ export function Countdown() {
 
   return (
     <div className="relative mx-auto w-full max-w-[19rem] sm:max-w-[21rem]">
-      <div className="relative" style={{ aspectRatio: "670 / 713" }}>
+      <div className="relative" style={{ aspectRatio: "672 / 719" }}>
         <Image
           src="/media/hero/countdown-card.png"
           alt=""
