@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X, Ticket } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { useScrollState } from "@/lib/hooks";
 import { lenisRef } from "@/lib/lenis";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
@@ -47,26 +46,10 @@ const NAV_LINKS = [
  * FAQs merged into /venue (Frequently Asked Questions, at the end of that
  * page) — both routes were removed as standalone nav items. */
 
-/**
- * Routes whose top-of-page content sits on a DARK ground.
- *
- * The header is transparent until scrolled, so on these routes the nav
- * renders directly over maroon and must invert to stay legible. Gallery's
- * own section is maroon and — now that it's a dedicated page — sits flush at
- * the very top with no cream spacer above it (see app/gallery/page.tsx), so
- * it needs the same treatment Passport's maroon hero already gets.
- */
-const DARK_HERO_ROUTES = new Set<string>(["/passport", "/gallery"]);
-
 export function Nav() {
-  const { scrolled } = useScrollState();
   const [open, setOpen] = useState(false);
   const reduced = useReducedMotion();
   const pathname = usePathname();
-
-  /* Once scrolled the header gets its cream backdrop, so it is always "light"
-     from that point on. Only the transparent state can be over a dark hero. */
-  const onDark = !scrolled && DARK_HERO_ROUTES.has(pathname);
 
   const isCurrent = (href: string) => pathname === href;
 
@@ -106,13 +89,16 @@ export function Nav() {
         Skip to content
       </a>
 
+      {/* Always a solid, opaque cream bar — never transparent/glassy over
+          whatever sits below it. This used to switch to transparent at the
+          very top of the page (fine when the hero underneath was cream, but
+          it let dark hero grounds — Passport, Gallery — and now the
+          full-bleed homepage hero artwork show straight through behind the
+          logo/links). One unconditional style now, identical on every
+          route, so the header reads as the same shared component
+          everywhere rather than a homepage-specific variant. */}
       <header
-        className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-300",
-          scrolled
-            ? "bg-[var(--color-cream)]/92 shadow-[var(--shadow-sm)] backdrop-blur-md"
-            : "bg-transparent"
-        )}
+        className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-cream)] shadow-[var(--shadow-sm)]"
         style={{ paddingTop: "var(--safe-top)" }}
       >
         <nav
@@ -123,23 +109,17 @@ export function Nav() {
           <Link
             href="/"
             onClick={handleHomeClick}
-            className={cn(
-              "-ml-1 flex shrink-0 items-center rounded-[var(--radius-chip)] py-1 pl-1 pr-2",
-              "focus-visible:outline-3 focus-visible:outline-offset-2",
-              onDark ? "focus-visible:outline-[var(--color-cream)]" : "focus-visible:outline-[var(--color-maroon)]"
-            )}
+            className="-ml-1 flex shrink-0 items-center rounded-[var(--radius-chip)] py-1 pl-1 pr-2 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-maroon)]"
             aria-label={`${festival.name} — home`}
           >
             {/* Clear space: py-1/pr-2 keeps the mark off the nav edge and the
                 links. Height steps up with the nav so it never dominates.
-                Colourway follows the ground: orange is only 3.31:1 on maroon,
-                cream is 11.48:1. */}
-            <Logo
-              variant={onDark ? "cream" : "orange"}
-              height={44}
-              priority
-              className="lg:!h-[64px] lg:!w-[59px]"
-            />
+                Always the orange lockup now that the header is always the
+                cream ground it was designed for (cream is 11.48:1; orange
+                only clears 3.31:1, which is why a cream variant existed at
+                all — for the header's old transparent-over-dark moment,
+                which no longer happens). */}
+            <Logo variant="orange" height={44} priority className="lg:!h-[64px] lg:!w-[59px]" />
           </Link>
 
           {/*
@@ -163,39 +143,23 @@ export function Nav() {
                     className={cn(
                       "tap-target relative block whitespace-nowrap rounded-[var(--radius-pill)] px-4 text-[length:var(--text-sm)] font-medium transition-colors",
                       "focus-visible:outline-3 focus-visible:outline-offset-2",
-                      onDark
-                        ? [
-                            // DARK GROUND — verified against maroon #6B1028
-                            "text-[var(--color-cream)]", //          11.48:1
-                            "hover:text-[var(--color-gold)]", //      5.02:1
-                            "focus-visible:outline-[var(--color-cream)]",
-                            current && "font-semibold",
-                          ]
-                        : [
-                            // LIGHT GROUND — verified against cream #FDF8F0
-                            "text-[var(--color-ink)]", //            15.77:1
-                            "hover:text-[var(--color-maroon)]", //   11.48:1
-                            "focus-visible:outline-[var(--color-maroon)]",
-                            current && "font-semibold text-[var(--color-maroon)]",
-                          ]
+                      // Verified against cream #FDF8F0.
+                      "text-[var(--color-ink)]", //          15.77:1
+                      "hover:text-[var(--color-maroon)]", // 11.48:1
+                      "focus-visible:outline-[var(--color-maroon)]",
+                      current && "font-semibold text-[var(--color-maroon)]"
                     )}
                   >
                     {link.label}
                     {/* Current-item indicator.
                         Colour lives in a non-text underline (needs only 3:1)
                         rather than the label itself — orange fails AA as TEXT
-                        on both grounds (4.16:1 on maroon, 2.76:1 on cream).
-                        Current is therefore signalled by weight AND colour,
-                        not colour alone (WCAG 1.4.1). */}
+                        on cream (2.76:1). Current is therefore signalled by
+                        weight AND colour, not colour alone (WCAG 1.4.1). */}
                     {current && (
                       <span
                         aria-hidden="true"
-                        className={cn(
-                          "absolute inset-x-4 bottom-1.5 h-0.5 rounded-full",
-                          onDark
-                            ? "bg-[var(--color-saffron)]" //      4.16:1 on maroon
-                            : "bg-[var(--color-saffron-deep)]" // 4.05:1 on cream
-                        )}
+                        className="absolute inset-x-4 bottom-1.5 h-0.5 rounded-full bg-[var(--color-saffron-deep)]" // 4.05:1 on cream
                       />
                     )}
                   </Link>
@@ -207,12 +171,12 @@ export function Nav() {
           <div className="flex shrink-0 items-center gap-2">
             {/* Passport CTA is present from pixel one — the primary conversion
                 sits well down the page, so it must also live permanently up
-                here. A maroon button on a maroon hero would disappear, so the
-                outline-on-dark variant takes over there. */}
+                here. Always the solid secondary (maroon) variant now that
+                the header is always cream underneath it. */}
             <Button
               href="/passport"
               size="sm"
-              variant={onDark ? "onDark" : "secondary"}
+              variant="secondary"
               className="hidden sm:inline-flex"
             >
               <Ticket size={16} aria-hidden="true" />
@@ -223,13 +187,7 @@ export function Nav() {
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
-              className={cn(
-                "tap-target rounded-[var(--radius-pill)] transition-colors lg:hidden",
-                "focus-visible:outline-3 focus-visible:outline-offset-2",
-                onDark
-                  ? "text-[var(--color-cream)] hover:text-[var(--color-gold)] focus-visible:outline-[var(--color-cream)]"
-                  : "text-[var(--color-maroon)] hover:text-[var(--color-burgundy)] focus-visible:outline-[var(--color-maroon)]"
-              )}
+              className="tap-target rounded-[var(--radius-pill)] text-[var(--color-maroon)] transition-colors hover:text-[var(--color-burgundy)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-maroon)] lg:hidden"
               aria-expanded={open}
               aria-controls="mobile-drawer"
               aria-label={open ? "Close menu" : "Open menu"}

@@ -51,11 +51,29 @@ import { EASE_BRAND } from "@/lib/motion";
  *      simply object-cover positioned to favour the arch/skyline/lights
  *      band over the busier rangoli pattern at the very bottom, which crops
  *      out first on tall frames without losing the shot's main subject.
- * The mask, glow, particles and bottom fade are otherwise untouched. The
- * timer-area radial mask was resized/lowered to track the countdown card,
- * which itself moved toward the bottom of its column (see the JSX below) so
- * it sits over the calmer lower part of the new scene instead of the arch
- * sign and skyline.
+ * v7 — full-bleed: the artwork now covers the ENTIRE hero section rather
+ * than sitting in a boxed 58%-wide panel on the right with a plain cream
+ * field on the left. The two-column grid below (narrative left, countdown
+ * right) is untouched — only what's painted BEHIND it changed, from
+ * "cream, then an image box floated on top of the right half" to "one
+ * continuous photograph behind everything, with gradient scrims doing the
+ * work of keeping text readable." Concretely:
+ *   - `HeroImage` is now `inset-0` (the full section), still rendered once
+ *     for desktop/tablet and once for mobile so each keeps its own
+ *     hand-tuned `objectPosition` — same idea as before, just no longer
+ *     confined to a corner box.
+ *   - The old "boxed illustration" mask/glow/face-anchoring machinery is
+ *     gone — there's no box edge to mask anymore. In its place: a
+ *     left-to-right cream scrim on desktop (opaque behind the copy column,
+ *     fading out before the skyline so the photograph reads clearly on the
+ *     right), a top-to-bottom cream scrim on mobile (content stacks over
+ *     the full image there, so it needs a full-height wash rather than a
+ *     side one), and one soft dark radial behind the countdown card's
+ *     corner so its ticket surface has something to sit "on" without a
+ *     hard-edged panel.
+ *   - Fewer overlapping gradients than the boxed version had (no separate
+ *     glow + two masks + two washes) — this was also a chance to simplify,
+ *     per the brief's own "avoid excessive gradients."
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -169,108 +187,66 @@ export function Hero() {
 }
 
 /**
- * Media layer — v4: same layering as v2 (base wash → artwork → glow → radial
- * timer-area mask → cream text-side wash → particles → bottom fade), with one
- * addition: a soft radial mask centered on the artwork roughly where the
- * countdown sits, so that specific area of the image gently darkens/softens
- * — diffuse, no hard edge — giving the frosted glass card behind it more
- * contrast to read against without needing a solid background of its own.
+ * Media layer — v7, full-bleed. The photograph now fills the whole section;
+ * everything else here is a scrim doing the job the old "cream half of the
+ * screen" used to do for free.
  */
 function HeroMedia() {
   return (
     <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
-      {/* 1 — base wash, untouched */}
-      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_0%,#FFFDF8_0%,var(--color-cream)_45%,var(--color-cream-deep)_100%)]" />
+      {/* Base wash — shows briefly before the image paints, and is what's
+          behind the image at its own edges/corners if the aspect ratio
+          ever doesn't perfectly fill the section. */}
+      <div className="absolute inset-0 bg-[var(--color-cream)]" />
 
-      {/* 2–3 — desktop artwork: oversized, raised, right-anchored, mask-faded.
-          No bounding box at 50% — the mask itself is the only edge, and it
-          fades to nothing rather than to an opaque color. */}
-      <div
-        className="absolute hidden lg:block"
-        style={{ top: "-100px", right: "-8%", width: "58%", height: "125%" }}
-      >
-        <div className="relative h-full w-full">
-          {/* CSS `mask-image` on a <video> was unreliable in Chromium; kept
-              masking a plain wrapping div (with the media as a normal
-              child) since that still applies to <Image>. */}
-          <div className="hero-artwork-mask absolute inset-0 overflow-hidden">
-            <HeroImage objectPosition="50% 32%" />
-          </div>
-
-          {/* warm ambient glow, unchanged in spirit — the new scene already
-              has its own dusk lighting, so this just adds a touch more
-              warmth centred on the arch/skyline band rather than a face */}
-          <div
-            className="hero-glow absolute left-1/2 top-[28%] h-[38%] w-[64%] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background: "radial-gradient(closest-side, var(--color-gold) 0%, transparent 72%)",
-              mixBlendMode: "screen",
-              opacity: 0.08,
-            }}
-          />
-
-          {/* soft radial mask behind the timer only — resized and moved
-              down to track the countdown card, which now sits near the
-              bottom of its column (see the `lg:self-end` card below)
-              instead of dead-centre. Diffuse falloff, no visible edge,
-              purely to lift the card's readability against the artwork. */}
-          <div
-            className="absolute left-1/2 top-[78%] h-[52%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background:
-                "radial-gradient(closest-side, rgba(20,12,10,0.32) 0%, rgba(20,12,10,0.17) 45%, rgba(20,12,10,0.05) 68%, transparent 82%)",
-            }}
-          />
-
-          {/* soften the artwork's own bottom edge, in addition to the mask */}
-          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-[var(--color-cream)]/70" />
-
-          <HeroParticles />
-        </div>
+      {/* The artwork itself, full-bleed. Two instances so desktop/tablet and
+          mobile can keep their own hand-tuned crop (favouring the arch,
+          skyline and string lights over the busier rangoli pattern low in
+          the frame) rather than sharing one compromise position. */}
+      <div className="absolute inset-0 hidden lg:block">
+        <HeroImage objectPosition="64% 38%" />
+      </div>
+      <div className="absolute inset-0 lg:hidden">
+        <HeroImage objectPosition="58% 32%" />
       </div>
 
-      {/* mobile/tablet: full-bleed, top-anchored, mask-faded at the bottom
-          only (single-column layout, no left/right seam to worry about) */}
-      <div className="absolute inset-x-0 top-0 h-[64%] lg:hidden">
-        <div className="relative h-full w-full">
-          <div className="hero-artwork-mask-mobile absolute inset-0 overflow-hidden">
-            <HeroImage objectPosition="50% 30%" />
-          </div>
-
-          {/* same soft timer-area mask on mobile — the countdown sits toward
-              the lower half of this stacked artwork block */}
-          <div
-            className="absolute left-1/2 bottom-0 h-[62%] w-full"
-            style={{
-              background:
-                "radial-gradient(120% 100% at 50% 100%, rgba(20,12,10,0.30) 0%, rgba(20,12,10,0.14) 42%, transparent 75%)",
-              transform: "translateX(-50%)",
-            }}
-          />
-
-          <HeroParticles />
-        </div>
-      </div>
-
-      {/* 4 — wide cream radial wash behind the text column. Soft and wide
-          rather than a hard-edged band, so it reads as ambient light rather
-          than a panel boundary. */}
+      {/* Desktop readability scrim: opaque cream behind the copy column on
+          the left, fading out before the skyline so the photograph reads
+          clearly across the right half rather than being hidden under a
+          panel. */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 hidden lg:block"
         style={{
           background:
-            "radial-gradient(60% 85% at 20% 45%, var(--color-cream) 0%, var(--color-cream) 38%, transparent 72%)",
+            "linear-gradient(100deg, rgba(253,248,240,0.95) 0%, rgba(253,248,240,0.88) 24%, rgba(253,248,240,0.42) 46%, rgba(253,248,240,0.1) 62%, transparent 76%)",
         }}
       />
+      {/* Soft dark pool behind the countdown card's corner (bottom-right of
+          its column, where `lg:self-end` puts it) — just enough to lift the
+          card's own gold border/shadow off the artwork without a hard edge. */}
+      <div
+        className="absolute inset-0 hidden lg:block"
+        style={{
+          background: "radial-gradient(42% 55% at 80% 90%, rgba(20,12,10,0.30) 0%, rgba(20,12,10,0.1) 55%, transparent 78%)",
+        }}
+      />
+
+      {/* Mobile/tablet: content stacks vertically over the full image here
+          (headline through the countdown card), so this needs a full-height
+          wash rather than a one-sided one. Strongest through the middle
+          where body copy and buttons sit; a little more picture shows at
+          the very top and bottom. */}
       <div
         className="absolute inset-0 lg:hidden"
         style={{
           background:
-            "linear-gradient(to bottom, var(--color-cream) 0%, var(--color-cream) 38%, rgba(253,248,240,0.55) 64%, rgba(253,248,240,0.15) 100%)",
+            "linear-gradient(to bottom, rgba(253,248,240,0.82) 0%, rgba(253,248,240,0.9) 18%, rgba(253,248,240,0.9) 70%, rgba(253,248,240,0.8) 100%)",
         }}
       />
 
-      {/* 6 — bottom fade into the next section, unchanged */}
+      <HeroParticles />
+
+      {/* Bottom fade into the next section, unchanged */}
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--color-cream)] to-transparent" />
     </div>
   );
@@ -305,7 +281,7 @@ function HeroImage({ objectPosition }: { objectPosition: string }) {
         aria-hidden="true"
         fill
         priority
-        sizes="(max-width: 1024px) 100vw, 58vw"
+        sizes="100vw"
         style={{ objectPosition }}
         className="object-cover"
       />
