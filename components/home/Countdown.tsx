@@ -18,7 +18,7 @@ const SUB_UNITS = [
 ] as const;
 
 // Percentage geometry measured directly off the reference artwork
-// (public/media/hero/countdown-card.webp, 670×713, cropped tight to the
+// (public/media/hero/countdown-card.png, 670×713, cropped tight to the
 // card's own silhouette) — see the long comment below for how these were
 // derived and why they exist at all.
 const DAY_BOX = { left: 38.5, top: 27.5, width: 24, height: 19 };
@@ -37,7 +37,7 @@ const MEDALLION_FILL = "#520817";
  * WHAT'S IMAGE, WHAT'S REAL TEXT
  * The card frame — the arched/scalloped silhouette, the maroon+gold double
  * border, both peacocks, the corner florals, the crown motif, the side
- * vines and the bottom lotus — is `public/media/hero/countdown-card.webp`,
+ * vines and the bottom lotus — is `public/media/hero/countdown-card.png`,
  * a cropped, background-removed version of the client's reference PNG (the
  * photographic backdrop baked into the original crop was masked out by
  * hand-tracing the card's silhouette in this session, since no background-
@@ -48,7 +48,7 @@ const MEDALLION_FILL = "#520817";
  * on top of the artwork at measured percentage positions, NOT baked into
  * the picture:
  *   - the big day count (`DAY_BOX`)
- *   - the three Hours/Minutes/Seconds digits (`MEDALLION_CENTERS`)
+ *   - the three Hours/Minutes/Seconds digits (each `SUB_UNITS` entry's `center`)
  * Each sits on a small flat-colour patch (sampled directly from the
  * artwork's own paper/medallion fill — `CARD_PAPER` / `MEDALLION_FILL`) that
  * fully covers the reference's static placeholder digits before the live
@@ -160,7 +160,7 @@ export function Countdown() {
     <div className="relative mx-auto w-full max-w-[19rem] sm:max-w-[21rem]">
       <div className="relative" style={{ aspectRatio: "670 / 713" }}>
         <Image
-          src="/media/hero/countdown-card.webp"
+          src="/media/hero/countdown-card.png"
           alt=""
           aria-hidden="true"
           fill
