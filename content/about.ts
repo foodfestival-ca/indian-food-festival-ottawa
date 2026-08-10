@@ -27,7 +27,7 @@ export const organizers = z.array(OrganizerSchema).parse([
   {
     id: "pujan",
     name: "Pujan Sanura",
-    role: "Co-Founder",
+    role: "Co-Founder · Team Lead",
     bio: "Keeps the festival running on the ground — the team, the timeline and the hundred small decisions on-site that make three days feel effortless from the outside.",
     image: "/media/team/pujan.jpg",
     objectPosition: "center 16%",
@@ -39,6 +39,14 @@ export const organizers = z.array(OrganizerSchema).parse([
     bio: "Builds the vendor and partner side of the festival, working with the local businesses and community groups who turn a park into a neighbourhood for three days.",
     image: "/media/team/sagar.jpg",
     objectPosition: "center 26%",
+  },
+  {
+    id: "ramchandra",
+    name: "Ramchandra Reddy",
+    role: "Team Lead",
+    bio: "Leads the on-ground team through the festival weekend, keeping every moving part — staff, vendors, schedule — running in step.",
+    image: "/media/team/ramchandra.jpg",
+    objectPosition: "center 15%",
   },
 ]);
 

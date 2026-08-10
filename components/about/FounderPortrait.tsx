@@ -23,11 +23,12 @@ interface FounderPortraitProps {
  * property — an image that never fails to render, even if the file is
  * missing — via the same onError-to-placeholder pattern.
  *
- * Frame height: 420–460px on desktop (was 400px), stepping down at smaller
- * breakpoints — taller than before, for a more spacious "leadership page"
- * feel rather than a tight headshot crop. Hover zoom is also dialled back
- * from 1.03 to 1.02, since a bigger frame reads as more premium when it sits
- * still and just barely breathes on hover, not when it visibly jumps.
+ * Frame height: 320px on desktop, stepping down at smaller breakpoints.
+ * Was pushed up to 420–460px for a more spacious "leadership page" feel,
+ * but on a fixed-width card that just means more crop, not more photo —
+ * with object-cover, a taller frame zooms in harder rather than showing
+ * more of the subject. Pulled back down to a size that reads as a portrait
+ * rather than a close-up. Hover zoom stays at 1.02.
  */
 export function FounderPortrait({
   src,
@@ -39,7 +40,7 @@ export function FounderPortrait({
   const [errored, setErrored] = useState(false);
 
   return (
-    <div className="group relative h-80 w-full overflow-hidden rounded-t-[var(--radius-card)] sm:h-96 md:h-[420px] lg:h-[450px]">
+    <div className="group relative h-56 w-full overflow-hidden rounded-t-[var(--radius-card)] sm:h-64 md:h-72 lg:h-80">
       {errored || !src ? (
         <div className="absolute inset-0 flex items-end bg-[linear-gradient(135deg,#F3E4CE_0%,#E9D3B4_45%,#DFC49F_100%)] p-4">
           <span className="text-[length:var(--text-xs)] font-medium uppercase tracking-[0.18em] text-[var(--color-maroon)]/55">
