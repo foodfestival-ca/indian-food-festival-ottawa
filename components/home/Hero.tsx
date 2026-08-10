@@ -173,10 +173,15 @@ export function Hero() {
               its column — over the calmer lower portion of the new artwork
               (past the arch sign and skyline) — rather than dead-centre
               across the middle of the scene. Unchanged on mobile, where it
-              already follows the text/CTAs in normal document flow. */}
+              already follows the text/CTAs in normal document flow.
+              `lg:pb-16` (was `lg:pb-6`) gives the card's own bottom edge —
+              the lotus pendant — real clearance above the section's own
+              bottom edge, since it was sitting close enough to feel
+              clipped/crowded there. The card's actual on-screen size is
+              capped by its own `max-w` in Countdown.tsx, not here. */}
           <motion.div
             {...rise(0.38)}
-            className="mx-auto w-full max-w-[30rem] lg:max-w-none lg:self-end lg:pb-6"
+            className="mx-auto w-full max-w-[30rem] lg:max-w-none lg:self-end lg:pb-16"
           >
             <Countdown />
           </motion.div>

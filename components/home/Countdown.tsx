@@ -14,7 +14,7 @@ const SUB_UNITS = [
 ] as const;
 
 // The card's own blank "content well" as a percentage box, measured off
-// public/media/hero/countdown-card.png (982×1193): everything below the
+// public/media/hero/countdown-card.png (1022×1131): everything below the
 // gold divider under the crown motif and above the peacock/lotus cluster is
 // bare parchment, left blank in the artwork specifically so live content
 // could be laid on top of it. All countdown text lives inside this one box
@@ -22,28 +22,37 @@ const SUB_UNITS = [
 // line — so it re-centres itself automatically for whichever phase's
 // content is currently shortest/tallest, and scales with the card at every
 // breakpoint since it's percentage-based against the same box the image
-// itself scales within.
-const CONTENT_WELL = { left: 18, top: 18.5, width: 66, height: 70 };
+// itself scales within. Re-measured against the round-7 asset (a much more
+// accurate silhouette — see the file comment below) with extra clearance at
+// the bottom specifically so the date line never crowds the peacocks/lotus.
+const CONTENT_WELL = { left: 21, top: 18, width: 62, height: 62 };
 
 /**
- * Hero countdown — round 6: the client supplied a second reference asset,
- * this time with the card's centre panel left intentionally blank (no
- * placeholder digits baked in at all). That removes the reason round 5
- * needed patch-and-overlay: there's nothing to hide anymore, so every line
- * of text — including "The Countdown Begins" and the date, which round 5
- * still left as picture pixels — is now real HTML laid directly onto bare
- * parchment inside `CONTENT_WELL`.
+ * Hero countdown — round 7. Round 6 introduced the blank-panel artwork;
+ * this round fixes three things reported against the live result:
+ *  1. The background mask still left a visible rectangle of the artwork's
+ *     own photographic backdrop around the card. Rounds 5–6 masked that
+ *     backdrop by hand-tracing the silhouette as a polygon, which kept
+ *     under- or over-shooting the actual (irregularly scalloped) edge.
+ *     This round instead segments it with OpenCV's GrabCut — seeded with a
+ *     rough bounding rectangle, it fits the mask to the image's own colour
+ *     statistics rather than a guessed set of points — which produced a
+ *     dramatically tighter, more accurate silhouette with no hand-drawn
+ *     points at all. See the mask-generation notes kept alongside the
+ *     asset source for the exact procedure.
+ *  2. "The Countdown Begins" was wrapping to two lines inside the content
+ *     well on desktop; it's now sized to reliably fit on one.
+ *  3. The card's on-page footprint/position (size, vertical placement) is
+ *     tuned in Hero.tsx, not here — see that file for the corresponding
+ *     change.
  *
  * WHAT'S IMAGE, WHAT'S REAL TEXT
  * The entire frame — arched/scalloped silhouette, maroon+gold double
  * border, crown motif, both side vines, both peacocks, and the bottom
- * lotus — is `public/media/hero/countdown-card.png`. As with round 5's
- * asset, this is a hand-masked crop of the client's supplied PNG (its own
- * photographic backdrop removed by tracing the card's silhouette in this
- * session — no background-removal model is reachable from this sandbox).
- * Every word of text on the card, for all three phases, is real DOM
- * content positioned inside `CONTENT_WELL` — none of it is part of the
- * picture.
+ * lotus — is `public/media/hero/countdown-card.png`, the client's supplied
+ * PNG with its own photographic backdrop removed (see above). Every word of
+ * text on the card, for all three phases, is real DOM content positioned
+ * inside `CONTENT_WELL` — none of it is part of the picture.
  *
  * THREE PHASES, ONE IMAGE. The artwork has no phase-specific content baked
  * in (unlike round 5's asset), so the same frame is reused for all three
@@ -65,14 +74,14 @@ export function Countdown() {
   const reduced = useReducedMotion();
 
   return (
-    <div className="relative mx-auto w-full max-w-[19rem] sm:max-w-[21rem]">
-      <div className="relative" style={{ aspectRatio: "982 / 1193" }}>
+    <div className="relative mx-auto w-full max-w-[19rem] sm:max-w-[21rem] lg:max-w-[18.5rem]">
+      <div className="relative" style={{ aspectRatio: "1022 / 1131" }}>
         <Image
           src="/media/hero/countdown-card.png"
           alt=""
           aria-hidden="true"
           fill
-          sizes="(min-width: 1024px) 21rem, 19rem"
+          sizes="(min-width: 1024px) 18.5rem, (min-width: 640px) 21rem, 19rem"
           className="object-contain drop-shadow-[0_18px_38px_rgba(42,26,24,0.3)]"
         />
 
@@ -87,12 +96,16 @@ export function Countdown() {
         >
           {c.phase === "counting" && (
             <>
-              <p className="text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.22em] text-[var(--color-saffron-deep)] sm:text-[length:var(--text-sm)]">
+              {/* Deliberately smaller/tighter than the other eyebrow-style
+                  labels on this card and forced to one line — at the
+                  original size this wrapped to two lines ("THE COUNTDOWN" /
+                  "BEGINS") inside the well's width on desktop. */}
+              <p className="whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-saffron-deep)] sm:text-[11px] sm:tracking-[0.16em]">
                 The Countdown Begins
               </p>
 
               <motion.span
-                className="tabular mt-1 block font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-none text-[var(--color-maroon)] sm:mt-2 sm:text-[length:var(--text-6xl)]"
+                className="tabular mt-2 block font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-none text-[var(--color-maroon)] sm:mt-3 sm:text-[length:var(--text-6xl)]"
                 animate={reduced ? undefined : { opacity: [1, 0.85, 1] }}
                 transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -102,7 +115,7 @@ export function Countdown() {
                 Days To Go
               </span>
 
-              <div className="mt-3 flex items-start justify-center gap-4 border-t border-[var(--color-maroon)]/20 pt-3 sm:mt-4 sm:gap-6 sm:pt-4">
+              <div className="mt-4 flex items-start justify-center gap-5 border-t border-[var(--color-maroon)]/20 pt-4 sm:mt-5 sm:gap-7 sm:pt-5">
                 {SUB_UNITS.map((u, i) => (
                   <div key={u.key} className="relative px-1.5 text-center sm:px-2">
                     <span
@@ -114,11 +127,11 @@ export function Countdown() {
                     >
                       {c.ready ? String(c[u.key]).padStart(2, "0") : "--"}
                     </span>
-                    <span className="mt-1 block text-[9px] font-medium uppercase tracking-[0.1em] text-[var(--color-ink-muted)] sm:text-[10px]">
+                    <span className="mt-1.5 block text-[9px] font-medium uppercase tracking-[0.1em] text-[var(--color-ink-muted)] sm:text-[10px]">
                       {u.label}
                     </span>
                     {i < SUB_UNITS.length - 1 && (
-                      <span aria-hidden="true" className="absolute -right-2 top-1 h-7 w-px bg-[var(--color-maroon)]/20 sm:-right-3" />
+                      <span aria-hidden="true" className="absolute -right-2.5 top-1 h-7 w-px bg-[var(--color-maroon)]/20 sm:-right-3.5" />
                     )}
                   </div>
                 ))}
@@ -128,7 +141,7 @@ export function Countdown() {
                 {c.ready ? `${c.days} days until the festival begins.` : ""}
               </p>
 
-              <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-muted)]/85 sm:mt-4 sm:text-[11px]">
+              <p className="mt-4 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-muted)]/85 sm:mt-5 sm:text-[11px]">
                 {festival.dateLabel} · {festival.venue.city}
               </p>
             </>
