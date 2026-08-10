@@ -4,31 +4,16 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useCountdown } from "@/lib/useCountdown";
 import { festival } from "@/content/festival";
-import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import {
   TicketNotch,
   GoldRule,
   MandalaCorner,
-  CornerFlourish,
-  PeakGem,
-  LotusCap,
+  CrownOrnament,
+  VineBorder,
   PeacockOrnament,
-  PaisleyMotif,
-  FloralSprig,
+  LotusBloom,
 } from "@/components/ornament/Ornaments";
-
-const CORNERS = [
-  "absolute left-2.5 top-9 text-[var(--color-gold)]",
-  "absolute right-2.5 top-9 -scale-x-100 text-[var(--color-gold)]",
-  "absolute bottom-3 left-2.5 -scale-y-100 text-[var(--color-gold)]",
-  "absolute bottom-3 right-2.5 -scale-x-100 -scale-y-100 text-[var(--color-gold)]",
-] as const;
-
-const SIDE_FLOURISHES = [
-  "absolute left-1 top-1/2 h-5 w-5 -translate-y-1/2 rotate-90 text-[var(--color-gold)] opacity-60",
-  "absolute right-1 top-1/2 h-5 w-5 -translate-y-1/2 -rotate-90 text-[var(--color-gold)] opacity-60",
-] as const;
 
 const SUB_UNITS = [
   { key: "hours", label: "Hours" },
@@ -37,30 +22,42 @@ const SUB_UNITS = [
 ] as const;
 
 /**
- * Hero countdown — "ornate Indian invitation" redesign, round 2.
+ * Hero countdown — "ornate Indian invitation" redesign, round 3.
  *
- * Round 1 built the arched/domed silhouette (huge top-corner radius, clamped
- * by CSS to a smooth dome at any width), the maroon double-line border, and
- * a first pass at corner ornament. This round adds the pieces the client's
- * reference ("4th concept") called out specifically that round 1 didn't
- * have: two facing peacocks flanking the dome, denser paisley/floral
- * ornament around the bottom finial, and a fully opaque ivory surface (round
- * 1's sub-unit badges were a translucent orange wash; that read as *less*
- * finished against the busy hero photo, so this round goes back to solid
- * fills for anything text sits on, per the reference).
+ * Rounds 1–2 built the domed silhouette and added ornament, but scattered it
+ * around the card's edges (corner flourishes, peacocks up near the crown)
+ * rather than reproducing the reference's actual *structure*: a decorative
+ * top crest, a traced vine running down each inner edge, and a pair of
+ * peacocks anchored at the base flanking a full lotus bloom — three
+ * integrated zones, not loose accents. This round rebuilds the ornament
+ * layer around those three zones specifically:
  *
- * Ornament budget: every new decorative element is `aria-hidden`, drawn in
- * `currentColor` (recolored per-instance via a Tailwind text-color utility)
- * with at most one or two fixed accent colours (peacock feather "eyes",
- * florals) so the palette stays inside the existing maroon/gold/saffron/
- * emerald set rather than introducing new hues. None of it sits behind text
- * at meaningful opacity — the two exceptions (MandalaCorner watermark, the
- * glow behind the day number) are unchanged from round 1 and were already
- * tuned low enough not to affect contrast.
+ *  - TOP: `CrownOrnament`, a symmetrical gold scrollwork crest astride the
+ *    dome's apex (was a single small gem).
+ *  - SIDES: `VineBorder` traces both inner edges top-to-bottom (was nothing
+ *    — round 2's "side flourish" was two 20×20px corner icons, not a frame
+ *    element).
+ *  - BASE: two `PeacockOrnament`s — now a filled, coloured illustration
+ *    (emerald body, gold/maroon tail eyes) rather than thin currentColor
+ *    line-art — sit at the bottom-left/right corners facing the centre,
+ *    flanking a full `LotusBloom` (a filled five-petal flower, not the
+ *    small `LotusCap` bud from earlier rounds).
+ *
+ * All of it lives *inside* the card's own box (no negative-offset overflow
+ * outside the card, unlike round 2's peacocks) — that removes the desktop/
+ * tablet/mobile clipping risk entirely rather than needing per-breakpoint
+ * offset tuning. `MandalaCorner` remains as a faint centred watermark; the
+ * double-line maroon/gold border and domed top-corner radius are unchanged
+ * from round 1.
+ *
+ * The card surface stays a near-opaque ivory gradient so the hero photograph
+ * never shows through, and the Hours/Minutes/Seconds badges stay solid
+ * maroon medallions with cream digits — both carried over from round 2 for
+ * contrast.
  *
  * Countdown hierarchy, copy, and every dynamic value below still come
- * straight from `useCountdown()`/`festival` — nothing here is hardcoded,
- * and `lib/useCountdown.ts` / `content/festival.ts` were not touched.
+ * straight from `useCountdown()`/`festival`; `lib/useCountdown.ts` and
+ * `content/festival.ts` were not touched.
  */
 export function Countdown() {
   const c = useCountdown(festival.startsAt, festival.endsAt);
@@ -68,18 +65,8 @@ export function Countdown() {
 
   return (
     <div className="relative mx-auto w-full max-w-[20rem] sm:max-w-[22rem]">
-      {/* Peacocks — perched just outside the dome's shoulders, facing
-          inward toward the countdown. Scaled down below `sm` per the
-          "reduce scale on mobile, don't remove" brief. */}
-      <PeacockOrnament
-        className="pointer-events-none absolute -left-8 top-2 h-16 w-14 text-[var(--color-maroon)] opacity-80 sm:-left-11 sm:top-0 sm:h-20 sm:w-[4.25rem]"
-      />
-      <PeacockOrnament
-        className="pointer-events-none absolute -right-8 top-2 h-16 w-14 -scale-x-100 text-[var(--color-maroon)] opacity-80 sm:-right-11 sm:top-0 sm:h-20 sm:w-[4.25rem]"
-      />
-
       <div
-        className="relative overflow-visible px-6 pb-6 pt-11 sm:px-7 sm:pb-7 sm:pt-12"
+        className="relative overflow-hidden px-7 pb-8 pt-11 sm:px-8 sm:pb-9 sm:pt-12"
         style={{
           borderRadius: "999px 999px 26px 26px",
           background:
@@ -101,34 +88,24 @@ export function Countdown() {
           style={{ border: "1px solid rgba(196,145,54,0.4)" }}
         />
 
-        {/* Apex finial — astride the top edge of the dome. */}
-        <PeakGem className="pointer-events-none absolute left-1/2 top-0 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-[var(--color-gold)]" />
+        {/* SIDES — vine tracing both inner edges, top to bottom. Sits inside
+            the card's own padding, well clear of the centred text column. */}
+        <VineBorder className="absolute left-2.5 top-12 bottom-10 h-auto w-3.5 text-[var(--color-gold)] opacity-70 sm:left-3 sm:w-4" />
+        <VineBorder className="absolute right-2.5 top-12 bottom-10 h-auto w-3.5 -scale-x-100 text-[var(--color-gold)] opacity-70 sm:right-3 sm:w-4" />
 
-        {/* Bottom finial cluster — lotus drop flanked by a small paisley on
-            each side, matching the reference's denser base ornament. */}
-        <LotusCap className="pointer-events-none absolute bottom-0 left-1/2 h-6 w-10 -translate-x-1/2 translate-y-1/2 text-[var(--color-maroon)]" />
-        <PaisleyMotif className="pointer-events-none absolute bottom-0 left-[26%] h-7 w-5 translate-y-1/3 -rotate-12 text-[var(--color-gold)] opacity-70" />
-        <PaisleyMotif className="pointer-events-none absolute bottom-0 right-[26%] h-7 w-5 translate-y-1/3 rotate-12 -scale-x-100 text-[var(--color-gold)] opacity-70" />
-        <FloralSprig className="pointer-events-none absolute bottom-1 left-3 h-6 w-6 opacity-80" />
-        <FloralSprig className="pointer-events-none absolute bottom-1 right-3 h-6 w-6 -scale-x-100 opacity-80" />
-
-        {CORNERS.map((cls, i) => (
-          <CornerFlourish key={i} className={cn("h-6 w-6 opacity-70", cls)} />
-        ))}
-        {SIDE_FLOURISHES.map((cls, i) => (
-          <CornerFlourish key={`side-${i}`} className={cls} />
-        ))}
+        {/* TOP — gold scrollwork crest astride the dome's apex. */}
+        <CrownOrnament className="pointer-events-none absolute left-1/2 top-1 h-6 w-[5.5rem] -translate-x-1/2 text-[var(--color-gold)] sm:h-7 sm:w-24" />
 
         {/* Mandala watermark — decorative only, sits behind every phase's
             content via z-index, low enough opacity to never affect contrast. */}
-        <MandalaCorner className="pointer-events-none absolute left-1/2 top-[54%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 text-[var(--color-gold)] opacity-[0.08]" />
+        <MandalaCorner className="pointer-events-none absolute left-1/2 top-[52%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 text-[var(--color-gold)] opacity-[0.08]" />
 
         {/* Extremely subtle static gold glow behind the focal number — not
             animated, just a soft warmth. */}
         {c.phase === "counting" && (
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-[4.4rem] h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full sm:top-[4.7rem]"
+            className="pointer-events-none absolute left-1/2 top-[4.6rem] h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full sm:top-[4.9rem]"
             style={{
               background: "radial-gradient(closest-side, var(--color-gold) 0%, transparent 72%)",
               opacity: 0.15,
@@ -160,9 +137,8 @@ export function Countdown() {
               <GoldRule className="mx-auto mt-3 max-w-[6rem]" />
 
               {/* Hours / Minutes / Seconds — solid maroon "medallion" badges
-                  with a thin gold ring and cream digits, matching the
-                  reference's opaque timer badges (crystal-clear against the
-                  hero photo behind the card, not a translucent wash). */}
+                  with a thin gold ring and cream digits: opaque and
+                  crystal-clear against the hero photo behind the card. */}
               <div className="mt-4 grid grid-cols-3 gap-2 pt-1">
                 {SUB_UNITS.map((u) => (
                   <div key={u.key} className="text-center">
@@ -248,6 +224,17 @@ export function Countdown() {
               </div>
             </div>
           )}
+
+          {/* BASE — a full lotus bloom flanked by two peacocks, facing
+              inward, anchored to the bottom of the card. Present in every
+              phase (it's part of the card's frame, not the countdown
+              content), sized down slightly under `sm` per the "reduce
+              scale, don't remove" brief. */}
+          <div className="mt-5 flex items-end justify-center gap-1 sm:mt-6">
+            <PeacockOrnament className="h-11 w-9 shrink-0 -translate-y-1 sm:h-12 sm:w-10" />
+            <LotusBloom className="h-9 w-12 shrink-0 sm:h-10 sm:w-14" />
+            <PeacockOrnament className="h-11 w-9 shrink-0 -translate-y-1 -scale-x-100 sm:h-12 sm:w-10" />
+          </div>
         </div>
       </div>
     </div>
