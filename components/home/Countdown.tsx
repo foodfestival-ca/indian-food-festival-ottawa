@@ -55,12 +55,16 @@ const MEDALLION_FILL = "#520817";
  * the picture:
  *   - the big day count (`DAY_BOX`)
  *   - the three Hours/Minutes/Seconds digits (each `SUB_UNITS` entry's `center`)
- * Each sits on a small flat-colour patch (sampled directly from the
- * artwork's own paper/medallion fill — `CARD_PAPER` / `MEDALLION_FILL`) that
- * fully covers the reference's static placeholder digits before the live
- * value is drawn on top, so at a glance it reads as one seamless card, not
- * a photo with numbers floating over it. `useCountdown()` is the only
- * source for any of these values — nothing is hardcoded.
+ * Each sits on a small patch (sampled directly from the artwork's own
+ * paper/medallion fill — `CARD_PAPER` / `MEDALLION_FILL`) that fully covers
+ * the reference's static placeholder digits before the live value draws on
+ * top. The patch itself carries a same-colour blurred `boxShadow` rather
+ * than a hard-edged fill — a flat rectangle read as a visible seam against
+ * the artwork's subtly textured paper once this was live; the blur feathers
+ * the patch's border into that texture so it isn't a legible rectangle at
+ * normal viewing size, while its solid centre still fully hides the baked
+ * digits underneath. `useCountdown()` is the only source for any of these
+ * values — nothing is hardcoded.
  *
  * The static line art the picture already carries correctly for our actual
  * dates — "THE COUNTDOWN BEGINS", "DAYS TO GO", the HOURS/MINUTES/SECONDS
@@ -185,7 +189,11 @@ export function Countdown() {
             height: `${DAY_BOX.height}%`,
           }}
         >
-          <span className="absolute inset-0 rounded-sm" style={{ background: CARD_PAPER }} aria-hidden="true" />
+          <span
+            className="absolute inset-0"
+            style={{ background: CARD_PAPER, boxShadow: `0 0 16px 12px ${CARD_PAPER}` }}
+            aria-hidden="true"
+          />
           <span className="relative tabular font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-none text-[var(--color-maroon)] sm:text-[length:var(--text-6xl)]">
             {c.ready ? c.days : "--"}
           </span>
@@ -204,7 +212,11 @@ export function Countdown() {
               height: `${MEDALLION_BOX.height}%`,
             }}
           >
-            <span className="absolute inset-0 rounded-sm" style={{ background: MEDALLION_FILL }} aria-hidden="true" />
+            <span
+              className="absolute inset-0"
+              style={{ background: MEDALLION_FILL, boxShadow: `0 0 7px 4px ${MEDALLION_FILL}` }}
+              aria-hidden="true"
+            />
             <span
               className="relative tabular font-[family-name:var(--font-display)] text-[length:var(--text-lg)] font-bold leading-none text-[var(--color-cream)] sm:text-[length:var(--text-xl)]"
               /* Seconds must not be announced — a live region ticking every
