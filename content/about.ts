@@ -1,4 +1,13 @@
 import { z } from "zod";
+import { festival } from "@/content/festival";
+
+// The 2026 vendor figure quoted in the Our Story copy below is derived from
+// `festival.stats` (canonical) rather than hardcoded, so it can't drift out
+// of sync with the homepage stats strip or the Journey timeline.
+const currentTotalVendors = `${
+  festival.stats.find((s) => s.label === "Food Vendors")!.value +
+  festival.stats.find((s) => s.label === "Product Vendors")!.value
+}+`;
 
 const OrganizerSchema = z.object({
   id: z.string(),
@@ -58,7 +67,7 @@ export const aboutCopy = {
     body: [
       "Where does an Indian family in Ottawa go to find the food they grew up with — not a version of it, but the actual thing, made by someone from the place it comes from?",
       "In 2024, Navatara Inc. answered it by putting thirty vendors in a park and hoping a few thousand people would come. Ten thousand did. Stalls sold out hours before closing.",
-      "In 2025 the festival grew in every direction, and CBC and CTV came to see why. In 2026 we return for a third edition — three days, over a hundred vendors, and the most ambitious cultural programme we have staged.",
+      `In 2025 the festival grew in every direction, and CBC and CTV came to see why. In 2026 we return for a third edition — three days, ${currentTotalVendors} vendors, and the most ambitious cultural programme we have staged.`,
     ],
   },
   mission: {

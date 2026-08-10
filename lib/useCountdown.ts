@@ -45,10 +45,24 @@ export function useCountdown(startsAt: string, endsAt: string): CountdownState {
   const startMs = Date.parse(startsAt);
   const endMs = Date.parse(endsAt);
 
-  // Deterministic first render: identical on server and client.
-  const [state, setState] = useState<Omit<CountdownState, "ready">>(() =>
-    resolve(startMs, endMs, startMs)
-  );
+  // Deterministic first render: identical on server and client, and
+  // independent of `startMs`/`endMs` entirely — no Date.now() call here.
+  // `resolve(startMs, endMs, startMs)` was tried before, but "now === startMs"
+  // itself satisfies `now >= startMs`, so that seed always resolved to
+  // "live" on the very first paint regardless of the real date — a visitor
+  // browsing months before the festival would see "Festival Is Happening
+  // Now!" flash for a frame before the mount effect corrected it to
+  // "counting". Always seeding "counting" with zeroed digits sidesteps that:
+  // it's the one phase this component already renders with "--" placeholders
+  // (via `ready`) for exactly this reason, so the first paint is neutral no
+  // matter which of the three phases turns out to be correct once mounted.
+  const [state, setState] = useState<Omit<CountdownState, "ready">>({
+    phase: "counting",
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
   const [ready, setReady] = useState(false);
 
   useEffect(() => {

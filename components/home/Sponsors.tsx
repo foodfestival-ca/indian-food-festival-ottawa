@@ -42,7 +42,7 @@ export function Sponsors({ className }: { className?: string } = {}) {
 
         <Reveal className="mt-12 text-center">
           <p className="mx-auto mb-4 max-w-[34rem] text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
-            Interested in reaching fifteen thousand visitors across one weekend?
+            Interested in reaching ten thousand visitors across one weekend?
           </p>
           <FormButton form="sponsor" variant="secondary" size="md">
             <Handshake size={17} aria-hidden="true" />

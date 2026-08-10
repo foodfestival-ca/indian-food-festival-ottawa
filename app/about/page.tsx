@@ -194,14 +194,14 @@ export default function AboutPage() {
             eyebrow="Get Involved"
             title="Be Part of 2026"
             accent="2026"
-            intro="Fifteen thousand visitors across one weekend. If you'd like a stall, a sponsorship, or press access, start here."
+            intro="Ten thousand visitors across one weekend. If you'd like a stall, a sponsorship, or press access, start here."
             onDark
           />
 
           <RevealGroup className="mx-auto mt-12 grid max-w-[56rem] gap-4 md:grid-cols-3">
             {[
               { id: "vendors", title: "Vendors", body: "Food stalls and marketplace booths for makers, restaurants and local businesses.", Icon: Store, form: "vendor" as const, cta: "Apply as a Vendor" },
-              { id: "sponsors", title: "Sponsors", body: "Reach fifteen thousand engaged visitors across three days. Packages at every level.", Icon: Handshake, form: "sponsor" as const, cta: "Sponsor the Festival" },
+              { id: "sponsors", title: "Sponsors", body: "Reach ten thousand engaged visitors across three days. Packages at every level.", Icon: Handshake, form: "sponsor" as const, cta: "Sponsor the Festival" },
               { id: "contact", title: "Media & Press", body: "Press access, interviews and creator collaborations for the 2026 edition.", Icon: Mail, form: "contact" as const, cta: "Contact the Team" },
             ].map((card) => (
               <RevealItem key={card.id}>

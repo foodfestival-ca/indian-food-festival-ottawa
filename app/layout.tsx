@@ -26,13 +26,21 @@ const inter = Inter({
   display: "swap",
 });
 
+// Vendor/performance counts for the SEO description below are derived from
+// `festival.stats` — the single canonical source — rather than hardcoded, so
+// this can never drift out of sync with what the homepage stats strip shows.
+const foodVendorsStat = festival.stats.find((s) => s.label === "Food Vendors")!;
+const productVendorsStat = festival.stats.find((s) => s.label === "Product Vendors")!;
+const performancesStat = festival.stats.find((s) => s.label === "Performances")!;
+const totalVendors = `${foodVendorsStat.value + productVendorsStat.value}+`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: `${festival.name} 2026 | ${festival.subheading}`,
     template: `%s | ${festival.name}`,
   },
-  description: `${festival.subheading}. ${festival.dateLabel} at ${festival.venue.name}, Ottawa. Free admission. 100+ food vendors, 50+ live performances, marketplace and Kids Zone.`,
+  description: `${festival.subheading}. ${festival.dateLabel} at ${festival.venue.name}, Ottawa. Free admission. ${totalVendors} vendors, ${performancesStat.value}${performancesStat.suffix} live performances, marketplace and Kids Zone.`,
   applicationName: festival.name,
   keywords: [
     "Indian food festival Ottawa",

@@ -4,9 +4,11 @@ import { Section, Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { MandalaCorner, GoldRule } from "@/components/ornament/Ornaments";
+import { InstagramIcon } from "@/components/ornament/BrandIcons";
 import { GalleryShowcase } from "@/components/gallery/GalleryShowcase";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { pageMeta } from "@/lib/seo";
+import { festival } from "@/content/festival";
 
 export const metadata: Metadata = pageMeta({
   title: "Gallery",
@@ -98,7 +100,7 @@ export default function GalleryPage() {
                 Thank You for Making 2024 &amp; 2025 Unforgettable
               </h2>
               <p className="mt-4 text-[length:var(--text-base)] leading-[var(--leading-body)] text-[var(--color-ink-muted)]">
-                Thousands of visitors, hundreds of performances, incredible food, and unforgettable memories.
+                Thousands of visitors, incredible performances, amazing food, and unforgettable memories.
                 We&rsquo;re excited to welcome everyone back for an even bigger celebration in 2026.
               </p>
               <div className="mt-8">
@@ -107,6 +109,49 @@ export default function GalleryPage() {
                   <ArrowRight size={18} aria-hidden="true" />
                 </Button>
               </div>
+            </Reveal>
+          </Container>
+        </Section>
+
+        {/* Instagram CTA — closes out the gallery on a "keep following" note
+            rather than ending cold after the last photo. `cream-deep` keeps
+            the Thali rule intact against the `cream` closing CTA above it,
+            while still reading as one continuous "after the gallery" moment
+            rather than a new, separate section. Instagram URL/handle both
+            resolve from festival.social (content/festival.ts →
+            content/social.ts) — no new literal added here. */}
+        <Section id="gallery-instagram" ground="cream-deep" labelledBy="gallery-instagram-heading">
+          <Container>
+            <Reveal className="mx-auto max-w-[36rem] text-center">
+              <span
+                aria-hidden="true"
+                className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[var(--color-maroon)]/8 text-[var(--color-maroon)]"
+              >
+                <InstagramIcon size={26} />
+              </span>
+              <h2
+                id="gallery-instagram-heading"
+                className="mt-4 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold text-[var(--color-maroon)]"
+              >
+                More Festival Moments
+              </h2>
+              <p className="mt-3 text-[length:var(--text-base)] leading-[var(--leading-body)] text-[var(--color-ink-muted)]">
+                See the latest photos, videos, behind-the-scenes moments and festival updates on Instagram.
+              </p>
+              <div className="mt-6">
+                <Button
+                  href={festival.social.instagram}
+                  size="lg"
+                  variant="secondary"
+                  aria-label="Follow the Indian Food Festival of Ottawa on Instagram (opens in a new tab)"
+                >
+                  <InstagramIcon size={18} />
+                  Follow Us on Instagram
+                </Button>
+              </div>
+              <p className="mt-3 text-[length:var(--text-sm)] text-[var(--color-ink-muted)]/75">
+                Follow @{festival.social.instagramHandle}
+              </p>
             </Reveal>
           </Container>
         </Section>

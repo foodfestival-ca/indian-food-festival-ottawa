@@ -1,7 +1,19 @@
 import { z } from "zod";
+import { festival } from "@/content/festival";
 
 /** Chronology lives HERE, not in the gallery. This is the one place
  *  where 2024 vs 2025 is the actual point. */
+
+// The 2026 entry below is the CURRENT edition, so its vendor/performance
+// figures are derived from `festival.stats` (the canonical source) instead
+// of a second hardcoded set of numbers that could drift out of sync with
+// what the rest of the site shows. The 2024 and 2025 entries are historical
+// and stay hardcoded — they describe completed editions, not this one.
+const foodVendorsStat = festival.stats.find((s) => s.label === "Food Vendors")!;
+const productVendorsStat = festival.stats.find((s) => s.label === "Product Vendors")!;
+const performancesStat = festival.stats.find((s) => s.label === "Performances")!;
+const currentTotalVendors = `${foodVendorsStat.value + productVendorsStat.value}+`;
+const currentPerformances = `${performancesStat.value}${performancesStat.suffix}`;
 
 const YearSchema = z.object({
   year: z.string(),
@@ -46,11 +58,11 @@ export const journey = z.array(YearSchema).parse([
     year: "2026",
     title: "The Largest Yet",
     blurb:
-      "Three days, over a hundred vendors, and the most ambitious cultural programme we have staged. The third edition is the one we have been building toward.",
+      `Three days, ${currentTotalVendors} vendors, and the most ambitious cultural programme we have staged. The third edition is the one we have been building toward.`,
     stats: [
       { value: "3", label: "Days" },
-      { value: "100+", label: "Vendors" },
-      { value: "50+", label: "Performances" },
+      { value: currentTotalVendors, label: "Vendors" },
+      { value: currentPerformances, label: "Performances" },
     ],
     image: "/media/journey/2026.jpg",
     alt: "Poster artwork for the 2026 Indian Food Festival of Ottawa",

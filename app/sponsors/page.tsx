@@ -6,7 +6,7 @@ import { pageMeta } from "@/lib/seo";
 export const metadata: Metadata = pageMeta({
   title: "Become a Sponsor",
   description:
-    "Sponsorship packages for the Indian Food Festival of Ottawa 2026 — reach fifteen thousand visitors across three days. Meet our presenting, gold and community partners.",
+    "Sponsorship packages for the Indian Food Festival of Ottawa 2026 — reach ten thousand visitors across three days. Meet our presenting, gold and community partners.",
   path: "/sponsors",
 });
 

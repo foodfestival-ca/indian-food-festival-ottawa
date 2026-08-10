@@ -35,7 +35,7 @@ export const experiences = z.array(ExperienceSchema).parse([
   {
     id: "community",
     title: "Community",
-    blurb: "Three days that turn a park into a neighbourhood — cultural associations, volunteers and fifteen thousand neighbours.",
+    blurb: "Three days that turn a park into a neighbourhood — cultural associations, volunteers and ten thousand neighbours.",
     image: "/media/community/community.jpg",
     alt: "Festival visitors gathered together on the festival grounds",
     icon: "heart",

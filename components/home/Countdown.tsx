@@ -1,8 +1,10 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { useCountdown } from "@/lib/useCountdown";
 import { festival } from "@/content/festival";
+import { Button } from "@/components/ui/Button";
 import { TicketNotch } from "@/components/ornament/Ornaments";
 import { GoldRule } from "@/components/ornament/Ornaments";
 
@@ -90,23 +92,33 @@ export function Countdown() {
             <span className="eyebrow text-[var(--color-emerald)]">Happening Now</span>
           </span>
           <p className="mt-3 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold text-[var(--color-maroon)]">
-            We&rsquo;re open — come on down
+            Festival Is Happening Now!
           </p>
           <p className="mt-1.5 text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
-            {festival.venue.name}, Ottawa
+            Come celebrate food, culture, music and community.
           </p>
         </div>
       )}
 
+      {/* No date is guessed here — "Until Next Year" without a specific year
+          avoids asserting a 2027 edition that isn't in the canonical festival
+          data. The gallery CTA gives the ended state something to do besides
+          state a fact. */}
       {c.phase === "ended" && (
         <div className="py-2 text-center">
           <p className="eyebrow">Until Next Year</p>
           <p className="mt-3 font-[family-name:var(--font-display)] text-[length:var(--text-2xl)] font-bold text-[var(--color-maroon)]">
-            Thank you, Ottawa.
+            Thank You for Celebrating With Us
           </p>
           <p className="mt-1.5 text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
-            See you in 2027 — join the newsletter for first word on dates.
+            Relive the memories, explore the gallery and stay tuned for what&rsquo;s next.
           </p>
+          <div className="mt-4">
+            <Button href="/gallery" size="sm" variant="outline">
+              Explore Festival Gallery
+              <ArrowRight size={15} aria-hidden="true" />
+            </Button>
+          </div>
         </div>
       )}
     </div>

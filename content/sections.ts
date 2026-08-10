@@ -1,4 +1,10 @@
 import { z } from "zod";
+import { festival } from "@/content/festival";
+
+// Performances intro below quotes the canonical performance count instead
+// of a second hardcoded figure, so it can't drift out of sync with the
+// homepage stats strip or the "Why Visit" card.
+const performancesStat = festival.stats.find((s) => s.label === "Performances")!;
 
 /**
  * Section copy — eyebrows, headers and intros.
@@ -43,7 +49,7 @@ export const sectionCopy = {
     title: "Put the Plate Down. Something's Starting.",
     accent: "Something's Starting.",
     intro:
-      "Over fifty performances across three days — classical forms carried by the families who kept them, folk traditions with the volume up, and three nights that end on a dance floor.",
+      `Over ${performancesStat.value} performances across three days — classical forms carried by the families who kept them, folk traditions with the volume up, and three nights that end on a dance floor.`,
   }),
 
   marketplace: SectionCopySchema.parse({

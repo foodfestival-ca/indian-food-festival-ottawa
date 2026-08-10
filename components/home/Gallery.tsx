@@ -27,7 +27,7 @@ export function Gallery({ className }: { className?: string } = {}) {
           eyebrow="From Previous Years"
           title="This Is What It Looks Like"
           accent="What It Looks Like"
-          intro="Three days, fifteen thousand people, and a park that stops being a park for a weekend."
+          intro="Three days, ten thousand people, and a park that stops being a park for a weekend."
           onDark
         />
       </Container>
