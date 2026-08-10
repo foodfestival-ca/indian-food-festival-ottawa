@@ -4,18 +4,18 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Calendar, MapPin, Ticket, CalendarDays, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Countdown } from "@/components/home/Countdown";
 import { HeroParticles } from "@/components/home/HeroParticles";
 import { MandalaCorner, GoldRule } from "@/components/ornament/Ornaments";
 import { festival } from "@/content/festival";
 import { EASE_BRAND } from "@/lib/motion";
 
 /**
- * MOBILE      single column, content stacked, countdown below CTAs,
+ * MOBILE      single column, content stacked,
  *             min-height uses svh so iOS browser chrome can't clip it
  * TABLET      wider measure, CTAs go inline, larger display type
- * DESKTOP     two columns — narrative left, countdown overlaying the
- *             illustration on the right (per the approved composition)
+ * DESKTOP     single content column, left-aligned, capped to a readable
+ *             measure — the festival photograph fills the rest of the
+ *             section naturally behind it (see `HeroMedia`)
  *
  * v4 — reverted back to the overlay composition (v3's "countdown below the
  * illustration" redesign was not approved: the overlay was visually stronger,
@@ -74,6 +74,16 @@ import { EASE_BRAND } from "@/lib/motion";
  *   - Fewer overlapping gradients than the boxed version had (no separate
  *     glow + two masks + two washes) — this was also a chance to simplify,
  *     per the brief's own "avoid excessive gradients."
+ *
+ * v8 — the countdown card is gone. Per the client's direction, the entire
+ * countdown UI (component, its dedicated column, and the scrim that only
+ * existed to seat it against the photograph) has been removed so a new
+ * countdown design can be built from scratch separately. The narrative
+ * column is now the section's only content — no more two-column grid, no
+ * reserved second column, no placeholder where the card used to sit. The
+ * underlying countdown logic (`lib/useCountdown.ts`) and data
+ * (`content/festival.ts`) are untouched and not currently rendered
+ * anywhere on this page.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -99,91 +109,71 @@ export function Hero() {
       <MandalaCorner className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 text-[var(--color-maroon)] opacity-[0.05] lg:h-[26rem] lg:w-[26rem]" />
 
       <div className="container-page relative z-10">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-          <div className="text-center lg:text-left">
-            <motion.p {...rise(0)} className="eyebrow">
-              A Celebration of Flavours, Culture &amp; Community
-            </motion.p>
-            <GoldRule className="mx-auto mt-3 max-w-[15rem] lg:mx-0" />
+        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+          <motion.p {...rise(0)} className="eyebrow">
+            A Celebration of Flavours, Culture &amp; Community
+          </motion.p>
+          <GoldRule className="mx-auto mt-3 max-w-[15rem] lg:mx-0" />
 
-            <motion.h1
-              id="hero-heading"
-              {...rise(0.08)}
-              className="mt-5 font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-[var(--leading-display)] text-[var(--color-maroon)]"
-            >
-              Tastes Like <span className="text-[var(--color-saffron)]">India</span>
-              <br />
-              Feels Like <span className="text-[var(--color-emerald)]">Home</span>
-            </motion.h1>
-
-            <motion.p
-              {...rise(0.16)}
-              className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
-            >
-              Three days of incredible food, culture, music and celebration that brings us all together.
-            </motion.p>
-
-            <motion.ul
-              {...rise(0.22)}
-              className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
-            >
-              <li className="flex items-center gap-2">
-                <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
-                {festival.dateLabel}
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
-                {festival.venue.name}
-              </li>
-              <li>
-                <span className="rounded-[var(--radius-pill)] bg-[var(--color-emerald)]/12 px-3 py-1 font-semibold text-[var(--color-emerald)]">
-                  {festival.admission}
-                </span>
-              </li>
-            </motion.ul>
-
-            {/* CTA hierarchy: ① Explore ② Schedule ③ Passport.
-                Explore Festival and Get Passport swapped slots (and thus
-                prominence) at the client's request — Get Passport now also
-                links straight to the /passport page itself rather than
-                opening the registration form directly from the homepage;
-                the form is still one tap away once someone's on that page.
-                Full-width stacked on mobile for thumb-width targets. */}
-            <motion.div
-              {...rise(0.3)}
-              className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
-            >
-              <Button href="#why-visit" size="lg" variant="primary" fluid>
-                Explore Festival
-                <ArrowRight size={17} aria-hidden="true" />
-              </Button>
-              <Button href="/schedule" size="lg" variant="outline" fluid>
-                <CalendarDays size={18} aria-hidden="true" />
-                View Schedule
-              </Button>
-              <Button href="/passport" size="lg" variant="ghost" fluid>
-                <Ticket size={18} aria-hidden="true" />
-                Get Passport
-              </Button>
-            </motion.div>
-          </div>
-
-          {/* `lg:self-center` keeps the card near the grid's own vertical
-              centring, with a slight downward nudge (`lg:mt-10`) so it
-              sits a little below true centre rather than dead-level with
-              the headline. `lg:ml-auto lg:mr-[8%]` right-aligns it within
-              its own column with ~8% of the column's width as breathing
-              room from the hero's right edge. The card itself is now a
-              plain HTML/CSS card (see Countdown.tsx) rather than an
-              image, so its height is simply whatever its content needs —
-              nothing here is sized to accommodate an illustration's
-              proportions any more. The card's max width is capped by its
-              own `max-w` in Countdown.tsx, not here. */}
-          <motion.div
-            {...rise(0.38)}
-            className="mx-auto w-full max-w-[30rem] lg:mx-0 lg:ml-auto lg:mr-[8%] lg:max-w-none lg:self-center lg:mt-10"
+          <motion.h1
+            id="hero-heading"
+            {...rise(0.08)}
+            className="mt-5 font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-[var(--leading-display)] text-[var(--color-maroon)]"
           >
-            <Countdown />
+            Tastes Like <span className="text-[var(--color-saffron)]">India</span>
+            <br />
+            Feels Like <span className="text-[var(--color-emerald)]">Home</span>
+          </motion.h1>
+
+          <motion.p
+            {...rise(0.16)}
+            className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
+          >
+            Three days of incredible food, culture, music and celebration that brings us all together.
+          </motion.p>
+
+          <motion.ul
+            {...rise(0.22)}
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
+          >
+            <li className="flex items-center gap-2">
+              <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
+              {festival.dateLabel}
+            </li>
+            <li className="flex items-center gap-2">
+              <MapPin size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
+              {festival.venue.name}
+            </li>
+            <li>
+              <span className="rounded-[var(--radius-pill)] bg-[var(--color-emerald)]/12 px-3 py-1 font-semibold text-[var(--color-emerald)]">
+                {festival.admission}
+              </span>
+            </li>
+          </motion.ul>
+
+          {/* CTA hierarchy: ① Explore ② Schedule ③ Passport.
+              Explore Festival and Get Passport swapped slots (and thus
+              prominence) at the client's request — Get Passport now also
+              links straight to the /passport page itself rather than
+              opening the registration form directly from the homepage;
+              the form is still one tap away once someone's on that page.
+              Full-width stacked on mobile for thumb-width targets. */}
+          <motion.div
+            {...rise(0.3)}
+            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
+          >
+            <Button href="#why-visit" size="lg" variant="primary" fluid>
+              Explore Festival
+              <ArrowRight size={17} aria-hidden="true" />
+            </Button>
+            <Button href="/schedule" size="lg" variant="outline" fluid>
+              <CalendarDays size={18} aria-hidden="true" />
+              View Schedule
+            </Button>
+            <Button href="/passport" size="lg" variant="ghost" fluid>
+              <Ticket size={18} aria-hidden="true" />
+              Get Passport
+            </Button>
           </motion.div>
         </div>
       </div>
@@ -226,26 +216,10 @@ function HeroMedia() {
             "linear-gradient(100deg, rgba(253,248,240,0.97) 0%, rgba(253,248,240,0.91) 26%, rgba(253,248,240,0.48) 48%, rgba(253,248,240,0.12) 64%, transparent 78%)",
         }}
       />
-      {/* Soft dark pool roughly under where the countdown card now sits
-          (right column, `lg:self-center` + a slight downward nudge) —
-          just enough to lift the card's own cream surface and shadow off
-          the photograph without a hard edge. The card is a near-opaque
-          HTML/CSS surface now rather than translucent parchment, so this
-          matters less for legibility than it used to, but it still helps
-          the card read as sitting "on" the scene instead of pasted over
-          it. */}
-      <div
-        className="absolute inset-0 hidden lg:block"
-        style={{
-          background: "radial-gradient(42% 52% at 78% 55%, rgba(20,12,10,0.30) 0%, rgba(20,12,10,0.10) 55%, transparent 80%)",
-        }}
-      />
-
-      {/* Mobile/tablet: content stacks vertically over the full image here
-          (headline through the countdown card), so this needs a full-height
-          wash rather than a one-sided one. Strongest through the middle
-          where body copy and buttons sit; a little more picture shows at
-          the very top and bottom. */}
+      {/* Mobile/tablet: content stacks vertically over the full image here,
+          so this needs a full-height wash rather than a one-sided one.
+          Strongest through the middle where body copy and buttons sit; a
+          little more picture shows at the very top and bottom. */}
       <div
         className="absolute inset-0 lg:hidden"
         style={{
