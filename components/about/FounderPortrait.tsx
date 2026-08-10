@@ -23,13 +23,20 @@ interface FounderPortraitProps {
  * property — an image that never fails to render, even if the file is
  * missing — via the same onError-to-placeholder pattern.
  *
- * Frame height: 208px on desktop, stepping down at smaller breakpoints.
- * Was pushed up to 420–460px for a more spacious "leadership page" feel,
- * then pulled back to 320px, but the photos were still dominating the
- * card next to the name/role/bio text below. Sized down again so the
- * portrait reads as a supporting element of the card rather than the
- * headline — same 3-column grid, same object-position per photo, just a
- * smaller fixed band. Hover zoom stays at 1.02.
+ * `object-contain` on a neutral card-tinted background, not `object-cover`:
+ * the source photos are different aspect ratios (a couple near-square, one
+ * portrait), and `cover` on a fixed-height band was cropping into faces —
+ * more so the taller the band, but even at a smaller size it still cuts
+ * off headroom or chins on whichever photos don't match the band's ratio.
+ * `contain` guarantees the entire photo is always visible, letterboxed
+ * where the aspect ratio doesn't fill the box, which reads as a deliberate
+ * framed portrait rather than a crop. `objectPosition` still nudges the
+ * photo within that box per-image.
+ *
+ * Frame height: 192px on desktop, stepping down at smaller breakpoints —
+ * slightly smaller than the previous 208px cover-cropped version, since
+ * `contain` no longer needs the extra height to keep faces from being cut
+ * off. Hover zoom stays at 1.02.
  */
 export function FounderPortrait({
   src,
@@ -41,7 +48,7 @@ export function FounderPortrait({
   const [errored, setErrored] = useState(false);
 
   return (
-    <div className="group relative h-40 w-full overflow-hidden rounded-t-[var(--radius-card)] sm:h-44 md:h-48 lg:h-52">
+    <div className="group relative h-36 w-full overflow-hidden rounded-t-[var(--radius-card)] bg-[var(--color-cream-deep)] sm:h-40 md:h-44 lg:h-48">
       {errored || !src ? (
         <div className="absolute inset-0 flex items-end bg-[linear-gradient(135deg,#F3E4CE_0%,#E9D3B4_45%,#DFC49F_100%)] p-4">
           <span className="text-[length:var(--text-xs)] font-medium uppercase tracking-[0.18em] text-[var(--color-maroon)]/55">
@@ -58,7 +65,7 @@ export function FounderPortrait({
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           style={{ objectPosition }}
           className={cn(
-            "object-cover transition-transform duration-300 ease-out",
+            "object-contain transition-transform duration-300 ease-out",
             "group-hover:scale-[1.02]"
           )}
           onError={() => setErrored(true)}
