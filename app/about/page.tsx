@@ -11,7 +11,7 @@ import { JsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { pageMeta } from "@/lib/seo";
 import { festival } from "@/content/festival";
 import { journey } from "@/content/journey";
-import { organizers, aboutCopy } from "@/content/about";
+import { organizers, aboutCopy, type Organizer } from "@/content/about";
 
 export const metadata: Metadata = pageMeta({
   title: "About Us",
@@ -21,6 +21,12 @@ export const metadata: Metadata = pageMeta({
 });
 
 export default function AboutPage() {
+  // Split by role rather than adding a new schema field — content/about.ts
+  // already distinguishes "Co-Founder" from "Team Lead" in `role`, so
+  // grouping off that keeps the data file's shape unchanged.
+  const founders = organizers.filter((p) => p.role === "Co-Founder");
+  const teamLeads = organizers.filter((p) => p.role === "Team Lead");
+
   return (
     <>
       <JsonLd
@@ -143,38 +149,40 @@ export default function AboutPage() {
             title={`Behind It All: ${festival.organizer.legalName}`}
             accent={festival.organizer.legalName}
           />
-          {/* max-w bumped from 64rem to 72rem: with square source photos and
-              object-cover, a taller image frame on a FIXED-width card
-              necessarily crops MORE off the sides, not less — the zoom people
-              feel is set by the frame's height:width ratio, and object-position
-              only changes which part of that crop is kept, not how much is
-              cropped. Widening the grid keeps each card's width growing
-              roughly in step with the taller frame, so the ratio — and the
-              amount of visible zoom — stays reasonable instead of getting
-              tighter. Cards are still identical widths to each other, just
-              wider than before. */}
-          <RevealGroup className="mx-auto mt-12 grid max-w-[72rem] gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {organizers.map((person, i) => (
-              <RevealItem key={person.id}>
-                <article className="h-full overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-white shadow-[var(--shadow-sm)]">
-                  <FounderPortrait
-                    src={person.image}
-                    alt={`Portrait of ${person.name}`}
-                    objectPosition={person.objectPosition}
-                    label={person.name}
-                    priority={i === 0}
-                  />
-                  <div className="p-5">
-                    <h3 className="font-[family-name:var(--font-display)] text-[length:var(--text-xl)] font-bold text-[var(--color-maroon)]">
-                      {person.name}
-                    </h3>
-                    <p className="eyebrow mt-1">{person.role}</p>
-                    <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[var(--color-ink-muted)]">{person.bio}</p>
-                  </div>
-                </article>
-              </RevealItem>
-            ))}
-          </RevealGroup>
+          {/* Two explicit rows — Co-Founders, then Team Leads underneath —
+              rather than one flat grid. Each row is its own 2-up grid capped
+              at ~38rem so the pair sits together at a card width matching
+              the rest of the site's card sizing, and centers as a pair
+              instead of stretching to fill a wider track. Stacks to one
+              column on mobile via the same sm:grid-cols-2 breakpoint used
+              elsewhere on this page. */}
+          <div className="mx-auto mt-12 max-w-[40rem] space-y-10">
+            <div>
+              <p className="text-center text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.14em] text-[var(--color-saffron-deep)]">
+                Co-Founders
+              </p>
+              <RevealGroup className="mt-5 grid gap-5 sm:grid-cols-2">
+                {founders.map((person, i) => (
+                  <RevealItem key={person.id}>
+                    <OrganizerCard person={person} priority={i === 0} />
+                  </RevealItem>
+                ))}
+              </RevealGroup>
+            </div>
+
+            <div>
+              <p className="text-center text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.14em] text-[var(--color-saffron-deep)]">
+                Team Leads
+              </p>
+              <RevealGroup className="mt-5 grid gap-5 sm:grid-cols-2">
+                {teamLeads.map((person) => (
+                  <RevealItem key={person.id}>
+                    <OrganizerCard person={person} />
+                  </RevealItem>
+                ))}
+              </RevealGroup>
+            </div>
+          </div>
         </Container>
       </Section>
 
@@ -232,5 +240,28 @@ export default function AboutPage() {
           still holds. */}
       <Contact />
     </>
+  );
+}
+
+/** One organizer card — factored out so the Co-Founders and Team Leads rows
+ *  render identical, consistently-sized cards without duplicating markup. */
+function OrganizerCard({ person, priority = false }: { person: Organizer; priority?: boolean }) {
+  return (
+    <article className="h-full overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-white shadow-[var(--shadow-sm)]">
+      <FounderPortrait
+        src={person.image}
+        alt={`Portrait of ${person.name}`}
+        objectPosition={person.objectPosition}
+        label={person.name}
+        priority={priority}
+      />
+      <div className="p-5">
+        <h3 className="font-[family-name:var(--font-display)] text-[length:var(--text-xl)] font-bold text-[var(--color-maroon)]">
+          {person.name}
+        </h3>
+        <p className="eyebrow mt-1">{person.role}</p>
+        <p className="mt-3 text-[length:var(--text-sm)] leading-relaxed text-[var(--color-ink-muted)]">{person.bio}</p>
+      </div>
+    </article>
   );
 }
