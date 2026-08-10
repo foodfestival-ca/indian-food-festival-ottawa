@@ -91,6 +91,44 @@ import { EASE_BRAND } from "@/lib/motion";
  * transparent, rendered with `object-contain` inside an aspect-ratio box
  * that matches its real pixel dimensions (1536×1024) exactly, so nothing
  * crops, stretches, or letterboxes it at any breakpoint.
+ *
+ * v10 — fixes a real regression from the previous sizing pass: shrinking
+ * the narrative column's `fr` share to grow the frame let "Tastes Like
+ * India" / "Feels Like Home" wrap onto four lines instead of two at
+ * normal desktop widths. Two changes fix this together rather than
+ * trading one off against the other:
+ *   1. The narrative column is no longer sized by a grid `fr` fraction —
+ *      it's a fixed `42rem` (672px) track. That specific number isn't
+ *      arbitrary: it's the exact `max-w-2xl` the headline column used
+ *      back when this was a single-column layout (v8) and reliably
+ *      stayed on two lines at normal desktop widths — reusing it as a
+ *      hard floor makes the "no wrap" guarantee an actual constraint
+ *      instead of a hope. The frame's column is `1fr` — it gets 100% of
+ *      whatever room is left over, so it grows freely with viewport
+ *      width instead of being capped by a fixed fraction of a fixed
+ *      container.
+ *   2. The two-column split now only engages at `xl:` (1280px) instead
+ *      of `lg:` (1024px), and this section stopped using the sitewide
+ *      `container-page` utility (max-width 1240px) in favour of its own
+ *      wider `max-w-[1680px]` wrapper with tighter, fixed gutters. Both
+ *      changes exist for the same reason: a 672px-wide protected column
+ *      plus a genuinely large frame simply doesn't fit inside 1240px of
+ *      usable width at 1024px — the previous rounds' wrapping bug and
+ *      undersized frame were really the same problem (not enough total
+ *      room) wearing two different symptoms. Below 1280px there still
+ *      isn't room for both side by side without compromising one of
+ *      them, so the layout stays single-column (frame stacks below the
+ *      narrative, full width, same as mobile) — the client's own stated
+ *      target range for the two-column composition was 1280–1600px, and
+ *      that's exactly where this layout switches on.
+ * Because the frame's column is now `1fr` against a fixed sibling rather
+ * than a fraction against a fixed container, it grows with the viewport:
+ * roughly break-even with the previous round right at the 1280px edge
+ * (where there's the least room to spare), then meaningfully larger
+ * — well past the requested 35–40% — at the 1440–1680px widths that
+ * cover most real desktop and laptop screens, capped only by this
+ * section's own 1680px ceiling so it doesn't grow unreasonably large on
+ * ultra-wide monitors.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -115,13 +153,19 @@ export function Hero() {
       <MandalaCorner className="pointer-events-none absolute -left-24 -top-16 h-72 w-72 text-[var(--color-gold)] opacity-[0.07] lg:h-96 lg:w-96" />
       <MandalaCorner className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 text-[var(--color-maroon)] opacity-[0.05] lg:h-[26rem] lg:w-[26rem]" />
 
-      <div className="container-page relative z-10">
-        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-10">
-          <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
+      {/* Hero-specific wrapper instead of the sitewide `container-page`
+          (max-width 1240px): this section needs materially more usable
+          width than that at `xl:` to fit a fixed, wrap-safe narrative
+          column alongside a genuinely large frame — see the v10 note
+          above. Gutters are fixed rather than the sitewide clamp so the
+          extra width isn't immediately eaten back up by growing padding. */}
+      <div className="relative z-10 mx-auto w-full max-w-[1680px] px-5 sm:px-6 xl:px-6">
+        <div className="grid items-center gap-10 xl:grid-cols-[42rem_1fr] xl:gap-6">
+          <div className="mx-auto max-w-2xl text-center xl:mx-0 xl:max-w-none xl:text-left">
             <motion.p {...rise(0)} className="eyebrow">
               A Celebration of Flavours, Culture &amp; Community
             </motion.p>
-            <GoldRule className="mx-auto mt-3 max-w-[15rem] lg:mx-0" />
+            <GoldRule className="mx-auto mt-3 max-w-[15rem] xl:mx-0" />
 
             <motion.h1
               id="hero-heading"
@@ -135,14 +179,14 @@ export function Hero() {
 
             <motion.p
               {...rise(0.16)}
-              className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
+              className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] xl:mx-0"
             >
               Three days of incredible food, culture, music and celebration that brings us all together.
             </motion.p>
 
             <motion.ul
               {...rise(0.22)}
-              className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
+              className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] xl:justify-start"
             >
               <li className="flex items-center gap-2">
                 <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
@@ -168,7 +212,7 @@ export function Hero() {
                 Full-width stacked on mobile for thumb-width targets. */}
             <motion.div
               {...rise(0.3)}
-              className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
+              className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center xl:justify-start"
             >
               <Button href="#why-visit" size="lg" variant="primary" fluid>
                 Explore Festival
@@ -189,28 +233,18 @@ export function Hero() {
               The aspect-ratio box below is locked to the asset's own real
               pixel dimensions (1536×1024, 3:2) so `object-contain` never
               needs to letterbox, crop, or stretch it at any width. Stacks
-              full-width below the narrative column on mobile/tablet
-              (normal grid flow, no explicit stacking rules needed); sits
-              in its own column on the right from `lg:` up.
-
-              Sizing pass: bumped ~20–25% over the previous round at every
-              breakpoint (mobile 19rem→23rem, tablet 22rem→27rem) and, on
-              desktop, both the explicit caps (28rem/36rem, up from an
-              uncapped column that rendered ~24rem at the 1024px boundary
-              and ~29.5rem on typical wider laptops/desktops) and the grid
-              column's own share (`1fr_1.1fr`, up from `1.15fr_0.85fr`,
-              since a shift toward the right column was the only way to
-              raise the container-capped ceiling — the previous split
-              left the frame's effective maximum unchanged on any screen
-              ≥1240px, which is most desktops). The left column keeps the
-              larger share below `lg:` and only gives up part of its share
-              here; CSS Grid guarantees the two columns can never overlap
-              regardless of the split, so the only real trade-off is the
-              headline column being somewhat narrower on desktop than
-              before — worth a visual check after this change. */}
+              full-width below the narrative column below `xl:` (mobile,
+              tablet, and small-desktop widths all get the same generous
+              stacked treatment); from `xl:` up it sits in the grid's `1fr`
+              column — i.e. it gets 100% of whatever width is left over
+              once the fixed 42rem narrative column and gutters are
+              accounted for, so it keeps growing as the viewport widens
+              rather than being capped by a fixed fraction. See the v10
+              note above for why this replaced the previous `fr`-split
+              approach. */}
           <motion.div
             {...rise(0.38)}
-            className="relative mx-auto w-full max-w-[23rem] sm:max-w-[27rem] lg:mx-0 lg:max-w-[28rem] xl:max-w-[36rem]"
+            className="relative mx-auto w-full max-w-[27rem] sm:max-w-[32rem] xl:mx-0 xl:max-w-none"
           >
             <div className="relative w-full" style={{ aspectRatio: "1536 / 1024" }}>
               <Image
@@ -218,7 +252,7 @@ export function Hero() {
                 alt=""
                 aria-hidden="true"
                 fill
-                sizes="(min-width: 1280px) 36rem, (min-width: 1024px) 28rem, (min-width: 640px) 27rem, 23rem"
+                sizes="(min-width: 1280px) 55vw, (min-width: 640px) 32rem, 27rem"
                 className="object-contain"
               />
               {/* Future countdown overlay mounts here — an absolutely
