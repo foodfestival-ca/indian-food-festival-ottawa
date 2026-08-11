@@ -94,9 +94,17 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left:   env(safe-area-inset-left, 0px);
   --safe-right:  env(safe-area-inset-right, 0px);
-  --nav-h: 72px;
+  /* Nav height — reduced about 25% (72px to 54px mobile, 96px to 72px
+     desktop) per client request: the header felt too tall relative to the
+     Hero. This is the single source of truth every page's own top padding
+     derives from (see Hero.tsx and each route's page.tsx under app),
+     so the shorter value cascades everywhere consistently — that's
+     intended, not a side effect: the brief was explicit that the Hero (and
+     everything else) should sit noticeably higher as a result, without
+     touching any of those files directly. */
+  --nav-h: 54px;
 }
-@media (min-width: 64rem) { :root { --nav-h: 96px; } }
+@media (min-width: 64rem) { :root { --nav-h: 72px; } }
 
 /* ============================================================
    BASE
