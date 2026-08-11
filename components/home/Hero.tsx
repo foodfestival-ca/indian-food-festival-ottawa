@@ -180,7 +180,7 @@ export function Hero() {
   return (
     <section
       className="relative flex min-h-[100svh] items-center overflow-hidden bg-[var(--color-cream)]"
-      style={{ paddingTop: "calc(var(--nav-h) + var(--safe-top) + 1.5rem)", paddingBottom: "3rem" }}
+      style={{ paddingTop: "calc(var(--nav-h) + var(--safe-top) + 0.75rem)", paddingBottom: "0.75rem" }}
       aria-labelledby="hero-heading"
     >
       <HeroMedia />
@@ -194,7 +194,7 @@ export function Hero() {
           <motion.p {...rise(0)} className="eyebrow">
             A Celebration of Flavours, Culture &amp; Community
           </motion.p>
-          <GoldRule className="mx-auto mt-3 max-w-[15rem] lg:mx-0" />
+          <GoldRule className="mx-auto mt-2 max-w-[15rem] lg:mx-0" />
 
           <motion.h1
             id="hero-heading"
@@ -208,14 +208,14 @@ export function Hero() {
 
           <motion.p
             {...rise(0.16)}
-            className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
+            className="mx-auto mt-3 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
           >
             Three days of incredible food, culture, music and celebration that brings us all together.
           </motion.p>
 
           <motion.ul
             {...rise(0.22)}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
+            className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
           >
             <li className="flex items-center gap-2">
               <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
@@ -238,21 +238,33 @@ export function Hero() {
               links straight to the /passport page itself rather than
               opening the registration form directly from the homepage;
               the form is still one tap away once someone's on that page.
-              Full-width stacked on mobile for thumb-width targets. */}
+              Full-width stacked on mobile for thumb-width targets.
+
+              Sized `md` (not `lg`) and paired with tighter `mt-4`/`mt-5`
+              gaps above (description/date row) so all three CTAs clear the
+              first viewport without scrolling on a normal desktop window —
+              "Get Passport" was landing just below the fold at `lg` sizing.
+              Font size is unchanged (`md` and `lg` share the same text
+              size; only height/padding differ), so this is a spacing trim,
+              not a smaller-looking CTA. */}
           <motion.div
             {...rise(0.3)}
-            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
+            className="mt-3 flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
           >
-            <Button href="#why-visit" size="lg" variant="primary" fluid>
+            {/* `min-h-[44px]` shaves the last few px off `md`'s default 48px
+                without touching font size or horizontal padding — 44px is
+                the site's own documented minimum touch target (see
+                Button.tsx), so this isn't an accessibility regression. */}
+            <Button href="#why-visit" size="md" variant="primary" fluid className="min-h-[44px]">
               Explore Festival
-              <ArrowRight size={17} aria-hidden="true" />
+              <ArrowRight size={16} aria-hidden="true" />
             </Button>
-            <Button href="/schedule" size="lg" variant="outline" fluid>
-              <CalendarDays size={18} aria-hidden="true" />
+            <Button href="/schedule" size="md" variant="outline" fluid className="min-h-[44px]">
+              <CalendarDays size={16} aria-hidden="true" />
               View Schedule
             </Button>
-            <Button href="/passport" size="lg" variant="ghost" fluid>
-              <Ticket size={18} aria-hidden="true" />
+            <Button href="/passport" size="md" variant="ghost" fluid className="min-h-[44px]">
+              <Ticket size={16} aria-hidden="true" />
               Get Passport
             </Button>
           </motion.div>
