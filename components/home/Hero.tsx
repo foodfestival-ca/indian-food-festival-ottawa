@@ -93,6 +93,42 @@ import { EASE_BRAND } from "@/lib/motion";
  * for now, per the client's note that it may be used again. Nothing in
  * `lib/useCountdown.ts` or `content/festival.ts` was ever touched by any
  * of this.
+ *
+ * v12 — the frame is back, this time sized and structured to avoid the v10
+ * regression instead of repeating it. Two hard constraints from the client,
+ * in priority order: (1) the headline must stay on its clean two-line
+ * arrangement no matter what, (2) the frame should read as roughly 40-45%
+ * of the hero's content width on large desktop. The layout that satisfies
+ * both:
+ *   - The narrative column keeps the same fixed, wrap-safe width used by
+ *     the single-column layout (`max-w-2xl` = 42rem/672px) — the exact
+ *     measure already proven, via the client's own screenshot, to keep
+ *     "Tastes Like India" / "Feels Like Home" each on one line at the
+ *     display type's max clamp size. In the grid it becomes a *fixed*
+ *     42rem track (`xl:grid-cols-[42rem_1fr]`), not a flexible fraction —
+ *     it cannot be squeezed by the frame growing, which is exactly what
+ *     broke the headline last time.
+ *   - The frame column is `1fr` (takes whatever room is left) but now has
+ *     an explicit `max-w-[46rem]` ceiling, so it can't run away to a
+ *     disproportionate share on very wide screens. Worked through the
+ *     numbers against the hero's `max-w-[1680px]` wrapper: the frame lands
+ *     at ~43-45% of the row's usable width from 1280px up through the
+ *     1680px cap, which is the ratio the client asked for. At the single
+ *     narrowest edge of the range (exactly 1280px, where the `xl:` grid
+ *     first engages) the fixed 672px headline column leaves only ~530px
+ *     for the frame — marginally *below* the previous "too small" 576px
+ *     cap. That's a real, disclosed trade-off: it's the geometric ceiling
+ *     once the headline column is non-negotiable at 1280px specifically.
+ *     From ~1366px up (a more typical "large desktop" width) the frame is
+ *     substantially bigger than every prior attempt.
+ *   - Breakpoint stays at `xl:` (1280px), and the wrapper stays the
+ *     wider `max-w-[1680px]` hero-specific container (not `container-page`'s
+ *     1240px cap) — both carried over from the v10 fix since they're what
+ *     made room for the frame without touching the headline's own classes.
+ *   - Frame itself: same `next/image` `fill object-contain` inside an
+ *     `aspect-[1536/1024]`-locked box as before — natural ratio, no crop,
+ *     no stretch, transparency untouched. Center stays completely empty;
+ *     no countdown markup exists yet anywhere in this file.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -117,12 +153,13 @@ export function Hero() {
       <MandalaCorner className="pointer-events-none absolute -left-24 -top-16 h-72 w-72 text-[var(--color-gold)] opacity-[0.07] lg:h-96 lg:w-96" />
       <MandalaCorner className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 text-[var(--color-maroon)] opacity-[0.05] lg:h-[26rem] lg:w-[26rem]" />
 
-      <div className="container-page relative z-10">
-        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+      <div className="relative z-10 mx-auto w-full max-w-[1680px] px-5 sm:px-6 xl:px-5">
+        <div className="grid items-center gap-10 xl:grid-cols-[42rem_1fr] xl:gap-6">
+          <div className="mx-auto max-w-2xl text-center xl:mx-0 xl:max-w-none xl:text-left">
           <motion.p {...rise(0)} className="eyebrow">
             A Celebration of Flavours, Culture &amp; Community
           </motion.p>
-          <GoldRule className="mx-auto mt-3 max-w-[15rem] lg:mx-0" />
+          <GoldRule className="mx-auto mt-3 max-w-[15rem] xl:mx-0" />
 
           <motion.h1
             id="hero-heading"
@@ -136,14 +173,14 @@ export function Hero() {
 
           <motion.p
             {...rise(0.16)}
-            className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
+            className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] xl:mx-0"
           >
             Three days of incredible food, culture, music and celebration that brings us all together.
           </motion.p>
 
           <motion.ul
             {...rise(0.22)}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] xl:justify-start"
           >
             <li className="flex items-center gap-2">
               <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
@@ -169,7 +206,7 @@ export function Hero() {
               Full-width stacked on mobile for thumb-width targets. */}
           <motion.div
             {...rise(0.3)}
-            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
+            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center xl:justify-start"
           >
             <Button href="#why-visit" size="lg" variant="primary" fluid>
               Explore Festival
@@ -184,9 +221,42 @@ export function Hero() {
               Get Passport
             </Button>
           </motion.div>
+          </div>
+
+          <HeroFrame />
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Static ornamental frame, right column, desktop-only until it stacks below
+ * the content on smaller screens. The asset itself is untouched — same file,
+ * same transparency, same peacocks/vines/lotus/border — this component only
+ * decides how much room it's given at each breakpoint. Locked to the
+ * artwork's real pixel ratio (1536×1024) via `aspect-[1536/1024]` so
+ * `object-contain` never has to crop or letterbox unevenly; the whole frame
+ * is always fully visible.
+ *
+ * No countdown markup lives here — the panel drawn into the center of the
+ * artwork itself stays exactly as delivered, empty. That's deliberate per
+ * this round's brief: the timer gets mounted here in a later pass.
+ */
+function HeroFrame() {
+  return (
+    <div className="mx-auto w-full max-w-[27rem] sm:max-w-[32rem] xl:mx-0 xl:max-w-[46rem]">
+      <div className="relative aspect-[1536/1024] w-full">
+        <Image
+          src="/media/hero/countdown-frame.png"
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="(min-width: 1280px) 46rem, (min-width: 640px) 32rem, 27rem"
+          className="object-contain"
+        />
+      </div>
+    </div>
   );
 }
 
