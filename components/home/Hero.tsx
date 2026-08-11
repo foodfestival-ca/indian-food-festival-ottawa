@@ -273,20 +273,33 @@ export function Hero() {
  * `object-contain` never has to crop or letterbox unevenly; the whole frame
  * is always fully visible.
  *
+ * v14 — desktop cap raised from 44rem (704px) to 936px, ~33% larger, per
+ * the client's "substantially larger, 30-35% more" request. This is purely
+ * a ceiling increase on the SAME mechanism as before (fixed 672px headline
+ * track + a `1fr` frame column that fills whatever room is left, up to this
+ * cap) — nothing about the grid, the breakpoint, or the headline column
+ * changed, so the v13 breakpoint fix (switch at `lg:`/1024px, safe against
+ * Windows scrollbar edge cases) and the headline-wrap protection both carry
+ * over unchanged. Concretely, at a `lg:px-5` gutter and `lg:gap-6` between
+ * columns, the frame now renders at: ~288px at the 1024px floor (unchanged
+ * — still the honest geometric minimum once the headline column is
+ * protected), ~630px at 1366px, ~800px at 1536px, and the full 936px cap
+ * from ~1656px up.
+ *
  * No countdown markup lives here — the panel drawn into the center of the
  * artwork itself stays exactly as delivered, empty. That's deliberate per
  * this round's brief: the timer gets mounted here in a later pass.
  */
 function HeroFrame() {
   return (
-    <div className="mx-auto w-full max-w-[27rem] sm:max-w-[32rem] lg:mx-0 lg:max-w-[44rem]">
+    <div className="mx-auto w-full max-w-[27rem] sm:max-w-[32rem] lg:mx-0 lg:max-w-[936px]">
       <div className="relative aspect-[1536/1024] w-full">
         <Image
           src="/media/hero/countdown-frame.png"
           alt=""
           aria-hidden="true"
           fill
-          sizes="(min-width: 1024px) 44rem, (min-width: 640px) 32rem, 27rem"
+          sizes="(min-width: 1024px) 936px, (min-width: 640px) 32rem, 27rem"
           className="object-contain"
         />
       </div>
