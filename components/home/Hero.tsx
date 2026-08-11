@@ -129,6 +129,40 @@ import { EASE_BRAND } from "@/lib/motion";
  *     `aspect-[1536/1024]`-locked box as before — natural ratio, no crop,
  *     no stretch, transparency untouched. Center stays completely empty;
  *     no countdown markup exists yet anywhere in this file.
+ *
+ * v13 — v12's live result was wrong: the frame rendered underneath the CTA
+ * row instead of beside the content, on what should have been a two-column
+ * desktop width. Root cause, found by inspecting the actual compiled CSS
+ * rather than guessing: the grid *was* correctly built as two real siblings
+ * (narrative column, then `<HeroFrame />`, both direct children of one
+ * `grid` element) with a verified `@media (min-width:80rem){.xl\:grid-cols-
+ * […]}` rule in the production stylesheet — the two-column rule itself was
+ * never broken. What's fragile is the *threshold*: `xl:` is exactly 1280px,
+ * and Windows' classic (non-overlay) scrollbar subtracts ~17px from the
+ * usable layout viewport, so a browser window that's "1280px" at the OS
+ * level can report a CSS viewport a little under 1280 and land on the wrong
+ * side of the breakpoint — collapsing to the single implicit grid column,
+ * which stacks the frame below the CTAs exactly as reported, and (being
+ * much taller stacked than side-by-side) reads as running past the fold.
+ * Fix: the two-column switch now happens at `lg:` (1024px/64rem) instead of
+ * `xl:` — the same breakpoint already used everywhere else in this file for
+ * its other desktop/mobile forks, so it's consistent with the rest of the
+ * component and gives real margin against this exact edge case. The fixed
+ * 42rem headline column is untouched by this move: it stays a *hard*
+ * 42rem/672px track no matter which breakpoint switches it on, so dropping
+ * the switch-over point earlier does not reopen any wrap risk — worked
+ * through the arithmetic at 1024px specifically (the new floor): usable
+ * width after the hero's padding and the inter-column gap is ~960px, minus
+ * the fixed 672px column, leaves ~288px for the frame. Small, but never
+ * broken or overlapping — CSS Grid can shrink a `1fr`/capped track down,
+ * it cannot make two explicit siblings overlap. From ~1366px up the frame
+ * clears 600px, hits its (unchanged-in-spirit, retuned) 44rem/704px cap at
+ * ~1440px, and holds 700-704px from there through the 1680px wrapper cap —
+ * squarely inside the 600-700px / ~40-45%-of-row target for this round.
+ * Also confirmed there is no ancestor clipping the section itself (no fixed
+ * `height`/`overflow-y:hidden` above `<Hero>` in layout.tsx or globals.css)
+ * — the earlier "cut off at the bottom" symptom was the single-column
+ * fallback pushing total content past the fold, not literal CSS clipping.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -153,13 +187,13 @@ export function Hero() {
       <MandalaCorner className="pointer-events-none absolute -left-24 -top-16 h-72 w-72 text-[var(--color-gold)] opacity-[0.07] lg:h-96 lg:w-96" />
       <MandalaCorner className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 text-[var(--color-maroon)] opacity-[0.05] lg:h-[26rem] lg:w-[26rem]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-[1680px] px-5 sm:px-6 xl:px-5">
-        <div className="grid items-center gap-10 xl:grid-cols-[42rem_1fr] xl:gap-6">
-          <div className="mx-auto max-w-2xl text-center xl:mx-0 xl:max-w-none xl:text-left">
+      <div className="relative z-10 mx-auto w-full max-w-[1680px] px-5 sm:px-6 lg:px-5">
+        <div className="grid items-center gap-10 lg:grid-cols-[42rem_1fr] lg:gap-6">
+          <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
           <motion.p {...rise(0)} className="eyebrow">
             A Celebration of Flavours, Culture &amp; Community
           </motion.p>
-          <GoldRule className="mx-auto mt-3 max-w-[15rem] xl:mx-0" />
+          <GoldRule className="mx-auto mt-3 max-w-[15rem] lg:mx-0" />
 
           <motion.h1
             id="hero-heading"
@@ -173,14 +207,14 @@ export function Hero() {
 
           <motion.p
             {...rise(0.16)}
-            className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] xl:mx-0"
+            className="mx-auto mt-5 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
           >
             Three days of incredible food, culture, music and celebration that brings us all together.
           </motion.p>
 
           <motion.ul
             {...rise(0.22)}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] xl:justify-start"
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 text-[length:var(--text-sm)] font-medium text-[var(--color-ink)] lg:justify-start"
           >
             <li className="flex items-center gap-2">
               <Calendar size={17} className="text-[var(--color-saffron)]" aria-hidden="true" />
@@ -206,7 +240,7 @@ export function Hero() {
               Full-width stacked on mobile for thumb-width targets. */}
           <motion.div
             {...rise(0.3)}
-            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center xl:justify-start"
+            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
           >
             <Button href="#why-visit" size="lg" variant="primary" fluid>
               Explore Festival
@@ -245,14 +279,14 @@ export function Hero() {
  */
 function HeroFrame() {
   return (
-    <div className="mx-auto w-full max-w-[27rem] sm:max-w-[32rem] xl:mx-0 xl:max-w-[46rem]">
+    <div className="mx-auto w-full max-w-[27rem] sm:max-w-[32rem] lg:mx-0 lg:max-w-[44rem]">
       <div className="relative aspect-[1536/1024] w-full">
         <Image
           src="/media/hero/countdown-frame.png"
           alt=""
           aria-hidden="true"
           fill
-          sizes="(min-width: 1280px) 46rem, (min-width: 640px) 32rem, 27rem"
+          sizes="(min-width: 1024px) 44rem, (min-width: 640px) 32rem, 27rem"
           className="object-contain"
         />
       </div>
