@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import type { Vendor } from "@/content/vendors";
+import { isFoodVendor, type Vendor } from "@/content/vendors";
 
 /**
  * One vendor tile in the showcase grid.
@@ -70,7 +70,7 @@ export function VendorCard({ vendor, onOpen }: { vendor: Vendor; onOpen: (vendor
         </p>
 
         <span className="mt-3 inline-flex items-center gap-1.5 text-[length:var(--text-xs)] font-semibold text-[var(--color-saffron-deep)] transition-[gap] duration-300 group-hover:gap-2.5">
-          View Menu
+          {isFoodVendor(vendor) ? "View Menu" : "View Details"}
           <ArrowRight size={13} aria-hidden="true" />
         </span>
       </div>
