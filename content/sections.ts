@@ -30,10 +30,10 @@ const SectionCopySchema = z.object({
 export const sectionCopy = {
   whyVisit: SectionCopySchema.parse({
     eyebrow: "Why You'll Love It",
-    title: "Reasons to Clear Your Weekend",
-    accent: "Clear Your Weekend",
+    title: "Welcome, Explorer!",
+    accent: "Explorer!",
     intro:
-      "Fifteen thousand people came last year. Here is what they came for — and what you'd be walking into.",
+      "Your festival adventure starts here! Discover everything waiting for you at this year's festival — from the full schedule and incredible vendors to exciting activities, performances, workshops and more. Plan your day, explore something new, and make sure you don't miss a thing. Explore. Participate. Discover. Experience it all! 🇮🇳❤️",
   }),
 
   flavours: SectionCopySchema.parse({

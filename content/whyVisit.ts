@@ -1,16 +1,22 @@
 import { z } from "zod";
 
 /**
- * Bento grid of six. Doubles as a contents list for scanners who won't read
- * linearly — every card links somewhere. The former "Five States on One
- * Plate" / Featured Flavours card was removed along with the Featured
- * Flavours section itself (not moved, just taken out). `stage` now points at
- * `/schedule#performances` rather than a same-page anchor, since Performances
- * moved off the homepage onto its own route; `free`, `market`, `flavors` and
- * `kids` point at their own dedicated routes too, since Venue, Food Vendors
- * and Gallery moved off the homepage when the site became multi-page. All
- * six cards are "normal" span so the 3-column grid resolves cleanly (2 rows
- * of 3, no ragged trailing row).
+ * Bento grid — now four cards. Doubles as a contents list for scanners who
+ * won't read linearly — every card links somewhere. The former "Five States
+ * on One Plate" / Featured Flavours card was removed along with the
+ * Featured Flavours section itself (not moved, just taken out). `stage` now
+ * points at `/schedule#performances` rather than a same-page anchor, since
+ * Performances moved off the homepage onto its own route; `market`,
+ * `flavors` and `kids` point at their own dedicated routes too, since Venue,
+ * Food Vendors and Gallery moved off the homepage when the site became
+ * multi-page.
+ *
+ * `free` ("Free for Everyone") and `passport` ("The Festival Passport")
+ * were removed entirely at the client's request — not just their CTA (which
+ * had already been stripped in an earlier pass), the whole card. See
+ * components/home/WhyVisit.tsx for the matching grid-column adjustment (was
+ * a 3-column bento sized for six cards, now 2 columns for a clean 2×2 with
+ * four).
  */
 
 const ReasonSchema = z.object({
@@ -24,12 +30,10 @@ const ReasonSchema = z.object({
 });
 
 export const whyVisit = z.array(ReasonSchema).parse([
-  { id: "free",       title: "Free for Everyone",        blurb: "No ticket, no gate fee, no age limit. You pay only for what you choose to eat or buy.",                              href: "/venue",      icon: "gift",     span: "normal" },
   { id: "stage",      title: "Watch live performances",  blurb: "Bollywood dance performances, classical dance, live music, folk, and three nights of DJ",                          href: "/schedule#performances", icon: "music",  span: "normal" },
   { id: "flavors",    title: "Flavors from India",       blurb: "Street food, regional specialties and festival favourites — dishes from every corner of India, all in one place.",   href: "/vendor",       icon: "utensils", span: "normal" },
   { id: "market",     title: "A Full Marketplace",       blurb: "Textiles, jewellery, apparel and Ottawa's Indian-owned makers. Come hungry, leave carrying things.",                href: "/vendor",       icon: "store",  span: "normal" },
   { id: "kids",       title: "Kids Zone and Activities", blurb: "A dedicated Kids Zone, stroller-friendly grounds and food mild enough for small palates.",                          href: "/gallery",      icon: "baby",   span: "normal" },
-  { id: "passport",   title: "The Festival Passport",    blurb: "Claim it free, check in at the festival, enter the prize draws. It takes under a minute.",                          href: "/passport",     icon: "ticket", span: "normal" },
 ]);
 
 export type Reason = (typeof whyVisit)[number];
