@@ -173,11 +173,15 @@ export function Nav() {
                 sits well down the page, so it must also live permanently up
                 here. Always the solid secondary (maroon) variant now that
                 the header is always cream underneath it. */}
+            {/* Text colour forced to pure white — the client flagged the
+                default `variant="secondary"` cream-on-maroon as hard to
+                read. Background/shape/size/typography/position all
+                untouched; this is a colour-only override. */}
             <Button
               href="/passport"
               size="sm"
               variant="secondary"
-              className="hidden sm:inline-flex"
+              className="hidden text-white hover:text-white sm:inline-flex"
             >
               <Ticket size={16} aria-hidden="true" />
               Get Passport

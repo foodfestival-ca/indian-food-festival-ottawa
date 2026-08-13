@@ -123,7 +123,7 @@ export const festival = FestivalSchema.parse({
   },
 
   stats: [
-    { value: 25,    suffix: "",  label: "Food Vendors",      sub: "From across India" },
+    { value: 25,    suffix: "",  label: "Food Vendors",      sub: "Flavours across India" },
     { value: 15,    suffix: "+", label: "Product Vendors",   sub: "& Local Businesses" },
     { value: 35,    suffix: "+", label: "Performances",      sub: "Music, Dance & More" },
     { value: 10000, suffix: "+", label: "Happy Visitors",    sub: "Every Year" },
