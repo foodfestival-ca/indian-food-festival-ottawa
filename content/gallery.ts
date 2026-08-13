@@ -256,7 +256,13 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     type: "photo",
     title: "High Fives All Around",
     year: "2025",
-    event: "kids-zone",
+    // NOT reclassified into Kids Zone — visual inspection during the Kids
+    // Zone content correction (2026-08-13) confirmed this file actually
+    // shows an adult performer dancing, not Kids Zone content, despite its
+    // id/title/category. Left as `event: "festival"` (default) so it stays
+    // in the general 2025 tab, where the photo genuinely belongs. Not
+    // touched further — the id/title/category mismatch is part of the
+    // wider pre-existing 2025 filename/content issue, out of scope here.
     category: "Kids Zone",
     alt: "A performer high-fiving young dancers in red and white tracksuits",
     image: `${BASE_2025}/kids-high-five.jpg`,
@@ -367,7 +373,9 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     type: "photo",
     title: "Name That Dish",
     year: "2025",
-    event: "kids-zone",
+    // NOT reclassified into Kids Zone — visual inspection confirmed this
+    // file actually shows three adult volunteers in festival t-shirts, not
+    // Kids Zone content. See the note on `kids-high-five` above.
     category: "Kids Zone",
     alt: "A large group of children and adults celebrating, holding up dish name signs",
     image: `${BASE_2025}/kids-team-food-signs.jpg`,
@@ -434,7 +442,11 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     type: "photo",
     title: "Kids Zone Face Painting",
     year: "2025",
-    event: "kids-zone",
+    // NOT reclassified into Kids Zone — visual inspection confirmed this
+    // file actually shows an adult classical dancer in a green sari, not a
+    // face-painting photo, despite its id/title/category. See the note on
+    // `kids-high-five` above. The genuine Kids Zone face-painting photo now
+    // lives at `kids-face-painting-2025` below.
     category: "Kids Zone",
     alt: "A child having a Spider-Man design face-painted at the Kids Zone",
     image: `${BASE_2025}/spiderman-face-paint.jpg`,
