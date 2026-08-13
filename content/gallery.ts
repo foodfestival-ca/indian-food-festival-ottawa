@@ -33,6 +33,14 @@ import { z } from "zod";
  * media is never mixed into a festival year's grid and vice versa, even
  * when they share the same `year`. Add a future event kind (e.g. a launch
  * party) the same way — new `event` value, `year`, no schema change needed.
+ *
+ * "kids-zone" is the same kind of partition, added for the Kids Zone
+ * gallery tab: it groups Kids Zone content collectively, independent of any
+ * single festival year, rather than filing it under whichever year it
+ * happens to date from. The three original 2025 Kids Zone photos were
+ * migrated from `event: "festival"` to `event: "kids-zone"` for this reason
+ * — they still carry their real `year` for record-keeping, it's just no
+ * longer what the UI uses to decide where they show up.
  */
 
 export const GALLERY_CATEGORIES = [
@@ -46,7 +54,7 @@ export const GALLERY_CATEGORIES = [
 
 const CategorySchema = z.enum(GALLERY_CATEGORIES);
 
-export const GALLERY_EVENTS = ["festival", "preview-night"] as const;
+export const GALLERY_EVENTS = ["festival", "preview-night", "kids-zone"] as const;
 
 const GalleryItemSchema = z.object({
   id: z.string(),
@@ -55,8 +63,11 @@ const GalleryItemSchema = z.object({
   /** 4-digit year as a string, e.g. "2026". Deliberately not a fixed enum —
    *  future years (2027, 2028, ...) are supported by adding data only, no
    *  code change. GalleryShowcase derives its year tabs from whatever
-   *  distinct values are actually present here. */
-  year: z.string().regex(/^\d{4}$/),
+   *  distinct values are actually present here. Optional because a handful
+   *  of Kids Zone entries are promotional/reference imagery for an upcoming
+   *  activity rather than a dated photo — for those, no year is genuinely
+   *  true, so the field is left out rather than forced. */
+  year: z.string().regex(/^\d{4}$/).optional(),
   /** Defaults to "festival" so every item added before this field existed
    *  is unaffected — only Preview Night entries need to set this. */
   event: z.enum(GALLERY_EVENTS).default("festival"),
@@ -77,6 +88,7 @@ const GalleryItemSchema = z.object({
 const BASE = "/media/gallery/2024";
 const BASE_2025 = "/media/gallery/2025";
 const BASE_PREVIEW_NIGHT_2026 = "/media/gallery/preview-night-2026";
+const BASE_KIDS_ZONE = "/media/gallery/kids-zone";
 
 export const galleryItems = z.array(GalleryItemSchema).parse([
   // ---------- Photos ----------
@@ -244,6 +256,7 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     type: "photo",
     title: "High Fives All Around",
     year: "2025",
+    event: "kids-zone",
     category: "Kids Zone",
     alt: "A performer high-fiving young dancers in red and white tracksuits",
     image: `${BASE_2025}/kids-high-five.jpg`,
@@ -354,6 +367,7 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     type: "photo",
     title: "Name That Dish",
     year: "2025",
+    event: "kids-zone",
     category: "Kids Zone",
     alt: "A large group of children and adults celebrating, holding up dish name signs",
     image: `${BASE_2025}/kids-team-food-signs.jpg`,
@@ -420,11 +434,79 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     type: "photo",
     title: "Kids Zone Face Painting",
     year: "2025",
+    event: "kids-zone",
     category: "Kids Zone",
     alt: "A child having a Spider-Man design face-painted at the Kids Zone",
     image: `${BASE_2025}/spiderman-face-paint.jpg`,
     width: 1066,
     height: 1599,
+  },
+  {
+    id: "kids-face-painting-2025",
+    type: "photo",
+    title: "Face Painting at the Kids Zone",
+    year: "2025",
+    event: "kids-zone",
+    category: "Kids Zone",
+    alt: "A young boy having a Spider-Man mask design face-painted by an artist at the festival's Kids Zone",
+    image: `${BASE_KIDS_ZONE}/kids-face-painting-2025.jpg`,
+    width: 933,
+    height: 1400,
+  },
+  {
+    id: "mandala-art-activity",
+    type: "photo",
+    title: "Mandala Art Activity",
+    event: "kids-zone",
+    category: "Kids Zone",
+    alt: "A hand-drawn and colored mandala design on paper, in blue and green, illustrating the Mandala Art activity",
+    image: `${BASE_KIDS_ZONE}/mandala-art-activity.jpg`,
+    width: 387,
+    height: 516,
+  },
+  {
+    id: "nail-art-activity",
+    type: "photo",
+    title: "Nail Art Activity",
+    event: "kids-zone",
+    category: "Kids Zone",
+    alt: "A pair of hands with nails painted in pink and blue patterns, illustrating the Nail Art activity",
+    image: `${BASE_KIDS_ZONE}/nail-art-activity.jpg`,
+    width: 447,
+    height: 447,
+  },
+  {
+    id: "tin-can-toss-game",
+    type: "photo",
+    title: "Tin-Can Toss Game",
+    event: "kids-zone",
+    category: "Kids Zone",
+    alt: "A child throwing a ball at a stack of tin cans on a table, illustrating the tin-can toss carnival game",
+    image: `${BASE_KIDS_ZONE}/tin-can-toss-game.jpg`,
+    width: 600,
+    height: 400,
+  },
+  {
+    id: "net-cricket-activity",
+    type: "photo",
+    title: "Net Cricket Activity",
+    event: "kids-zone",
+    category: "Kids Zone",
+    alt: "Two players using a portable cricket batting cage outdoors, illustrating the net cricket activity",
+    image: `${BASE_KIDS_ZONE}/net-cricket-activity.jpg`,
+    width: 894,
+    height: 894,
+  },
+  {
+    id: "inflatable-obstacle-course",
+    type: "photo",
+    title: "30-ft Inflatable Obstacle Course",
+    event: "kids-zone",
+    category: "Kids Zone",
+    alt: "A 30-foot inflatable obstacle course bouncy house, illustrating the inflatable obstacle course activity",
+    image: `${BASE_KIDS_ZONE}/inflatable-obstacle-course.jpg`,
+    width: 1264,
+    height: 843,
   },
   {
     id: "food-sampling-prep",
