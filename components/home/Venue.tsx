@@ -30,8 +30,8 @@ export function Venue({ className }: { className?: string } = {}) {
         <SectionHeader
           id="venue-heading"
           eyebrow="Finding Us"
-          title="Clarke Fields Park, Ottawa"
-          accent="Ottawa"
+          title="Clarke Fields Park, Nepean"
+          accent="Nepean"
           intro="Free admission, free parking, and level access throughout. Here is everything you need to plan the trip."
         />
 

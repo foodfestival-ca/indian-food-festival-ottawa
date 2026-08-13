@@ -62,7 +62,7 @@ export function Contact() {
                 Find Us
               </h3>
               <p className="mt-1.5 text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
-                {festival.venue.name}, {festival.venue.city}, {festival.venue.regionCode}
+                {festival.venue.name}, Nepean
               </p>
             </a>
           </Reveal>

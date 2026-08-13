@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useScrollState } from "@/lib/hooks";
 
 /**
- * Floating "Get Passport" CTA — mobile only, appears once the hero is gone.
+ * Floating "Claim your passport" CTA — mobile only, appears once the hero is gone.
  *
  * Lucide `Ticket` rather than the 🎟 emoji: emoji render differently on every
  * OS, at different optical weights, which undermines a premium build.
@@ -41,7 +41,7 @@ export function StickyMobileCTA() {
               className="flex min-h-[var(--touch-min)] flex-1 items-center justify-center gap-2 rounded-[var(--radius-pill)] px-4 text-[length:var(--text-sm)] font-medium text-[var(--color-cream)]"
             >
               <Ticket size={17} className="text-[var(--color-gold)]" aria-hidden="true" />
-              Get Passport
+              Claim your passport
             </Link>
             <button
               type="button"

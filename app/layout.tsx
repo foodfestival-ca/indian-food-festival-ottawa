@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     default: `${festival.name} 2026 | ${festival.subheading}`,
     template: `%s | ${festival.name}`,
   },
-  description: `${festival.subheading}. ${festival.dateLabel} at ${festival.venue.name}, Ottawa. Free admission. ${totalVendors} vendors, ${performancesStat.value}${performancesStat.suffix} live performances, marketplace and Kids Zone.`,
+  description: `${festival.subheading}. ${festival.dateLabel} at ${festival.venue.name}, Nepean. Free admission. ${totalVendors} vendors, ${performancesStat.value}${performancesStat.suffix} live performances, marketplace and Kids Zone.`,
   applicationName: festival.name,
   keywords: [
     "Indian food festival Ottawa",

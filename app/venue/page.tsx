@@ -7,7 +7,7 @@ import { pageMeta } from "@/lib/seo";
 export const metadata: Metadata = pageMeta({
   title: "Venue",
   description:
-    "Clarke Fields Park, Ottawa — directions, parking and accessibility for the Indian Food Festival of Ottawa 2026, August 21-23. Free admission, free parking, level access throughout. Plus frequently asked questions.",
+    "Clarke Fields Park, Nepean — directions, parking and accessibility for the Indian Food Festival of Ottawa 2026, August 21-23. Free admission, free parking, level access throughout. Plus frequently asked questions.",
   path: "/venue",
 });
 

@@ -54,7 +54,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin size={16} className="mt-0.5 shrink-0 text-[var(--color-gold)]" aria-hidden="true" />
-                <span>{festival.venue.name}, Ottawa</span>
+                <span>{festival.venue.name}, Nepean</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail size={16} className="mt-0.5 shrink-0 text-[var(--color-gold)]" aria-hidden="true" />

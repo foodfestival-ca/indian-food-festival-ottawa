@@ -148,7 +148,7 @@ export function Countdown() {
             We&rsquo;re open — come on down
           </p>
           <p className="mt-1.5 text-[length:var(--text-sm)] text-[var(--color-gold-soft)]">
-            {festival.venue.name}, Ottawa
+            {festival.venue.name}, Nepean
           </p>
         </div>
       )}

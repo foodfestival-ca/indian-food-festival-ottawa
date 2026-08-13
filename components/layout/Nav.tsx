@@ -184,7 +184,7 @@ export function Nav() {
               className="hidden text-white hover:text-white sm:inline-flex"
             >
               <Ticket size={16} aria-hidden="true" />
-              Claim Passport
+              Claim your passport
             </Button>
 
             {/* Hamburger — desktop (≥1024px) never sees this; lg:hidden. */}
@@ -270,7 +270,7 @@ export function Nav() {
               <div className="container-page mt-6">
                 <Button href="/passport" size="lg" fluid onClick={() => setOpen(false)}>
                   <Ticket size={18} aria-hidden="true" />
-                  Get Passport
+                  Claim your passport
                 </Button>
               </div>
             </motion.div>

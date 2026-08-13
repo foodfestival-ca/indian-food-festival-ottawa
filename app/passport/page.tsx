@@ -66,7 +66,7 @@ export default function PassportPage() {
           <Reveal delay={0.12} className="mt-8">
             <FormButton form="passport" variant="primary" size="lg">
               <Ticket size={18} aria-hidden="true" />
-              Claim Your Passport
+              Claim your passport
             </FormButton>
             <p className="mt-3 text-[length:var(--text-xs)] text-[var(--color-cream)]/55">
               Free · Takes under a minute
@@ -161,11 +161,11 @@ export default function PassportPage() {
             <div className="mt-6">
               <FormButton form="passport" variant="primary" size="lg">
                 <Ticket size={18} aria-hidden="true" />
-                Claim Now
+                Claim your passport
               </FormButton>
             </div>
             <p className="mt-4 text-[length:var(--text-sm)] text-[var(--color-ink-muted)]">
-              {festival.dateLabel} · {festival.venue.name}, {festival.venue.city}
+              {festival.dateLabel} · {festival.venue.name}, Nepean
             </p>
             <p className="mt-2 text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.16em] text-[var(--color-maroon)]/60">
               {festival.themeLine}
