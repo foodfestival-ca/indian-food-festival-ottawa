@@ -186,6 +186,23 @@ import { EASE_BRAND } from "@/lib/motion";
  *      calendar file, Footer, Contact, Passport) is untouched, since only
  *      this one on-page line was in scope.
  *   4. "Get Passport" → "Claim your passport" on the third CTA.
+ *
+ * v19 — visual polish pass on v18's live result (client feedback, with a
+ * live screenshot at their actual 1210px viewport confirming both issues):
+ *   1. H1 was `--text-5xl` (clamps up to 72px), which at the fixed 554px
+ *      narrative column wrapped the new, longer sentence onto FOUR lines
+ *      (measured: 273px tall) and visually dominated the left half of the
+ *      Hero. Dropped one step on the existing type scale to `--text-4xl`
+ *      (clamps up to 52px) — an existing, already-used-elsewhere token, not
+ *      an invented size — which is a ~28% reduction at the desktop cap
+ *      (72→52px), squarely in the client's requested 20-30% range, and
+ *      naturally reflows the same unmodified sentence to 2-3 lines in the
+ *      same column at every breakpoint (no manual `<br/>`, no wording
+ *      change — exactly per the "don't force awkward line breaks, don't
+ *      change the wording" brief). Nothing else about the H1 — weight,
+ *      colour, font, column width, position in the hierarchy — changed.
+ *   2. The countdown's contrast fix lives entirely in `Countdown.tsx` (see
+ *      its own v2 note) — nothing in this file's countdown wiring changed.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -221,7 +238,7 @@ export function Hero() {
           <motion.h1
             id="hero-heading"
             {...rise(0.08)}
-            className="mt-5 font-[family-name:var(--font-display)] text-[length:var(--text-5xl)] font-extrabold leading-[var(--leading-display)] text-[var(--color-maroon)]"
+            className="mt-5 font-[family-name:var(--font-display)] text-[length:var(--text-4xl)] font-extrabold leading-[var(--leading-display)] text-[var(--color-maroon)]"
           >
             Ottawa&rsquo;s biggest celebration of Indian food and culture
           </motion.h1>
