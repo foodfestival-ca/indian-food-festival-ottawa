@@ -329,7 +329,14 @@ export function Hero() {
           </motion.div>
           </div>
 
-          <motion.div {...rise(0.36)} className="mx-auto w-full max-w-sm lg:mx-0 lg:max-w-md">
+          {/* Nudged right + down per client feedback on the v20 hero photo —
+              `pl`/`mt` rather than touching the existing `mx-auto`/`lg:mx-0`
+              centering (which framer-motion's own `transform` on this same
+              element makes risky to fight with `translate-*` utilities), so
+              the mobile-centered / desktop-left-aligned behavior above is
+              unchanged, just offset a little further right/down from
+              wherever it already lands. */}
+          <motion.div {...rise(0.36)} className="mx-auto mt-6 w-full max-w-sm lg:mx-0 lg:mt-10 lg:max-w-md lg:pl-8">
             <Countdown />
           </motion.div>
         </div>
