@@ -184,7 +184,7 @@ export function Nav() {
               className="hidden text-white hover:text-white sm:inline-flex"
             >
               <Ticket size={16} aria-hidden="true" />
-              Get Passport
+              Claim Passport
             </Button>
 
             {/* Hamburger — desktop (≥1024px) never sees this; lg:hidden. */}

@@ -70,17 +70,22 @@ export function Countdown() {
     <div
       className="relative rounded-[var(--radius-card)] p-5 sm:p-7"
       style={{
-        // Tinted, blurred glass — always reads as dark burgundy regardless
-        // of what's behind it on the photograph, instead of the old fully
-        // transparent panel that let the photo's own colours (and
-        // sometimes very dark ones) sit directly behind the numbers.
-        background:
-          "linear-gradient(155deg, rgba(107,16,40,0.82) 0%, rgba(42,26,24,0.78) 100%)",
+        // v4 — client asked for the maroon tint gone entirely: fully
+        // transparent glass again, blur only. Numbers/labels stay the v2
+        // cream/gold-soft colours (not the original maroon) — that alone is
+        // a big legibility improvement over the very first version even
+        // with zero tint, since light text tolerates a busy blurred photo
+        // far better than dark maroon text did. The one compensating change
+        // versus v2/v3: the text-shadow below is strengthened (was a subtle
+        // depth-only shadow while the tint was doing the contrast work; now
+        // it's the main thing anchoring the text against whatever the
+        // blurred photo is doing at that spot).
+        background: "transparent",
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
         border: "1px solid rgba(232,217,168,0.32)",
         boxShadow: "0 12px 32px rgba(20,10,10,0.35)",
-        textShadow: "0 1px 3px rgba(0,0,0,0.25)",
+        textShadow: "0 1px 3px rgba(0,0,0,0.55), 0 2px 14px rgba(0,0,0,0.35)",
         // Forces this panel onto its own GPU compositing layer, independent
         // of the ancestor's entrance animation (Hero wraps this in a
         // motion.div that animates opacity + a y-transform on mount).

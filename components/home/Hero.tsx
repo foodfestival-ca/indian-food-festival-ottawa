@@ -243,9 +243,15 @@ export function Hero() {
             Ottawa&rsquo;s biggest celebration of Indian food and culture
           </motion.h1>
 
+          {/* Darkened from --color-ink-muted to --color-ink — client
+              reported this line was hard to read against the photo behind
+              the scrim. ink-muted (#6E5A56) was tuned assuming a fully
+              opaque cream backing; --color-ink (#2A1A18) holds up on its
+              own even where the scrim thins out, same fix logic as the
+              countdown's contrast pass. */}
           <motion.p
             {...rise(0.16)}
-            className="mx-auto mt-3 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink-muted)] lg:mx-0"
+            className="mx-auto mt-3 max-w-[34rem] text-[length:var(--text-lg)] text-[var(--color-ink)] lg:mx-0"
           >
             Three days of incredible food, culture, music and celebration that brings us all together.
           </motion.p>
@@ -263,7 +269,12 @@ export function Hero() {
               Clarke Fields Park, Nepean
             </li>
             <li>
-              <span className="rounded-[var(--radius-pill)] bg-[var(--color-emerald)]/12 px-3 py-1 font-semibold text-[var(--color-emerald)]">
+              {/* Background bumped from /12 to /18 opacity plus a hairline
+                  border — client reported this badge was hard to read.
+                  At 12% the pill's own backing was so faint it barely
+                  registered as a surface, so legibility depended almost
+                  entirely on the photo behind it. */}
+              <span className="rounded-[var(--radius-pill)] border border-[var(--color-emerald)]/25 bg-[var(--color-emerald)]/18 px-3 py-1 font-semibold text-[var(--color-emerald)]">
                 {festival.admission}
               </span>
             </li>
