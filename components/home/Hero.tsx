@@ -203,6 +203,17 @@ import { EASE_BRAND } from "@/lib/motion";
  *      colour, font, column width, position in the hierarchy — changed.
  *   2. The countdown's contrast fix lives entirely in `Countdown.tsx` (see
  *      its own v2 note) — nothing in this file's countdown wiring changed.
+ *
+ * v20 — Phase 5: hero background swapped to the client-supplied photograph
+ * (`public/media/hero/festival-team-photo.jpg` — the festival team posed
+ * under the Navatara's Indian Food Festival banner), replacing the
+ * illustrated arch/skyline artwork used since v6. Image itself is untouched
+ * (re-encoded for web delivery only, same 2048×1152 pixels, no crop, no
+ * distortion — cropping happens live via CSS `object-position`, per
+ * breakpoint, same mechanism as before). See `HeroMedia`'s own comment for
+ * the crop reasoning. Nothing else in this file changed: layout, H1
+ * copy/size, countdown, CTAs, and the readability scrims are all untouched
+ * from v19.
  */
 export function Hero() {
   const reduced = useReducedMotion();
@@ -341,14 +352,39 @@ function HeroMedia() {
       <div className="absolute inset-0 bg-[var(--color-cream)]" />
 
       {/* The artwork itself, full-bleed. Two instances so desktop/tablet and
-          mobile can keep their own hand-tuned crop (favouring the arch,
-          skyline and string lights over the busier rangoli pattern low in
-          the frame) rather than sharing one compromise position. */}
+          mobile can keep their own hand-tuned crop rather than sharing one
+          compromise position.
+          v20 — Phase 5: swapped to the client's supplied team photo under
+          the festival banner (was the illustrated arch/skyline scene).
+          Because the source is landscape (2048×1152, ~16:9) and
+          `object-cover` always fills the container first, which axis gets
+          cropped flips between breakpoints:
+            - Desktop/tablet (`lg:` — typically wider-than-16:9 once nav
+              chrome is subtracted): the image's HEIGHT is the constrained
+              axis, so objectPosition's Y matters most. Set to 22% (rather
+              than dead-centre) to keep the banner and the standing row in
+              frame and lose more of the grass/legs at the very bottom
+              first, per the brief's "banner should remain reasonably
+              visible" / "don't zoom into faces" directions. X at 58%
+              (right-of-centre) because the desktop scrim below is opaque
+              over roughly the left half for the copy column — 58% pushes a
+              richer, less-scrimmed slice of the actual group into the
+              visible right two-thirds rather than wasting frame on
+              content that's covered anyway.
+            - Mobile/tablet-portrait (`lg:hidden`): the reverse — the
+              image's WIDTH is the constrained axis (a tall narrow viewport
+              against a landscape source), so almost the FULL vertical
+              extent of the photo shows regardless of Y, and X is what
+              actually decides the crop. Centred at 50% to land on the main
+              cluster of the group directly under the centre of the banner
+              text, rather than favouring the Navatara/Phoenix Homes logos
+              at the far edges, which get cropped out on narrow screens
+              either way. */}
       <div className="absolute inset-0 hidden lg:block">
-        <HeroImage objectPosition="64% 38%" />
+        <HeroImage objectPosition="58% 22%" />
       </div>
       <div className="absolute inset-0 lg:hidden">
-        <HeroImage objectPosition="58% 32%" />
+        <HeroImage objectPosition="50% 30%" />
       </div>
 
       {/* Desktop readability scrim: opaque cream behind the copy column on
@@ -406,7 +442,7 @@ function HeroImage({ objectPosition }: { objectPosition: string }) {
       transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
     >
       <Image
-        src="/media/hero/festival-ottawa.jpg"
+        src="/media/hero/festival-team-photo.jpg"
         alt=""
         aria-hidden="true"
         fill
