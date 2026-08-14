@@ -510,6 +510,20 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     height: 894,
   },
   {
+    id: "planet-cricket-logo",
+    type: "photo",
+    title: "Planet Cricket",
+    event: "kids-zone",
+    category: "Kids Zone",
+    // Client-supplied brand logo (not a festival photo) for the partner
+    // running the Net Cricket activity above — alt text describes the
+    // logo itself rather than implying it was photographed at the event.
+    alt: "The Planet Cricket logo — a cricket ball orbiting a navy planet with a coloured ring, above the wordmark \"Planet Cricket\"",
+    image: `${BASE_KIDS_ZONE}/planet-cricket-logo.jpg`,
+    width: 1200,
+    height: 1000,
+  },
+  {
     id: "inflatable-obstacle-course",
     type: "photo",
     title: "30-ft Inflatable Obstacle Course",
