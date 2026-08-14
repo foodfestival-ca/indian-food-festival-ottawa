@@ -47,7 +47,7 @@ export const journey = z.array(YearSchema).parse([
       "The festival grew in every direction — more vendors, a larger site, a fuller performance programme — and both CBC and CTV covered the weekend.",
     stats: [
       { value: "15,000+", label: "Attendees" },
-      { value: "60+", label: "Vendors" },
+      { value: "40+", label: "Vendors" },
       { value: "CBC · CTV", label: "Coverage" },
     ],
     image: "/media/journey/2025.jpg",
@@ -58,7 +58,7 @@ export const journey = z.array(YearSchema).parse([
     year: "2026",
     title: "The Largest Yet",
     blurb:
-      `Three days, ${currentTotalVendors} vendors, and the most ambitious cultural programme we have staged. The third edition is the one we have been building toward.`,
+      `Three days, ${currentTotalVendors} vendors, and the most ambitious cultural programme we have staged.`,
     stats: [
       { value: "3", label: "Days" },
       { value: currentTotalVendors, label: "Vendors" },

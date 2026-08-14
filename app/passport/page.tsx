@@ -25,7 +25,7 @@ const STEPS = [
 ];
 
 const DRAW_TIMES = [
-  { day: "Friday, August 21", time: "9:00 PM" },
+  { day: "Friday, August 21", time: "6:00 PM & 9:00 PM" },
   { day: "Saturday, August 22", time: "4:00 PM & 9:00 PM" },
   { day: "Sunday, August 23", time: "4:00 PM" },
 ];
@@ -115,9 +115,9 @@ export default function PassportPage() {
           <SectionHeader
             id="prize-heading"
             eyebrow="Prizes"
-            title="12 Winners. 3 Days. Lots of Excitement."
+            title="15 Winners. 3 Days. Lots of Excitement."
             accent="Lots of Excitement."
-            intro="We'll be giving away prizes throughout the festival, with 12 lucky winners selected across the three days."
+            intro="We'll be giving away prizes throughout the festival, with 15 lucky winners selected across the three days."
           />
 
           <Reveal delay={0.1} className="mx-auto mt-10 max-w-[36rem]">

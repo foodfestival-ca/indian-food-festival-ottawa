@@ -26,6 +26,13 @@ import { z } from "zod";
  * document), `cuisine`/`description`/`menuItems` are left empty rather than
  * invented — `VendorCard`/`VendorModal` render fine with empty strings/
  * arrays here, just without that optional line of copy.
+ *
+ * `description` for the 5 Product & Marketplace vendors was filled in from
+ * a client-approved spreadsheet of exact wording (verbatim, not paraphrased
+ * — Flaunt It by F, Glorious Gleam by Aditi, Tarot Ocean, The Bling Baari,
+ * BBG). 7 other names on that same spreadsheet had no confident match to an
+ * existing vendor here and were deliberately left unmatched rather than
+ * guessed — see the phase's own report for the list.
  */
 
 export const VENDOR_CATEGORIES = [
@@ -313,7 +320,7 @@ export const vendors = z.array(VendorSchema).parse([
     name: "Flaunt It by F",
     cuisine: "Henna Art by Fatima Ehsan",
     category: "Henna Art",
-    description: "",
+    description: "Beautiful henna artistry celebrating tradition, creativity, and expression.",
     image: "/vendors/flaunt-it-by-f.jpg",
     menuItems: [],
   },
@@ -322,7 +329,7 @@ export const vendors = z.array(VendorSchema).parse([
     name: "Glorious Gleam by Aditi",
     cuisine: "Fashion Accessories, Jewelry & More",
     category: "Fashion & Jewelry",
-    description: "",
+    description: "Elegant Lucknow-inspired Chikankari fashion showcasing timeless Indian craftsmanship.",
     image: "/vendors/glorious-gleam-by-aditi.jpg",
     menuItems: [],
   },
@@ -331,7 +338,7 @@ export const vendors = z.array(VendorSchema).parse([
     name: "Tarot Ocean",
     cuisine: "Divine Insights Await",
     category: "Tarot & Wellness",
-    description: "",
+    description: "Explore tarot insights, intuition, guidance, and possibilities.",
     image: "/vendors/tarot-ocean.jpg",
     menuItems: [],
   },
@@ -340,7 +347,7 @@ export const vendors = z.array(VendorSchema).parse([
     name: "The Bling Baari",
     cuisine: "",
     category: "Fashion & Jewelry",
-    description: "",
+    description: "Statement jewellery and accessories adding sparkle to outfits.",
     image: "/vendors/the-bling-baari.jpg",
     menuItems: [],
   },
@@ -349,7 +356,7 @@ export const vendors = z.array(VendorSchema).parse([
     name: "BBG (Bangle Box Girl)",
     cuisine: "",
     category: "Fashion & Jewelry",
-    description: "",
+    description: "Colourful bangles bringing tradition, elegance, and celebration.",
     image: "/vendors/bbg-bangle-box-girl.jpg",
     menuItems: [],
   },
