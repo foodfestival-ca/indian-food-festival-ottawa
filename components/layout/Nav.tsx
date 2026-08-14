@@ -37,6 +37,10 @@ const NAV_LINKS = [
   { label: "Sponsors", href: "/sponsors" },
   { label: "Gallery", href: "/gallery" },
   { label: "Schedule", href: "/schedule" },
+  // `stackedLabel` — desktop-only compact presentation for this one item
+  // (see the desktop `<ul>` render below). `label` is still the full
+  // string and is what the mobile drawer renders — untouched there.
+  { label: "Activities & Workshops", href: "/activities", stackedLabel: ["Activities", "&", "Workshops"] },
   { label: "Passport", href: "/passport" },
   { label: "Venue", href: "/venue" },
   { label: "About", href: "/about" },
@@ -124,24 +128,43 @@ export function Nav() {
 
           {/*
             Desktop navigation — permanent horizontal row, visible from `lg`
-            (1024px) up; no hamburger and no drawer at this width or above.
+            (1024px) up, same as the original arrangement. A v7 attempt at
+            fixing 9-link crowding by bumping this to `xl` (1280px) and
+            tightening every link's padding/gap changed how the whole bar
+            looked and sat at ordinary desktop widths too, not just the
+            narrow 1024-1279px edge — reverted per client feedback ("prefer
+            the previous navigation arrangement"). Back to `lg:flex`,
+            `gap-1`, `px-4` — the original spacing. The actual fit fix now
+            lives entirely in the "Claim your passport" CTA below (made
+            slightly more compact), which the client asked to try first
+            rather than changing the breakpoint or the links' own spacing.
             `flex-nowrap` plus `whitespace-nowrap` on each label are the
             explicit no-wrap guarantee; `min-w-0` on the row lets the flexbox
             actually shrink logo/CTA space instead of forcing an overflow if
-            the viewport is ever right at the 1024px edge.
+            the viewport is ever right at the breakpoint edge.
           */}
           <ul className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-1 lg:flex">
             {NAV_LINKS.map((link) => {
               const current = isCurrent(link.href);
               const isHome = link.href === "/";
+              // Only "Activities & Workshops" declares this — every other
+              // item falls through to the plain single-line label below.
+              const stacked = "stackedLabel" in link ? link.stackedLabel : null;
               return (
                 <li key={link.href} className="shrink-0">
                   <Link
                     href={link.href}
                     onClick={isHome ? handleHomeClick : undefined}
                     aria-current={current ? "page" : undefined}
+                    // Only set when stacked: the visual 3-line block below is
+                    // marked aria-hidden, so the accessible name has to come
+                    // from here instead — screen readers still hear
+                    // "Activities & Workshops", exactly the mobile wording,
+                    // not "Activities Workshops" with the "&" dropped.
+                    aria-label={stacked ? link.label : undefined}
                     className={cn(
-                      "tap-target relative block whitespace-nowrap rounded-[var(--radius-pill)] px-4 text-[length:var(--text-sm)] font-medium transition-colors",
+                      "tap-target relative flex items-center justify-center whitespace-nowrap rounded-[var(--radius-pill)] px-4 font-medium transition-colors",
+                      stacked ? "py-1" : "text-[length:var(--text-sm)]",
                       "focus-visible:outline-3 focus-visible:outline-offset-2",
                       // Verified against cream #FDF8F0.
                       "text-[var(--color-ink)]", //          15.77:1
@@ -150,7 +173,26 @@ export function Nav() {
                       current && "font-semibold text-[var(--color-maroon)]"
                     )}
                   >
-                    {link.label}
+                    {stacked ? (
+                      // Compact 3-line stack — reduces this item's
+                      // horizontal footprint from "Activities & Workshops"
+                      // (22 characters) down to the width of "Workshops"
+                      // (its longest line), recovering the row space that
+                      // made the desktop nav feel crowded. Tight leading
+                      // (`leading-[1.15]`) and a smaller size than the rest
+                      // of the row (`text-[length:var(--text-xs)]`) keep the
+                      // whole stack well under the nav's own height so the
+                      // bar never grows taller for this one item; `<ul>`'s
+                      // `items-center` centers it vertically like every
+                      // other link.
+                      <span aria-hidden="true" className="flex flex-col items-center text-[length:var(--text-xs)] leading-[1.15]">
+                        <span>{stacked[0]}</span>
+                        <span>{stacked[1]}</span>
+                        <span>{stacked[2]}</span>
+                      </span>
+                    ) : (
+                      link.label
+                    )}
                     {/* Current-item indicator.
                         Colour lives in a non-text underline (needs only 3:1)
                         rather than the label itself — orange fails AA as TEXT
@@ -159,7 +201,20 @@ export function Nav() {
                     {current && (
                       <span
                         aria-hidden="true"
-                        className="absolute inset-x-4 bottom-1.5 h-0.5 rounded-full bg-[var(--color-saffron-deep)]" // 4.05:1 on cream
+                        className={cn(
+                          "absolute inset-x-4 h-0.5 rounded-full bg-[var(--color-saffron-deep)]", // 4.05:1 on cream
+                          // The stacked 3-line "Activities & Workshops" label
+                          // is taller than every other (single-line) nav
+                          // item's own box, so the same `bottom-1.5` offset
+                          // that sits cleanly below one line of text lands
+                          // inside the stacked block's last line ("Workshops")
+                          // instead — the underline needs to sit further
+                          // below this item's own box (into the row's
+                          // existing vertical-centering space) to clear it.
+                          // Only this item's underline changes; every other
+                          // link keeps the original `bottom-1.5`.
+                          stacked ? "-bottom-2" : "bottom-1.5"
+                        )}
                       />
                     )}
                   </Link>
@@ -176,18 +231,25 @@ export function Nav() {
             {/* Text colour forced to pure white — the client flagged the
                 default `variant="secondary"` cream-on-maroon as hard to
                 read. Background/shape/size/typography/position all
-                untouched; this is a colour-only override. */}
+                untouched; this is a colour-only override.
+                v8 — trimmed slightly more compact (`!px-3.5` instead of the
+                `sm` size's default `px-4`, icon 16→15px, `gap-1.5` instead
+                of the base component's `gap-2`) to buy the 9-item desktop
+                row a little breathing room at `lg` without touching the
+                nav links themselves or the breakpoint — the first fix the
+                client asked to try, ahead of any link-level change. */}
             <Button
               href="/passport"
               size="sm"
               variant="secondary"
-              className="hidden text-white hover:text-white sm:inline-flex"
+              className="hidden !gap-1.5 !px-3.5 text-white hover:text-white sm:inline-flex"
             >
-              <Ticket size={16} aria-hidden="true" />
+              <Ticket size={15} aria-hidden="true" />
               Claim your passport
             </Button>
 
-            {/* Hamburger — desktop (≥1024px) never sees this; lg:hidden. */}
+            {/* Hamburger — desktop (≥1024px) never sees this; lg:hidden,
+                matching the desktop row's own lg: breakpoint above. */}
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -202,7 +264,8 @@ export function Nav() {
         </nav>
       </header>
 
-      {/* Mobile / tablet drawer — unchanged in behaviour, lg:hidden as before. */}
+      {/* Mobile / tablet drawer — unchanged in behaviour, lg:hidden, matching
+          the desktop row's breakpoint above. */}
       <AnimatePresence>
         {open && (
           <motion.div

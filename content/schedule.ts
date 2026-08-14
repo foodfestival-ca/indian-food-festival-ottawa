@@ -49,16 +49,28 @@ const ScheduleEventSchema = z.object({
 
 export const scheduleEvents = z.array(ScheduleEventSchema).parse([
   // ---------- Friday ----------
-  { id: "fri-1", day: "fri", time: "5:00PM - 5:15PM", title: "MC Welcome Remarks", type: "Speech" },
-  { id: "fri-2", day: "fri", time: "5:15PM - 6:15PM", title: "Bollywood Singing with Dhol", type: "Vocals", performer: "Sidak" },
-  { id: "fri-3", day: "fri", time: "6:15PM - 6:45PM", title: "Opening Music Ceremony (Kerala Drums & Violin)", type: "Music", group: "Ottawa Mela Sangam" },
-  { id: "fri-4", day: "fri", time: "6:45PM - 7:15PM", title: "Mayor Speech & Remarks", type: "Speech", performer: "Mayor/Councellor" },
-  { id: "fri-5", day: "fri", time: "7:15PM - 7:25PM", title: "Cultural / Folk Performance", type: "Dance", performer: "Simran Kaur", group: "Lovin' Bhangra" },
-  { id: "fri-6", day: "fri", time: "7:30PM - 8:00PM", title: "Ceremonial Dhol Tasha", type: "Music", group: "Ottawa Dhol Pathak" },
-  { id: "fri-7", day: "fri", time: "8:05PM - 8:15PM", title: "Fusion Kids Performance", type: "Dance", performer: "Pranil", group: "Pranil Dance Studio" },
-  { id: "fri-8", day: "fri", time: "8:20PM - 8:30PM", title: "Gujarati Garba with Daughter", type: "Dance", performer: "Urvashi Makwana" },
-  { id: "fri-9", day: "fri", time: "8:30PM - 9:00PM", title: "Bollywood Singing", type: "Vocals", performer: "Devine Melodies" },
-  { id: "fri-10", day: "fri", time: "9:00PM - 10:00PM", title: "DJ", type: "DJ", performer: "DJ Avatar" },
+  // Replaced wholesale per the client's updated Friday schedule (2026-08-15
+  // correction) — the client's new schedule image is the source of truth
+  // for the entire day, not a patch on top of the old rows. Notably: the
+  // day now starts at 5:15PM (no separate 5:00-5:15PM slot), a new "Indian
+  // Fusion Dance" (Aaradhya) slot was added at 6:00-6:10PM, and the
+  // 8:20-8:30PM slot is now "Fusion Bharatnatyam" (Sujaya) — replacing the
+  // previous "Gujarati Garba with Daughter" (Urvashi Makwana) entry, which
+  // no longer appears anywhere in the schedule. `group` is omitted
+  // throughout (not carried over from the old rows) since the client's new
+  // list only supplies a performer name per slot, not a separate group
+  // name — nothing here is invented beyond what was supplied.
+  { id: "fri-1", day: "fri", time: "5:15PM - 5:25PM", title: "MC Welcome Remarks", type: "Speech" },
+  { id: "fri-2", day: "fri", time: "5:25PM - 5:55PM", title: "Bollywood Singing", type: "Vocals", performer: "Devine Melodies" },
+  { id: "fri-3", day: "fri", time: "6:00PM - 6:10PM", title: "Indian Fusion Dance", type: "Dance", performer: "Aaradhya" },
+  { id: "fri-4", day: "fri", time: "6:15PM - 6:45PM", title: "Opening Music Ceremony (Kerala Drums & Violin)", type: "Music", performer: "Pratap" },
+  { id: "fri-5", day: "fri", time: "6:45PM - 7:15PM", title: "Mayor Speech & Remarks", type: "Speech", performer: "Mayor/Councillor" },
+  { id: "fri-6", day: "fri", time: "7:15PM - 7:25PM", title: "Cultural / Folk Performance", type: "Dance", performer: "Simran Kaur" },
+  { id: "fri-7", day: "fri", time: "7:30PM - 8:00PM", title: "Ceremonial Dhol Tasha", type: "Music" },
+  { id: "fri-8", day: "fri", time: "8:05PM - 8:15PM", title: "Fusion Kids Performance", type: "Dance", performer: "Pranil" },
+  { id: "fri-9", day: "fri", time: "8:20PM - 8:30PM", title: "Fusion Bharatnatyam", type: "Dance", performer: "Sujaya" },
+  { id: "fri-10", day: "fri", time: "8:30PM - 9:00PM", title: "Bollywood Singing", type: "Vocals", performer: "Devine Melodies" },
+  { id: "fri-11", day: "fri", time: "9:00PM - 10:00PM", title: "DJ", type: "DJ", performer: "DJ Avstar" },
 
   // ---------- Saturday ----------
   { id: "sat-1", day: "sat", time: "12:30PM - 1:30PM", title: "Mandala Art Workshop", type: "Workshop" },

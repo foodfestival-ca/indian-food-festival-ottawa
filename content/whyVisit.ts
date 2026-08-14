@@ -33,7 +33,7 @@ export const whyVisit = z.array(ReasonSchema).parse([
   { id: "stage",      title: "Watch live performances",  blurb: "Bollywood dance performances, classical dance, live music, folk, and three nights of DJ",                          href: "/schedule#performances", icon: "music",  span: "normal" },
   { id: "flavors",    title: "Flavors from India",       blurb: "Street food, regional specialties and festival favourites — dishes from every corner of India, all in one place.",   href: "/vendor",       icon: "utensils", span: "normal" },
   { id: "market",     title: "A Full Marketplace",       blurb: "Textiles, jewellery, apparel and Ottawa's Indian-owned makers. Come hungry, leave carrying things.",                href: "/vendor",       icon: "store",  span: "normal" },
-  { id: "kids",       title: "Kids Zone and Activities", blurb: "A dedicated Kids Zone, stroller-friendly grounds and food mild enough for small palates.",                          href: "/gallery",      icon: "baby",   span: "normal" },
+  { id: "kids",       title: "Kids Zone and Activities", blurb: "A dedicated Kids Zone, stroller-friendly grounds and food mild enough for small palates.",                          href: "/activities#kids-zone", icon: "baby",   span: "normal" },
 ]);
 
 export type Reason = (typeof whyVisit)[number];

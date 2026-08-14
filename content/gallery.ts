@@ -34,13 +34,27 @@ import { z } from "zod";
  * when they share the same `year`. Add a future event kind (e.g. a launch
  * party) the same way — new `event` value, `year`, no schema change needed.
  *
- * "kids-zone" is the same kind of partition, added for the Kids Zone
- * gallery tab: it groups Kids Zone content collectively, independent of any
- * single festival year, rather than filing it under whichever year it
- * happens to date from. The three original 2025 Kids Zone photos were
- * migrated from `event: "festival"` to `event: "kids-zone"` for this reason
- * — they still carry their real `year` for record-keeping, it's just no
- * longer what the UI uses to decide where they show up.
+ * "kids-zone" WAS the same kind of partition, added for a dedicated Kids
+ * Zone gallery tab. It has since been removed: the new /activities page
+ * (app/activities/page.tsx, content/activities.ts) is now the primary
+ * place Kids Zone is presented, per explicit client direction ("Remove the
+ * dedicated Kids Zone activity tab/partition from Gallery... Only remove
+ * the dedicated Kids Zone activity grouping from the Gallery UI/data
+ * structure"). What that meant concretely for the items that used to carry
+ * `event: "kids-zone"`:
+ *   - `kids-face-painting-2025` is a real, dated 2025 photo — it moved back
+ *     to the default `event: "festival"`, so it now shows in the ordinary
+ *     2025 year tab, exactly where a genuine 2025 photo belongs. Not
+ *     deleted, not touched beyond the `event` field.
+ *   - The six other former Kids Zone entries (mandala/nail-art/tin-can-toss/
+ *     net-cricket/planet-cricket-logo/inflatable-obstacle-course) were
+ *     undated promotional/reference imagery, not genuine dated festival
+ *     photos — they had no honest home in a year-based Gallery even before
+ *     this change (see the schema's `year` comment below). They're removed
+ *     from this array entirely, NOT deleted as files — the same images at
+ *     the same `/media/gallery/kids-zone/` paths are now referenced
+ *     directly from `content/activities.ts` for the BMO Activity Zone
+ *     section, so nothing is duplicated and nothing is lost.
  */
 
 export const GALLERY_CATEGORIES = [
@@ -54,7 +68,7 @@ export const GALLERY_CATEGORIES = [
 
 const CategorySchema = z.enum(GALLERY_CATEGORIES);
 
-export const GALLERY_EVENTS = ["festival", "preview-night", "kids-zone"] as const;
+export const GALLERY_EVENTS = ["festival", "preview-night"] as const;
 
 const GalleryItemSchema = z.object({
   id: z.string(),
@@ -458,82 +472,18 @@ export const galleryItems = z.array(GalleryItemSchema).parse([
     type: "photo",
     title: "Face Painting at the Kids Zone",
     year: "2025",
-    event: "kids-zone",
     category: "Kids Zone",
     alt: "A young boy having a Spider-Man mask design face-painted by an artist at the festival's Kids Zone",
     image: `${BASE_KIDS_ZONE}/kids-face-painting-2025.jpg`,
     width: 933,
     height: 1400,
   },
-  {
-    id: "mandala-art-activity",
-    type: "photo",
-    title: "Mandala Art Activity",
-    event: "kids-zone",
-    category: "Kids Zone",
-    alt: "A hand-drawn and colored mandala design on paper, in blue and green, illustrating the Mandala Art activity",
-    image: `${BASE_KIDS_ZONE}/mandala-art-activity.jpg`,
-    width: 387,
-    height: 516,
-  },
-  {
-    id: "nail-art-activity",
-    type: "photo",
-    title: "Nail Art Activity",
-    event: "kids-zone",
-    category: "Kids Zone",
-    alt: "A pair of hands with nails painted in pink and blue patterns, illustrating the Nail Art activity",
-    image: `${BASE_KIDS_ZONE}/nail-art-activity.jpg`,
-    width: 447,
-    height: 447,
-  },
-  {
-    id: "tin-can-toss-game",
-    type: "photo",
-    title: "Tin-Can Toss Game",
-    event: "kids-zone",
-    category: "Kids Zone",
-    alt: "A child throwing a ball at a stack of tin cans on a table, illustrating the tin-can toss carnival game",
-    image: `${BASE_KIDS_ZONE}/tin-can-toss-game.jpg`,
-    width: 600,
-    height: 400,
-  },
-  {
-    id: "net-cricket-activity",
-    type: "photo",
-    title: "Net Cricket Activity",
-    event: "kids-zone",
-    category: "Kids Zone",
-    alt: "Two players using a portable cricket batting cage outdoors, illustrating the net cricket activity",
-    image: `${BASE_KIDS_ZONE}/net-cricket-activity.jpg`,
-    width: 894,
-    height: 894,
-  },
-  {
-    id: "planet-cricket-logo",
-    type: "photo",
-    title: "Planet Cricket",
-    event: "kids-zone",
-    category: "Kids Zone",
-    // Client-supplied brand logo (not a festival photo) for the partner
-    // running the Net Cricket activity above — alt text describes the
-    // logo itself rather than implying it was photographed at the event.
-    alt: "The Planet Cricket logo — a cricket ball orbiting a navy planet with a coloured ring, above the wordmark \"Planet Cricket\"",
-    image: `${BASE_KIDS_ZONE}/planet-cricket-logo.jpg`,
-    width: 1200,
-    height: 1000,
-  },
-  {
-    id: "inflatable-obstacle-course",
-    type: "photo",
-    title: "30-ft Inflatable Obstacle Course",
-    event: "kids-zone",
-    category: "Kids Zone",
-    alt: "A 30-foot inflatable obstacle course bouncy house, illustrating the inflatable obstacle course activity",
-    image: `${BASE_KIDS_ZONE}/inflatable-obstacle-course.jpg`,
-    width: 1264,
-    height: 843,
-  },
+  // mandala-art-activity, nail-art-activity, tin-can-toss-game,
+  // net-cricket-activity, planet-cricket-logo, inflatable-obstacle-course —
+  // moved out of the Gallery data structure (undated promotional/reference
+  // imagery, not genuine festival photos); now referenced directly from
+  // content/activities.ts at their same existing file paths. See the file
+  // header note above.
   {
     id: "food-sampling-prep",
     type: "photo",
