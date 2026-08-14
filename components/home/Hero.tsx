@@ -335,8 +335,31 @@ export function Hero() {
               element makes risky to fight with `translate-*` utilities), so
               the mobile-centered / desktop-left-aligned behavior above is
               unchanged, just offset a little further right/down from
-              wherever it already lands. */}
-          <motion.div {...rise(0.36)} className="mx-auto mt-6 w-full max-w-sm lg:mx-0 lg:mt-10 lg:max-w-md lg:pl-8">
+              wherever it already lands.
+
+              v21 — root-cause fix for the countdown failing to render on
+              desktop: this wrapper used the same `rise()` recipe as every
+              other Hero element (opacity 0→1 *and* a y: 22→0 transform).
+              `<Countdown />` itself uses `backdrop-filter: blur()` for its
+              entire visible surface, and Chromium/WebKit have a known
+              interaction bug where an ancestor's CSS `transform` animating
+              (even to an identity/no-op end state) can leave a descendant's
+              backdrop-filter layer un-composited — it never (re)samples the
+              blur, so the card renders with no visible surface at all.
+              `Countdown.tsx` already isolates its own layer with
+              `transform: translateZ(0)`, which helps once mounted but
+              doesn't stop the *ancestor's* transform from being the trigger.
+              Dropping the `y` transform here (opacity-only fade) removes
+              that trigger entirely while keeping a visible entrance
+              animation consistent with the rest of the Hero. See
+              `Countdown.tsx`'s own v3 note for the matching contrast-floor
+              fix (mobile "washed out" symptom). */}
+          <motion.div
+            initial={reduced ? { opacity: 1 } : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={reduced ? undefined : { duration: 0.8, delay: 0.36, ease: EASE_BRAND }}
+            className="mx-auto mt-6 w-full max-w-sm lg:mx-0 lg:mt-10 lg:max-w-md lg:pl-8"
+          >
             <Countdown />
           </motion.div>
         </div>

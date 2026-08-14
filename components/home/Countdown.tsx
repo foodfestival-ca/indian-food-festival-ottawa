@@ -80,7 +80,29 @@ export function Countdown() {
         // depth-only shadow while the tint was doing the contrast work; now
         // it's the main thing anchoring the text against whatever the
         // blurred photo is doing at that spot).
-        background: "transparent",
+        //
+        // v5 — root-cause fix for two live bug reports: mobile numbers
+        // "extremely faded/washed out", desktop card failing to render at
+        // all. `background: transparent` meant the card had ZERO visible
+        // surface of its own — every bit of contrast depended on (a) the
+        // `backdrop-filter` blur actually rendering, and (b) the blurred
+        // photo underneath happening to be dark enough at that exact spot.
+        // Neither is guaranteed: on mobile the hero photo behind the card is
+        // often light (sky/clothing), so the blur alone doesn't darken it
+        // enough for cream-on-cream text — that's the "washed out" report.
+        // On desktop, Chromium/WebKit can fail to composite a descendant's
+        // backdrop-filter at all when an ancestor's CSS transform is
+        // animating (see Hero.tsx's v21 note, which removes that trigger on
+        // the wrapping motion.div) — when that happens the card had
+        // literally nothing behind the text, which read as "doesn't
+        // render". Fix: a real, low-opacity maroon→ink tint sits behind the
+        // blur again, just far subtler than the old v2/v3 tint (18-22%
+        // here vs. ~75-82% before) — enough to guarantee a dark, consistent
+        // backing for the cream/gold text no matter what's in the photo or
+        // whether the blur itself renders, while still reading as
+        // translucent glass rather than a solid card.
+        background:
+          "linear-gradient(135deg, rgba(107,16,40,0.22) 0%, rgba(42,26,24,0.20) 100%)",
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
         border: "1px solid rgba(232,217,168,0.32)",
