@@ -8,6 +8,12 @@ interface SectionHeaderProps {
   /** Word or phrase inside `title` to render in the accent colour, matching
    *  the mixed-weight split in the design reference. */
   accent?: string;
+  /** Optional secondary heading rendered directly under `title`, above
+   *  `intro` — for sections that need a two-tier heading (primary title +
+   *  a smaller supporting name) instead of the usual eyebrow-above-title
+   *  pattern. Only used where explicitly passed; every other section is
+   *  unaffected. */
+  subheading?: string;
   intro?: string;
   align?: "left" | "center";
   onDark?: boolean;
@@ -19,6 +25,7 @@ export function SectionHeader({
   eyebrow,
   title,
   accent,
+  subheading,
   intro,
   align = "center",
   onDark = false,
@@ -58,6 +65,22 @@ export function SectionHeader({
           {head}
         </h2>
       </Reveal>
+      {subheading && (
+        <Reveal delay={0.07}>
+          {/* Plain, unaccented — a quiet supporting label under the title,
+              not a second highlighted heading. Same muted tone as `intro`
+              below it, just smaller/tighter so it still reads as its own
+              line, not the description. */}
+          <p
+            className={cn(
+              "mt-1.5 text-[length:var(--text-base)] font-medium",
+              onDark ? "text-[var(--color-cream)]/70" : "text-[var(--color-ink-muted)]"
+            )}
+          >
+            {subheading}
+          </p>
+        </Reveal>
+      )}
       {intro && (
         <Reveal delay={0.1}>
           <p

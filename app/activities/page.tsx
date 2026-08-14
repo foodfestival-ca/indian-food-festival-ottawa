@@ -202,10 +202,15 @@ export default function ActivitiesPage() {
           homepage Kids Zone button lands exactly here. */}
       <Section id="kids-zone" ground="cream-deep" labelledBy="kids-zone-heading">
         <Container>
+          {/* No eyebrow here — "Kids Zone" is the primary heading, with
+              "BMO Activity Zone" as a smaller supporting subheading directly
+              underneath (SectionHeader's `subheading` prop), rather than an
+              eyebrow-above-title. The BMO logo right below still carries the
+              brand visually. */}
           <SectionHeader
             id="kids-zone-heading"
-            eyebrow="Presented with BMO"
             title="Kids Zone"
+            subheading="BMO Activity Zone"
             intro="Fun activities for kids and families, all included with festival admission."
           />
 
