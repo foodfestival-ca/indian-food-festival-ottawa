@@ -136,7 +136,7 @@ export function VendorsShowcase() {
         {foodVendors.length > 0 ? (
           <RevealGroup className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {foodVendors.map((vendor) => (
-              <RevealItem key={vendor.id} className="h-full">
+              <RevealItem key={vendor.id} className="h-full" standalone>
                 <VendorCard vendor={vendor} onOpen={setActive} />
               </RevealItem>
             ))}
@@ -165,7 +165,7 @@ export function VendorsShowcase() {
         {productVendors.length > 0 ? (
           <RevealGroup className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {productVendors.map((vendor) => (
-              <RevealItem key={vendor.id} className="h-full">
+              <RevealItem key={vendor.id} className="h-full" standalone>
                 <VendorCard vendor={vendor} onOpen={setActive} />
               </RevealItem>
             ))}
