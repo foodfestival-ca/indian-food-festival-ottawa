@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -58,6 +58,31 @@ export function VendorsShowcase() {
     // ever apply to Food Vendors (see FOOD_CATEGORIES/FILTERS above).
     return vendors.filter((v) => !isFoodVendor(v) && matchesQuery(v, q));
   }, [query]);
+
+  /**
+   * Corrects a direct-link-with-hash landing short (client-reported:
+   * `/vendor#product-vendors-heading` from the homepage was scrolling to
+   * partway up the Food Vendors grid instead of the Product & Marketplace
+   * heading). This grid is rendered by this client component, so on a fresh
+   * page load the browser's own hash-scroll can fire before the full Food
+   * Vendors grid (26 cards) has finished laying out/hydrating — it jumps
+   * based on a shorter, not-yet-final page height. A single corrective
+   * `scrollIntoView` after the browser has painted the settled layout fixes
+   * that landing spot. Only runs once on mount, so same-page anchor clicks
+   * elsewhere on the site (which don't remount this component) are
+   * unaffected — this targets only the direct-navigation-with-hash case.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.location.hash) return;
+    const id = window.location.hash.slice(1);
+    const raf = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById(id)?.scrollIntoView({ block: "start", behavior: "auto" });
+      });
+    });
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally once-on-mount only
+  }, []);
 
   return (
     <Container className="!max-w-[100rem]">
