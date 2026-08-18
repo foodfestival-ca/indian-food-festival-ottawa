@@ -17,9 +17,18 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-[var(--color-saffron)] text-white shadow-[var(--shadow-sm)] " +
     "hover:bg-[var(--color-saffron-deep)] hover:shadow-[var(--shadow-md)]",
+  // Text is pure white, not `--color-cream` — the client already flagged
+  // cream-on-maroon as hard to read once (Nav.tsx's "Claim your passport"
+  // CTA, which used to force `text-white` as a one-off override on top of
+  // this same variant) and then flagged the identical low-contrast issue
+  // again on every other secondary button on the site (Become a Sponsor,
+  // Follow Us on Instagram, Get Directions, Send Us a Message). Fixing it
+  // here at the source — instead of adding more one-off overrides — means
+  // every current and future `variant="secondary"` button is white-on-maroon
+  // automatically; Nav's own override is now redundant but harmless.
   secondary:
-    "bg-[var(--color-maroon)] text-[var(--color-cream)] shadow-[var(--shadow-sm)] " +
-    "hover:bg-[var(--color-burgundy)] hover:shadow-[var(--shadow-md)]",
+    "bg-[var(--color-maroon)] text-white shadow-[var(--shadow-sm)] " +
+    "hover:bg-[var(--color-burgundy)] hover:text-white hover:shadow-[var(--shadow-md)]",
   // ② Hero secondary
   outline:
     "border border-[var(--color-maroon)]/35 text-[var(--color-maroon)] bg-transparent " +
@@ -54,7 +63,21 @@ type AnchorProps = CommonProps & { href: string } & Omit<ComponentPropsWithoutRe
 
 export function Button(props: ButtonProps | AnchorProps) {
   const { variant = "primary", size = "md", className, children, fluid, ...rest } = props;
-  const classes = cn(base, variants[variant], sizes[size], fluid && "w-full sm:w-auto", className);
+  // `sizes[size]` is merged BEFORE `variants[variant]`, not after. Every
+  // size sets an arbitrary-value font-size utility on the `text-` prefix,
+  // and `tailwind-merge` groups that together with each variant's own
+  // text-colour utility (also `text-` prefixed) as if they were the same
+  // conflicting property. Whichever one is LAST in the merge order silently
+  // wins and the other is dropped entirely — with the old order, the size's
+  // font-size utility always won, deleting every variant's intended text
+  // colour and leaving buttons with no explicit colour at all (inherited
+  // near-black ink). This was the actual root cause behind "Explore
+  // Festival", "Become a Sponsor", "Follow Us on Instagram", "Get
+  // Directions" and "Send Us a Message" all rendering with illegible dark
+  // text on coloured backgrounds — not a colour choice
+  // that needed changing, a silently-stripped class. `className` (caller
+  // overrides) still comes last, so it still wins over both, as intended.
+  const classes = cn(base, sizes[size], variants[variant], fluid && "w-full sm:w-auto", className);
 
   if ("href" in rest && rest.href) {
     const { href, ...anchorRest } = rest as AnchorProps;

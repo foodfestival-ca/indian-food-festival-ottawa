@@ -105,7 +105,18 @@ export function Footer() {
         <div className="mt-12 border-t border-[var(--color-cream)]/15 pt-6 text-[length:var(--text-xs)] text-[var(--color-cream)]/55">
           <p>
             © {new Date().getFullYear()} {festival.organizer.legalName}. Founded by{" "}
-            {festival.organizer.founders.join(" & ")}.
+            {festival.organizer.founders.map((name, i) => (
+              <span key={name}>
+                {i > 0 && " & "}
+                <Link
+                  href="/about#co-founders"
+                  className="underline decoration-transparent underline-offset-2 transition-colors hover:text-[var(--color-cream)] hover:decoration-current"
+                >
+                  {name}
+                </Link>
+              </span>
+            ))}
+            .
           </p>
         </div>
       </Container>

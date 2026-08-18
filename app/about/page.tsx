@@ -157,7 +157,14 @@ export default function AboutPage() {
               column on mobile via the same sm:grid-cols-2 breakpoint used
               elsewhere on this page. */}
           <div className="mx-auto mt-12 max-w-[40rem] space-y-10">
-            <div>
+            {/* `id`+`scroll-mt` here so the footer's "Bhakti Sheth & Sagar
+                Vora" credit line (components/layout/Footer.tsx) can link
+                straight to this row via /about#co-founders — the site's
+                existing global `scroll-behavior: smooth` +
+                `scroll-padding-top` (globals.css) already handles the nav
+                clearance for every other anchor link on the site, no JS
+                needed here either. */}
+            <div id="co-founders" className="scroll-mt-28">
               <p className="text-center text-[length:var(--text-xs)] font-semibold uppercase tracking-[0.14em] text-[var(--color-saffron-deep)]">
                 Co-Founders
               </p>
