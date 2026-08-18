@@ -99,11 +99,12 @@ export const vendors = z.array(VendorSchema).parse([
   {
     id: "everest-cuisine",
     name: "Everest Cuisine",
-    cuisine: "",
+    cuisine: "Himalayan",
     category: "Himalayan",
-    description: "",
+    description:
+      "Bringing the flavours of the Himalayas to the festival with vegetarian and chicken chowmein alongside vegetarian and chicken momo, made fresh and served hot.",
     image: "/vendors/everest-cuisine.png",
-    menuItems: [],
+    menuItems: ["Veg Chowmein", "Chicken Chowmein", "Veg Momo", "Chicken Momo"],
   },
   {
     id: "chawlas",
@@ -192,7 +193,7 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Gujarati",
     description:
       "Inspired by the rustic cuisine of Gujarat's Kathiyawad region, this vendor brings regional street food favourites with bold spices, including pani puri, frankies, and traditional Gujarati flavours.",
-    image: "",
+    image: "/vendors/kathiyawadi-bites.png",
     menuItems: ["Pani Puri", "Frankies"],
   },
   {

@@ -47,6 +47,11 @@ const BmoActivitySchema = z.object({
   alt: z.string().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
+  /** Optional external booking link — only set for Net Cricket with Planet
+   *  Cricket, whose slots need advance booking directly on Planet
+   *  Cricket's own site. Every other BMO/Kids Zone activity has no
+   *  reservation step, so this stays unset (no button rendered) for them. */
+  bookingUrl: z.string().optional(),
 });
 
 /**
@@ -115,6 +120,7 @@ export const bmoActivities = z.array(BmoActivitySchema).parse([
     alt: "Two players using a portable cricket batting cage outdoors",
     width: 894,
     height: 894,
+    bookingUrl: "https://www.planetcricketottawa.com/food-festival-cricket-nets",
   },
 ]);
 

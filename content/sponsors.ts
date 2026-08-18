@@ -82,6 +82,14 @@ export const sponsors = z.array(SponsorSchema).parse([
   { id: "ottawa-200", name: "Ottawa 200", logo: "/sponsors/ottawa-200.png" },
   { id: "costco", name: "Costco Wholesale", logo: "/sponsors/costco.png" },
 
+  // Newest sponsors (2026-08-18) — added at the end, still before Barrhaven
+  // BIA per the client's explicit "Barrhaven BIA is the final sponsor" rule
+  // above.
+  { id: "tapri-chai", name: "Tapri Chai", logo: "/sponsors/tapri-chai.jpg" },
+  { id: "socialflix", name: "Socialflix — Ottawa Events", logo: "/sponsors/socialflix.jpg" },
+  { id: "capital-city-events", name: "Capital City Events", logo: "/sponsors/capital-city-events.jpg" },
+  { id: "insuracan", name: "InsuraCan", logo: "/sponsors/insuracan.jpg" },
+
   // 17 — client-specified final sponsor.
   { id: "barrhaven-bia", name: "Barrhaven BIA", logo: "/sponsors/barrhaven-bia.png" },
 ]);

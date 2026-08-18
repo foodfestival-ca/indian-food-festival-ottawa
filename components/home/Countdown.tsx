@@ -147,6 +147,25 @@ export function Countdown() {
               </div>
             ))}
           </div>
+          {/* Event timing — per-day opening hours, straight from
+              `festival.days` (content/festival.ts), so it can never drift
+              out of sync with the Schedule/Venue pages' own hours. Sits
+              below the digits as a compact, wrapping row rather than a
+              fourth grid row, so it degrades gracefully at narrow widths
+              instead of forcing the card wider. */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 border-t border-[var(--color-gold-soft)]/20 pt-3.5">
+            {festival.days.map((day, i) => (
+              <span key={day.id} className="inline-flex items-center gap-2.5">
+                {i > 0 && (
+                  <span aria-hidden="true" className="h-1 w-1 rounded-full bg-[var(--color-gold-soft)]/50" />
+                )}
+                <span className="whitespace-nowrap text-[length:var(--text-xs)] font-medium text-[var(--color-gold-soft)]/90">
+                  {day.weekday.slice(0, 3)} {day.hoursLabel}
+                </span>
+              </span>
+            ))}
+          </div>
+
           <p className="sr-only-focusable">
             {c.ready ? `${c.days} days until the festival begins.` : ""}
           </p>

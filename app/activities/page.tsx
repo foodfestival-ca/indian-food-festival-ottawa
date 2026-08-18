@@ -271,6 +271,23 @@ export default function ActivitiesPage() {
                       <span aria-hidden="true">{activity.emoji} </span>
                       {activity.name}
                     </p>
+                    {/* Only Net Cricket with Planet Cricket sets `bookingUrl`
+                        — every other card renders exactly as before. External
+                        link to Planet Cricket's own booking page, opened in a
+                        new tab so visitors don't lose their place on this
+                        page. */}
+                    {activity.bookingUrl && (
+                      <a
+                        href={activity.bookingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center justify-center gap-1.5 self-center rounded-[var(--radius-pill)] border border-[var(--color-saffron-deep)]/40 px-3.5 py-1.5 text-[length:var(--text-xs)] font-semibold text-[var(--color-saffron-deep)] transition-colors hover:bg-[var(--color-saffron-deep)] hover:text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-maroon)]"
+                        aria-label="Book your slot now for Net Cricket with Planet Cricket (opens in a new tab)"
+                      >
+                        Book your slot now
+                        <ArrowRight size={13} aria-hidden="true" />
+                      </a>
+                    )}
                   </div>
                 </div>
               </RevealItem>
