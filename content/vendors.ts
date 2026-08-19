@@ -51,6 +51,10 @@ export const VENDOR_CATEGORIES = [
   "Henna Art",
   "Fashion & Jewelry",
   "Tarot & Wellness",
+  "Beauty & Wellness",
+  "Art & Craft",
+  "Fitness & Sports",
+  "Community Partners",
 ] as const;
 
 export type VendorCategory = (typeof VENDOR_CATEGORIES)[number];
@@ -79,6 +83,10 @@ export const NON_FOOD_CATEGORIES: readonly VendorCategory[] = [
   "Henna Art",
   "Fashion & Jewelry",
   "Tarot & Wellness",
+  "Beauty & Wellness",
+  "Art & Craft",
+  "Fitness & Sports",
+  "Community Partners",
 ];
 
 export function isFoodVendor(vendor: { category: VendorCategory }): boolean {
@@ -359,6 +367,155 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Fashion & Jewelry",
     description: "Colourful bangles bringing tradition, elegance, and celebration.",
     image: "/vendors/bbg-bangle-box-girl.jpg",
+    menuItems: [],
+  },
+  // ---- 2026-08-19 addition: 11 new Product & Marketplace vendors + BMO,
+  // client-supplied logos and (where given) verbatim descriptions. 5 had
+  // exact copy provided in chat; the other 6 (CSMA, Lufa Farms, GoodLife
+  // Fitness, Barrhaven Food Cupboard, Socialflix Lounge, Costco) had only a
+  // name + logo confirmed — `description`/`cuisine` left empty rather than
+  // invented, same pattern already used for `the-bling-baari`/`bbg-...`
+  // above. 4 new non-food categories added to VENDOR_CATEGORIES/
+  // NON_FOOD_CATEGORIES to bucket them; none affect the Food Vendors filter
+  // chips (those only ever read FOOD_CATEGORIES).
+  {
+    id: "swagriwaaz",
+    name: "Swagriwaaz",
+    cuisine: "",
+    category: "Fashion & Jewelry",
+    description: "Discover unique Indian-inspired products, style, and craftsmanship.",
+    image: "/vendors/swagriwaaz.jpg",
+    menuItems: [],
+  },
+  {
+    id: "dessence-of-her",
+    name: "D'essence of Her",
+    cuisine: "",
+    category: "Fashion & Jewelry",
+    description: "Chic statement jewellery designed to elevate every look.",
+    image: "/vendors/dessence-of-her.jpg",
+    menuItems: [],
+  },
+  {
+    id: "hiralba",
+    name: "Nail Edits by Hiralba",
+    cuisine: "",
+    category: "Beauty & Wellness",
+    description: "Custom nails and creative nail art experiences.",
+    image: "/vendors/hiralba.png",
+    menuItems: [],
+  },
+  {
+    id: "nidhi-arts-and-creation",
+    name: "Nidhi Arts and Creation",
+    cuisine: "",
+    category: "Art & Craft",
+    description: "Intricate mandala art handcrafted with creativity and detail.",
+    image: "/vendors/nidhi-arts-and-creation.jpg",
+    menuItems: [],
+  },
+  {
+    id: "csma",
+    name: "CSMA",
+    cuisine: "",
+    category: "Fitness & Sports",
+    description: "",
+    image: "/vendors/csma.png",
+    menuItems: [],
+  },
+  {
+    id: "the-earths-crown",
+    name: "The Earth's Crown",
+    cuisine: "",
+    category: "Beauty & Wellness",
+    description: "Personalized natural haircare inspired by individual scalp needs.",
+    image: "/vendors/the-earths-crown.jpg",
+    menuItems: [],
+  },
+  {
+    id: "lufa-farms",
+    name: "Lufa Farms",
+    cuisine: "",
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/lufa-farms.jpg",
+    menuItems: [],
+  },
+  {
+    id: "goodlife-fitness",
+    name: "GoodLife Fitness",
+    cuisine: "",
+    category: "Fitness & Sports",
+    description: "",
+    image: "/vendors/goodlife-fitness.png",
+    menuItems: [],
+  },
+  {
+    id: "barrhaven-food-cupboard",
+    name: "Barrhaven Food Cupboard",
+    cuisine: "",
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/barrhaven-food-cupboard.png",
+    menuItems: [],
+  },
+  {
+    id: "bmo",
+    name: "BMO",
+    cuisine: "",
+    category: "Community Partners",
+    // Reuses the existing BMO artwork from public/sponsors/bmo.png (already
+    // on-site as the Kids Zone/BMO Activity Zone sponsor) rather than a
+    // duplicate copy, per instruction to use that logo if possible.
+    description: "",
+    image: "/sponsors/bmo.png",
+    menuItems: [],
+  },
+  {
+    id: "socialflix-lounge",
+    name: "Socialflix Lounge",
+    cuisine: "",
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/socialflix-lounge.jpg",
+    menuItems: [],
+  },
+  {
+    id: "costco",
+    name: "Costco",
+    cuisine: "",
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/costco.png",
+    menuItems: [],
+  },
+  // ---- 2026-08-19 addition (2nd batch, same session): 3 more logo-only
+  // Community Partners, same no-invented-copy rule as the batch above.
+  {
+    id: "new-art-of-living",
+    name: "The New Art of Living",
+    cuisine: "",
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/new-art-of-living.jpg",
+    menuItems: [],
+  },
+  {
+    id: "billyard-insurance-group",
+    name: "Billyard Insurance Group",
+    cuisine: "",
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/billyard-insurance-group.jpg",
+    menuItems: [],
+  },
+  {
+    id: "surgenor",
+    name: "Surgenor Barrhaven",
+    cuisine: "",
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/surgenor.png",
     menuItems: [],
   },
 ]);
