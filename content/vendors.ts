@@ -325,6 +325,18 @@ export const vendors = z.array(VendorSchema).parse([
     menuItems: ["Surati Locho", "Egg Bhurji", "Egg Half Fry", "Egg Rolls", "Egg Pulao", "Pav Bhaji", "Masala Pav"],
   },
   {
+    id: "masala-chai-by-tanvi",
+    name: "Masala Chai By Tanvi",
+    cuisine: "",
+    // Placed first in the array per client instruction ("place this vendor
+    // in the 1st before Flaunt It by F") — Product & Marketplace renders in
+    // array order with no separate sort, so array position is display order.
+    category: "Fashion & Jewelry",
+    description: "Handcrafted boho treasures celebrating India's rich artisan traditions.",
+    image: "/vendors/masala-chai-by-tanvi.png",
+    menuItems: [],
+  },
+  {
     id: "flaunt-it-by-f",
     name: "Flaunt It by F",
     cuisine: "Henna Art by Fatima Ehsan",
@@ -516,6 +528,15 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Community Partners",
     description: "",
     image: "/vendors/surgenor.png",
+    menuItems: [],
+  },
+  {
+    id: "label-hoa",
+    name: "Label HOA",
+    cuisine: "",
+    category: "Fashion & Jewelry",
+    description: "Contemporary Indian fashion blending tradition, elegance, and craftsmanship.",
+    image: "/vendors/label-hoa.png",
     menuItems: [],
   },
 ]);
