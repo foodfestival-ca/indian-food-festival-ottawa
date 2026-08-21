@@ -191,14 +191,10 @@ export const scheduleEvents = z.array(ScheduleEventSchema).parse([
   { id: "sun-4", day: "sun", time: "1:00PM - 2:00PM", title: "Mandala Art Workshop", type: "Workshop" },
   { id: "sun-5", day: "sun", time: "2:30PM - 3:15PM", title: "Tamil Melodies", type: "Music", performer: "Sharmi", group: "canadiantamilsingersclub" },
   { id: "sun-6", day: "sun", time: "3:15PM - 3:45PM", title: "Bollywood Singing", type: "Music", performer: "Gautami & Siona", group: "Gautami and Siona: Two Voices, One Heart" },
-  { id: "sun-7", day: "sun", time: "3:45PM - 4:00PM", title: "Bollywood Singing", type: "Music", performer: "Ankit Arora" },
-  { id: "sun-8", day: "sun", time: "4:05PM - 4:10PM", title: "Dance – Fusion", type: "Dance", performer: "Catherine", group: "Athiradi Azhagigals" },
-  { id: "sun-9", day: "sun", time: "4:15PM - 5:00PM", title: "Power Garba", type: "Dance", performer: "Hiral", group: "Garba with Hiral" },
-  { id: "sun-10", day: "sun", time: "5:00PM - 6:00PM", title: "DJ with Sidak", type: "DJ", performer: "DJ Avatar" },
-  { id: "sun-11", day: "sun", time: "3:45PM - 4:00PM", title: "Music - Vocals", type: "Music", performer: "Ankit Arora" },
-  { id: "sun-12", day: "sun", time: "4:05PM - 4:10PM", title: "Dance – Fusion", type: "Dance", performer: "Catherine", group: "Athiradi Azhagigals" },
-  { id: "sun-13", day: "sun", time: "4:15PM - 5:00PM", title: "Power Garba", type: "Workshop", performer: "Hiral", group: "Garba with Hiral" },
-  { id: "sun-14", day: "sun", time: "5:00PM - 6:00PM", title: "DJ with Dhol", type: "DJ", performer: "DJ Avtaar & Sidak" },
+    { id: "sun-7", day: "sun", time: "3:45PM - 4:00PM", title: "Music - Vocals", type: "Music", performer: "Ankit Arora" },
+  { id: "sun-8", day: "sun", time: "4:05PM - 4:10PM", title: "Dance - Fusion", type: "Dance", group: "Athiradi Azhagigals" },
+  { id: "sun-9", day: "sun", time: "4:15PM - 5:00PM", title: "Power - Garba", type: "Workshop", group: "Garba with Hiral" },
+  { id: "sun-10", day: "sun", time: "5:00PM - 6:00PM", title: "DJ with Dhol", type: "DJ", performer: "DJ Avtaar & Sidak" },
 ]);
 
 export type ScheduleEvent = (typeof scheduleEvents)[number];
