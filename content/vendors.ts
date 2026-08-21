@@ -271,8 +271,20 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Desserts",
     description:
       "An irresistible dessert destination featuring handcrafted cakes inspired by Indian and international flavours, including rasmalai, mango, pistachio, tiramisu, black forest, pineapple cheesecake, and carrot cake.",
-    image: "",
+    // Logo supplied 2026-08-21 via "Bertolucci Chocalates.pdf" (Bertolucci
+    // Chocolates by Chef Anita) — was previously the one vendor on this page
+    // with no artwork.
+    image: "/vendors/bertolucci.png",
     menuItems: ["Rasmalai Cake", "Mango Cake", "Pistachio Cake", "Tiramisu", "Black Forest Cake", "Pineapple Cheesecake", "Carrot Cake"],
+  },
+  {
+    id: "divine-cakes",
+    name: "Divine Cakes",
+    cuisine: "",
+    category: "Desserts",
+    description: "",
+    image: "/vendors/divine-cakes.jpg",
+    menuItems: [],
   },
   {
     id: "chai-and-juice",
@@ -537,6 +549,18 @@ export const vendors = z.array(VendorSchema).parse([
     category: "Fashion & Jewelry",
     description: "Contemporary Indian fashion blending tradition, elegance, and craftsmanship.",
     image: "/vendors/label-hoa.png",
+    menuItems: [],
+  },
+  {
+    id: "chai-juice-co",
+    name: "Chai & Juice Co",
+    cuisine: "",
+    // Client placed this in Product & Marketplace explicitly, not Food
+    // Vendors — despite the name, it's a distinct listing from the existing
+    // "chai-and-juice" food vendor above (different id, different logo).
+    category: "Community Partners",
+    description: "",
+    image: "/vendors/chai-juice-co.jpg",
     menuItems: [],
   },
 ]);

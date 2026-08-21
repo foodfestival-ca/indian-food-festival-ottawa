@@ -18,7 +18,6 @@ export const venueInfo = z.array(InfoSchema).parse([
     lines: [
       "Free on-site parking is available on a first-come basis.",
       "Additional street parking nearby on surrounding residential roads.",
-      "Arrive before 5 PM on Saturday for the easiest parking.",
     ],
   },
   {
@@ -26,7 +25,7 @@ export const venueInfo = z.array(InfoSchema).parse([
     title: "Getting Here",
     icon: "bus",
     lines: [
-      "Reachable by OC Transpo — check the trip planner for routes to the venue.",
+      "Reachable by OC Transpo Route 70 — stop name: Tartan/Houlahan.",
       "Bicycle parking is available at the main entrance.",
       "Rideshare drop-off is at the main gate.",
     ],
